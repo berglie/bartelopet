@@ -1,0 +1,88 @@
+/**
+ * Norwegian UI messages and labels
+ */
+
+export const messages = {
+  auth: {
+    loginTitle: 'Logg inn',
+    emailPlaceholder: 'din@epost.no',
+    sendMagicLink: 'Send innloggingslenke',
+    checkEmail: 'Sjekk e-posten din',
+    magicLinkSent: 'Vi har sendt deg en innloggingslenke.',
+    logout: 'Logg ut',
+  },
+  registration: {
+    title: 'Registrer deg',
+    fullName: 'Fullt navn',
+    displayName: 'Visningsnavn (valgfritt)',
+    targetDistance: 'Målsatt distanse (km)',
+    submit: 'Registrer',
+    success: 'Registrering vellykket!',
+  },
+  dashboard: {
+    title: 'Dashboard',
+    stats: 'Statistikk',
+    completions: 'Gjennomføringer',
+    uploadPhoto: 'Last opp bilde',
+    myCompletions: 'Mine gjennomføringer',
+    myStats: 'Min statistikk',
+  },
+  gallery: {
+    title: 'Galleri',
+    filterBy: 'Filtrer',
+    sortBy: 'Sorter',
+    recent: 'Nyeste',
+    popular: 'Populære',
+    vote: 'Stem',
+    voted: 'Stemt',
+    viewDetails: 'Se detaljer',
+  },
+  participants: {
+    title: 'Deltakere',
+    leaderboard: 'Toppliste',
+    byDistance: 'Etter distanse',
+    byVotes: 'Etter stemmer',
+    byCompletions: 'Etter gjennomføringer',
+    viewProfile: 'Se profil',
+  },
+  completion: {
+    create: 'Registrer gjennomføring',
+    distance: 'Distanse (km)',
+    duration: 'Varighet (minutter)',
+    location: 'Lokasjon',
+    notes: 'Notater',
+    completedAt: 'Gjennomført dato',
+    uploadImage: 'Last opp bilde',
+    submit: 'Lagre gjennomføring',
+  },
+  common: {
+    loading: 'Laster...',
+    error: 'Noe gikk galt',
+    success: 'Suksess',
+    cancel: 'Avbryt',
+    save: 'Lagre',
+    delete: 'Slett',
+    edit: 'Rediger',
+    back: 'Tilbake',
+    next: 'Neste',
+    previous: 'Forrige',
+    close: 'Lukk',
+    confirm: 'Bekreft',
+    search: 'Søk',
+    filter: 'Filtrer',
+    sort: 'Sorter',
+  },
+  errors: {
+    required: 'Dette feltet er påkrevd',
+    invalidEmail: 'Ugyldig e-postadresse',
+    minLength: 'Må være minst {{min}} tegn',
+    maxLength: 'Kan ikke være mer enn {{max}} tegn',
+    uploadFailed: 'Opplasting feilet',
+    networkError: 'Nettverksfeil - sjekk tilkoblingen din',
+    unauthorized: 'Du må være innlogget',
+    notFound: 'Ikke funnet',
+    serverError: 'Serverfeil - prøv igjen senere',
+  },
+} as const;
+
+export type Messages = typeof messages;

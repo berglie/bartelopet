@@ -1,0 +1,54 @@
+// Database types matching Supabase schema
+
+export interface Participant {
+  id: string
+  user_id: string | null
+  email: string
+  full_name: string
+  postal_address: string
+  phone_number: string | null
+  bib_number: number
+  has_completed: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface Completion {
+  id: string
+  participant_id: string
+  completed_date: string
+  duration_text: string | null
+  photo_url: string
+  comment: string | null
+  vote_count: number
+  created_at: string
+  updated_at: string
+}
+
+export interface Vote {
+  id: string
+  voter_id: string
+  completion_id: string
+  created_at: string
+}
+
+// Extended types with relations
+export interface CompletionWithParticipant extends Completion {
+  participant: Participant
+}
+
+export interface ParticipantWithCompletion extends Participant {
+  completion: Completion | null
+}
+
+// Insert types (for creating new records)
+export type ParticipantInsert = Omit<Participant, 'id' | 'created_at' | 'updated_at' | 'has_completed'>
+
+export type CompletionInsert = Omit<Completion, 'id' | 'created_at' | 'updated_at' | 'vote_count'>
+
+export type VoteInsert = Omit<Vote, 'id' | 'created_at'>
+
+// Update types (for updating records)
+export type ParticipantUpdate = Partial<Pick<Participant, 'postal_address' | 'phone_number'>>
+
+export type CompletionUpdate = Partial<Pick<Completion, 'completed_date' | 'duration_text' | 'photo_url' | 'comment'>>
