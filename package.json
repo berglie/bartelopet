@@ -12,6 +12,7 @@
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
     "@mapbox/togeojson": "^0.16.2",
+    "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@supabase/ssr": "^0.5.2",
@@ -19,6 +20,7 @@
     "autoprefixer": "^10.4.21",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "gpxparser": "^3.0.8",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.447.0",

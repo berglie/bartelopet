@@ -3,20 +3,24 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { createClient } from '@/lib/supabase/server';
 import { RouteMap } from '@/components/route-map';
-import { MapPin, Users, Trophy, Upload, Award } from 'lucide-react';
+import { MapPin, Users, Trophy, Upload, Award, ExternalLink, Heart } from 'lucide-react';
 import { MustacheSVG } from '@/components/mustache-icon';
+import { getSpleisData, formatAmount, calculateProgress, SPLEIS_PROJECT_URL } from '@/lib/spleis';
 
 async function getStats() {
   const supabase = await createClient();
 
   const [
-    { count: completionCount }
+    { count: completionCount },
+    spleisData
   ] = await Promise.all([
-    supabase.from('completions').select('*', { count: 'exact', head: true })
+    supabase.from('completions').select('*', { count: 'exact', head: true }),
+    getSpleisData()
   ]);
 
   return {
-    completions: completionCount || 0
+    completions: completionCount || 0,
+    spleis: spleisData
   };
 }
 
@@ -278,20 +282,78 @@ export default async function HomePage() {
                 </p>
               </div>
 
-              <div className="bg-background/80 backdrop-blur-sm p-8 rounded-xl border border-accent/20 max-w-md mx-auto">
-                <p className="text-sm text-muted-foreground mb-2">Doner via Vipps</p>
-                <p className="text-4xl font-bold text-accent mb-2">123 45 678</p>
-                <p className="text-xs text-muted-foreground">
-                  Eller kontakt oss for bankoverføring
-                </p>
+              {/* Donation Progress */}
+              <div className="bg-background/80 backdrop-blur-sm p-8 rounded-xl border border-accent/20 max-w-2xl mx-auto space-y-4">
+                {stats.spleis && (
+                  <>
+                    <div className="flex justify-between items-baseline mb-2">
+                      <span className="text-sm text-muted-foreground">Samlet inn</span>
+                      <span className="text-sm text-muted-foreground">
+                        Mål: {formatAmount(stats.spleis.moneygoal)}
+                      </span>
+                    </div>
+
+                    {/* Progress Bar */}
+                    {stats.spleis.collected_amount !== undefined && (
+                      <>
+                        <div className="relative h-3 bg-muted rounded-full overflow-hidden">
+                          <div
+                            className="absolute inset-y-0 left-0 bg-gradient-to-r from-accent to-accent/80 transition-all duration-500"
+                            style={{ width: `${calculateProgress(stats.spleis.collected_amount, stats.spleis.moneygoal)}%` }}
+                          />
+                        </div>
+
+                        <div className="text-center">
+                          <p className="text-4xl font-bold text-accent mb-1">
+                            {formatAmount(stats.spleis.collected_amount)}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {calculateProgress(stats.spleis.collected_amount, stats.spleis.moneygoal)}% av målet nådd
+                          </p>
+                        </div>
+                      </>
+                    )}
+
+                    {stats.spleis.collected_amount === undefined && (
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-accent mb-1">
+                          Mål: {formatAmount(stats.spleis.moneygoal)}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Støtt Mental Helse Ungdom
+                        </p>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {!stats.spleis && (
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-accent mb-1">
+                      Støtt Barteprakt
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Doner til Mental Helse Ungdom
+                    </p>
+                  </div>
+                )}
               </div>
 
-              <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 h-12 px-8">
-                <Link href="/send-inn" className="flex items-center justify-center">
-                  <Award className="mr-2 h-5 w-5" />
-                  Start din reise
-                </Link>
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 h-12 px-8 shadow-lg shadow-accent/20">
+                  <a href={SPLEIS_PROJECT_URL} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center">
+                    <Heart className="mr-2 h-5 w-5" />
+                    Doner nå
+                    <ExternalLink className="ml-2 h-4 w-4" />
+                  </a>
+                </Button>
+                <Button asChild size="lg" variant="outline" className="h-12 px-8 border-border/50">
+                  <Link href="/send-inn" className="flex items-center justify-center">
+                    <Award className="mr-2 h-5 w-5" />
+                    Send inn løp
+                  </Link>
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,6 +13,28 @@ export function RegistrationForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [bibNumber, setBibNumber] = useState<number | null>(null);
+  const [prefillData, setPrefillData] = useState<{
+    email: string;
+    full_name: string;
+  } | null>(null);
+
+  // Load OAuth user data if logged in
+  useEffect(() => {
+    async function loadUserData() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (user && user.app_metadata.provider !== 'email') {
+        // User logged in with OAuth (Google/Facebook)
+        setPrefillData({
+          email: user.email || '',
+          full_name: user.user_metadata?.full_name || user.user_metadata?.name || '',
+        });
+      }
+    }
+
+    loadUserData();
+  }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -204,7 +226,9 @@ export function RegistrationForm() {
       <CardHeader>
         <CardTitle>Registreringsskjema</CardTitle>
         <CardDescription>
-          Alle feltene må fylles ut bortsett fra telefonnummer
+          {prefillData
+            ? 'Fullfør registreringen din ved å fylle ut informasjonen under'
+            : 'Alle feltene må fylles ut bortsett fra telefonnummer'}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -215,12 +239,22 @@ export function RegistrationForm() {
             </div>
           )}
 
+          {prefillData && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-sm">
+              <p className="font-semibold text-green-900 mb-1">✅ Logget inn med Google</p>
+              <p className="text-green-700">
+                Vi har hentet ditt navn og e-post fra Google. Fyll ut resten av informasjonen for å fullføre påmeldingen.
+              </p>
+            </div>
+          )}
+
           <div className="space-y-2">
             <Label htmlFor="full_name">Fullt navn *</Label>
             <Input
               id="full_name"
               name="full_name"
               required
+              defaultValue={prefillData?.full_name || ''}
               placeholder="Ola Nordmann"
               disabled={loading}
             />
@@ -233,11 +267,16 @@ export function RegistrationForm() {
               name="email"
               type="email"
               required
+              defaultValue={prefillData?.email || ''}
               placeholder="ola@example.com"
               disabled={loading}
+              readOnly={!!prefillData?.email}
+              className={prefillData?.email ? 'bg-muted cursor-not-allowed' : ''}
             />
             <p className="text-sm text-muted-foreground">
-              Du vil motta innloggingslenke på denne adressen
+              {prefillData?.email
+                ? 'E-post bekreftet av Google'
+                : 'Du vil motta innloggingslenke på denne adressen'}
             </p>
           </div>
 

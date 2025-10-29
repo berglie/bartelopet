@@ -30,7 +30,7 @@ export default function RootLayout({
         <main>{children}</main>
         <footer className="border-t mt-16">
           <div className="container mx-auto px-4 py-8 text-center text-sm text-muted-foreground">
-            <p>© 2024 Barteløpet - Støtter mental helse gjennom Movember</p>
+            <p>© 2025 OpenAid - Støtter mental helse gjennom Movember</p>
           </div>
         </footer>
       </body>

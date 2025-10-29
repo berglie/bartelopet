@@ -21,6 +21,7 @@ export interface Completion {
   photo_url: string
   comment: string | null
   vote_count: number
+  comment_count: number
   created_at: string
   updated_at: string
 }
@@ -44,9 +45,25 @@ export interface ParticipantWithCompletion extends Participant {
 // Insert types (for creating new records)
 export type ParticipantInsert = Omit<Participant, 'id' | 'created_at' | 'updated_at' | 'has_completed'>
 
-export type CompletionInsert = Omit<Completion, 'id' | 'created_at' | 'updated_at' | 'vote_count'>
+export type CompletionInsert = Omit<Completion, 'id' | 'created_at' | 'updated_at' | 'vote_count' | 'comment_count'>
 
 export type VoteInsert = Omit<Vote, 'id' | 'created_at'>
+
+// Photo Comments
+export interface PhotoComment {
+  id: string
+  completion_id: string
+  participant_id: string
+  comment_text: string
+  created_at: string
+  updated_at: string
+}
+
+export interface PhotoCommentWithParticipant extends PhotoComment {
+  participant: Participant
+}
+
+export type PhotoCommentInsert = Omit<PhotoComment, 'id' | 'created_at' | 'updated_at'>
 
 // Update types (for updating records)
 export type ParticipantUpdate = Partial<Pick<Participant, 'postal_address' | 'phone_number'>>

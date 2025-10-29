@@ -6,6 +6,7 @@ export async function GET(request: Request) {
   const token_hash = searchParams.get('token_hash');
   const type = searchParams.get('type');
   const next = searchParams.get('next') ?? '/dashboard';
+  const code = searchParams.get('code');
 
   // Also handle legacy token format (for signup confirmation)
   const legacyToken = searchParams.get('token');
@@ -13,9 +14,47 @@ export async function GET(request: Request) {
   // Debug logging (can be removed after testing)
   console.log('=== AUTH CALLBACK ===');
   console.log('URL:', request.url);
+  console.log('code:', code ? 'present (OAuth)' : 'missing');
   console.log('token_hash:', token_hash ? 'present' : 'missing');
   console.log('legacy token:', legacyToken ? 'present' : 'missing');
   console.log('type:', type);
+
+  // Handle OAuth callback (Google, Facebook, etc.)
+  if (code) {
+    console.log('🔐 Handling OAuth callback');
+    const supabase = await createClient();
+
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (error) {
+      console.error('❌ OAuth code exchange error:', error);
+      return NextResponse.redirect(
+        new URL(`/login?error=oauth_failed&message=${encodeURIComponent(error.message)}`, origin)
+      );
+    }
+
+    console.log('✅ OAuth session created');
+
+    // Check if user has participant record
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user) {
+      const { data: participant } = await supabase
+        .from('participants')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (!participant) {
+        console.log('ℹ️ No participant record, redirecting to registration');
+        return NextResponse.redirect(new URL('/pamelding', origin));
+      }
+
+      console.log('✅ Participant exists, redirecting to dashboard');
+    }
+
+    return NextResponse.redirect(new URL(next, origin));
+  }
 
   if (token_hash && type) {
     const supabase = await createClient();
