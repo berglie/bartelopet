@@ -42,7 +42,7 @@ export function validateYear(year: number): NextResponse | null {
     return NextResponse.json(
       {
         error: 'Ugyldig år',
-        message: `År må være mellom 2025 og 2100, fikk ${year}`,
+        message: `År må være mellom 2024 og 2100, fikk ${year}`,
       },
       { status: 400 }
     );

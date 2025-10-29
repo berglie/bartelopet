@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { updateCompletion } from '@/app/actions/completions'
+import { getCurrentEventYear } from '@/lib/utils/event-year'
 
 type Completion = {
   id: string
@@ -110,6 +111,8 @@ export function EditFieldDialog({
                 type="date"
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
+                min={`${getCurrentEventYear()}-01-01`}
+                max={new Date().toISOString().split('T')[0]}
                 required
                 disabled={isSubmitting}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"

@@ -50,7 +50,7 @@ export function useEventYear() {
     const yearParam = searchParams.get('year');
     if (yearParam) {
       const year = parseInt(yearParam, 10);
-      if (!isNaN(year) && year >= 2025 && year <= 2100) {
+      if (!isNaN(year) && year >= 2024 && year <= 2100) {
         return year;
       }
     }

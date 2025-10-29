@@ -76,7 +76,7 @@ export function SubmissionForm() {
         .select('bib_number')
         .order('bib_number', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       const bibNumber = maxBib ? maxBib.bib_number + 1 : 1001;
 

@@ -228,6 +228,7 @@ export function GalleryGrid({
                   fill
                   className="object-cover transition-transform group-hover:scale-105"
                   sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  priority={index === 0}
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
                   <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity text-sm font-medium">

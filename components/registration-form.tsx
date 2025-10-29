@@ -13,6 +13,7 @@ export function RegistrationForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [bibNumber, setBibNumber] = useState<number | null>(null);
+  const [signingOut, setSigningOut] = useState(false);
   const [prefillData, setPrefillData] = useState<{
     email: string;
     full_name: string;
@@ -36,6 +37,17 @@ export function RegistrationForm() {
     loadUserData();
   }, []);
 
+  async function handleSignOut() {
+    setSigningOut(true);
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    // Clear any stored flags
+    sessionStorage.clear();
+    localStorage.clear();
+    // Redirect to home or refresh
+    window.location.href = '/pamelding';
+  }
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
@@ -56,12 +68,24 @@ export function RegistrationForm() {
       const { data: { user } } = await supabase.auth.getUser();
 
       // Get the next bib number
-      const { data: maxBib } = await supabase
+      const { data: maxBib, error: maxBibError } = await supabase
         .from('participants')
         .select('bib_number')
         .order('bib_number', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
+
+      // Handle 403/permission errors (likely stale/invalid session)
+      if (maxBibError && (
+        maxBibError.message?.includes('permission denied') ||
+        maxBibError.message?.includes('JWT') ||
+        maxBibError.code === 'PGRST301'  // PostgREST 403 error code
+      )) {
+        console.log('⚠️ Permission/auth error detected');
+        console.error('Max bib error:', maxBibError);
+        setError('Det oppstod en tilgangsfeil. Vennligst prøv å logge ut og inn igjen.');
+        return;
+      }
 
       const nextBibNumber = maxBib ? maxBib.bib_number + 1 : 1001;
 
@@ -241,10 +265,42 @@ export function RegistrationForm() {
 
           {prefillData && (
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-sm">
-              <p className="font-semibold text-green-900 mb-1">✅ Logget inn med Google</p>
-              <p className="text-green-700">
-                Vi har hentet ditt navn og e-post fra Google. Fyll ut resten av informasjonen for å fullføre påmeldingen.
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <div className="flex-1">
+                  <p className="font-semibold text-green-900 mb-1">✅ Logget inn med Google</p>
+                  <p className="text-green-700">
+                    Vi har hentet ditt navn og e-post fra Google. Fyll ut resten av informasjonen for å fullføre påmeldingen.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  onClick={handleSignOut}
+                  disabled={signingOut}
+                  variant="ghost"
+                  size="sm"
+                  className="text-green-900 hover:text-green-950 hover:bg-green-100"
+                >
+                  Logg ut
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {error && error.includes('tilgangsfeil') && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm">
+              <p className="font-semibold text-yellow-900 mb-2">🔓 Prøv å logge ut</p>
+              <p className="text-yellow-700 mb-3">
+                Det ser ut til at økten din er ugyldig. Klikk knappen under for å logge ut og prøve igjen.
               </p>
+              <Button
+                type="button"
+                onClick={handleSignOut}
+                disabled={signingOut}
+                variant="outline"
+                className="w-full"
+              >
+                {signingOut ? 'Logger ut...' : 'Logg ut og start på nytt'}
+              </Button>
             </div>
           )}
 

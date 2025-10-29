@@ -10,27 +10,21 @@
  * Get the current event year based on the current date.
  *
  * Logic:
- * - If current month is November (11) or December (12): return current year
- * - Otherwise: return previous year
+ * - Returns the current calendar year
+ * - Submission window is controlled by the database feature toggle,
+ *   not by hardcoded month restrictions
  *
- * This is because the Barteløpet event takes place in November, so:
- * - From Nov 1 - Dec 31: We're in the current year's event cycle
- * - From Jan 1 - Oct 31: We're showing results from last year's event
+ * This supports year-round event management with the feature toggle
+ * controlling when submissions are allowed.
  *
  * @returns The current event year
  */
 export function getCurrentEventYear(): number {
   const now = new Date();
-  const currentMonth = now.getMonth() + 1; // getMonth() is 0-indexed
   const currentYear = now.getFullYear();
 
-  // If we're in November (11) or December (12), return current year
-  // Otherwise return previous year
-  if (currentMonth >= 11) {
-    return currentYear;
-  } else {
-    return currentYear - 1;
-  }
+  // Always return the current calendar year
+  return currentYear;
 }
 
 /**
@@ -79,18 +73,18 @@ export async function isYearEditable(year: number, supabase: any): Promise<boole
 }
 
 /**
- * Get all available event years (from 2025 to current year).
+ * Get all available event years (from 2024 to current year).
  *
  * This is useful for year selection dropdowns and filters.
  * Years are returned in descending order (most recent first).
  *
- * @returns Array of event years from 2025 to current year
+ * @returns Array of event years from 2024 to current year
  */
 export function getAvailableEventYears(): number[] {
   const currentYear = getCurrentEventYear();
   const years: number[] = [];
 
-  for (let year = currentYear; year >= 2025; year--) {
+  for (let year = currentYear; year >= EVENT_YEAR_CONSTANTS.FIRST_YEAR; year--) {
     years.push(year);
   }
 
@@ -100,13 +94,13 @@ export function getAvailableEventYears(): number[] {
 /**
  * Validate that an event year is valid.
  *
- * Valid years are between 2025 and 2100 (inclusive).
+ * Valid years are between 2024 and 2100 (inclusive).
  *
  * @param year The year to validate
  * @returns true if valid, false otherwise
  */
 export function isValidEventYear(year: number): boolean {
-  return Number.isInteger(year) && year >= 2025 && year <= 2100;
+  return Number.isInteger(year) && year >= 2024 && year <= 2100;
 }
 
 /**
@@ -243,7 +237,7 @@ export function checkYearPermission(
  * Constants related to event years
  */
 export const EVENT_YEAR_CONSTANTS = {
-  FIRST_YEAR: 2025,
+  FIRST_YEAR: 2024, // Changed from 2025 to support historical data
   MAX_YEAR: 2100,
   EDIT_MONTH: 11, // November
 } as const;

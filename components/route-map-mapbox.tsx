@@ -45,24 +45,26 @@ const MAP_STYLES = {
 
 type MapStyleKey = keyof typeof MAP_STYLES;
 
-export default function RouteMapMapbox() {
+export default function RouteMapMapbox({ year = 2025 }: { year?: number }) {
   const [routeData, setRouteData] = useState<RouteData>(FALLBACK_ROUTE);
   const [viewState, setViewState] = useState(DEFAULT_CENTER);
   const [isLoading, setIsLoading] = useState(true);
   const [mapStyle, setMapStyle] = useState<MapStyleKey>('dark');
 
   useEffect(() => {
-    // Try to load GPX file from public folder
-    loadGPXRoute('/bartelopet-route.gpx')
+    // Try to load GPX file from public folder (year-specific)
+    const gpxPath = `/bartelopet-route-${year}.gpx`;
+
+    loadGPXRoute(gpxPath)
       .then((gpxRoute) => {
         if (gpxRoute) {
           setRouteData(gpxRoute);
           const center = getRouteCenter(gpxRoute);
           const zoom = getRouteZoom(gpxRoute);
           setViewState({ ...center, zoom });
-          console.log('✅ GPX route loaded successfully');
+          console.log(`✅ GPX route loaded successfully: ${gpxPath}`);
         } else {
-          console.log('ℹ️ Using fallback route (add /public/bartelopet-route.gpx to use your GPX)');
+          console.log(`ℹ️ Using fallback route (add /public${gpxPath} to use your GPX)`);
         }
       })
       .catch((error) => {
@@ -71,7 +73,7 @@ export default function RouteMapMapbox() {
       .finally(() => {
         setIsLoading(false);
       });
-  }, []);
+  }, [year]);
 
   // Show helpful message if token is missing
   if (!MAPBOX_TOKEN) {

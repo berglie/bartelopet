@@ -41,11 +41,6 @@ export function YearSelector({ variant = 'default', className = '' }: YearSelect
         >
           <Calendar className="h-4 w-4" />
           <span className="font-semibold">{selectedYear}</span>
-          {isCurrentYear && (
-            <span className="text-xs bg-accent/20 text-accent px-2 py-0.5 rounded-full">
-              Nåværende
-            </span>
-          )}
           <ChevronDown className="h-4 w-4 opacity-50" />
         </Button>
       </DropdownMenuTrigger>

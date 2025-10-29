@@ -6,15 +6,21 @@ import { RouteMap } from '@/components/route-map';
 import { MapPin, Users, Trophy, Upload, Award, ExternalLink, Heart } from 'lucide-react';
 import { MustacheSVG } from '@/components/mustache-icon';
 import { getSpleisData, formatAmount, calculateProgress, SPLEIS_PROJECT_URL } from '@/lib/spleis';
+import { getCurrentEventYear, getYearDateRange } from '@/lib/utils/year';
 
-async function getStats() {
+async function getStats(year: number) {
   const supabase = await createClient();
+  const { start, end } = getYearDateRange(year);
 
   const [
     { count: completionCount },
     spleisData
   ] = await Promise.all([
-    supabase.from('completions').select('*', { count: 'exact', head: true }),
+    supabase
+      .from('completions')
+      .select('*', { count: 'exact', head: true })
+      .gte('completed_date', start.toISOString())
+      .lte('completed_date', end.toISOString()),
     getSpleisData()
   ]);
 
@@ -24,8 +30,14 @@ async function getStats() {
   };
 }
 
-export default async function HomePage() {
-  const stats = await getStats();
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: { year?: string };
+}) {
+  const yearParam = searchParams.year;
+  const year = yearParam ? parseInt(yearParam, 10) : getCurrentEventYear();
+  const stats = await getStats(year);
 
   return (
     <div className="min-h-screen">
@@ -38,7 +50,7 @@ export default async function HomePage() {
             {/* Badge */}
             <div className="inline-flex items-center gap-3 bg-accent/10 border border-accent/30 px-5 py-2 rounded-full backdrop-blur-sm">
               <MustacheSVG className="h-4 w-8 text-accent" />
-              <span className="text-sm font-medium text-accent">Movember 2025 • Støtt Barteprakt</span>
+              <span className="text-sm font-medium text-accent">Movember {year} • Støtt Barteprakt</span>
             </div>
 
             {/* Title */}
@@ -108,7 +120,7 @@ export default async function HomePage() {
 
             {/* Map */}
             <div className="relative">
-              <RouteMap />
+              <RouteMap year={year} />
             </div>
 
             {/* Route Info */}
@@ -269,7 +281,7 @@ export default async function HomePage() {
             <CardContent className="p-12 md:p-16 text-center space-y-8">
               <div className="inline-flex items-center gap-3 bg-background/50 px-5 py-2 rounded-full border border-accent/30">
                 <MustacheSVG className="h-5 w-10 text-accent" />
-                <span className="text-sm font-medium text-accent">Movember 2025 • Barteprakt</span>
+                <span className="text-sm font-medium text-accent">Movember {year} • Barteprakt</span>
               </div>
 
               <div className="space-y-4">

@@ -1,15 +1,17 @@
 import { createClient } from '@/lib/supabase/server';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Check } from 'lucide-react';
+import { getCurrentEventYear } from '@/lib/utils/year';
 
 export const revalidate = 300; // Revalidate every 5 minutes
 
-async function getParticipants() {
+async function getParticipants(year: number) {
   const supabase = await createClient();
 
   const { data: participants, error } = await supabase
     .from('participants')
-    .select('full_name, bib_number, has_completed')
+    .select('full_name, bib_number, has_completed, event_year')
+    .eq('event_year', year)
     .order('bib_number', { ascending: true });
 
   if (error) {
@@ -20,15 +22,15 @@ async function getParticipants() {
   return participants || [];
 }
 
-async function getStats() {
+async function getStats(year: number) {
   const supabase = await createClient();
 
   const [
     { count: totalCount },
     { count: completedCount }
   ] = await Promise.all([
-    supabase.from('participants').select('*', { count: 'exact', head: true }),
-    supabase.from('participants').select('*', { count: 'exact', head: true }).eq('has_completed', true)
+    supabase.from('participants').select('*', { count: 'exact', head: true }).eq('event_year', year),
+    supabase.from('participants').select('*', { count: 'exact', head: true }).eq('event_year', year).eq('has_completed', true)
   ]);
 
   return {
@@ -37,10 +39,17 @@ async function getStats() {
   };
 }
 
-export default async function ParticipantsPage() {
+export default async function ParticipantsPage({
+  searchParams,
+}: {
+  searchParams: { year?: string };
+}) {
+  const yearParam = searchParams.year;
+  const year = yearParam ? parseInt(yearParam, 10) : getCurrentEventYear();
+
   const [participants, stats] = await Promise.all([
-    getParticipants(),
-    getStats()
+    getParticipants(year),
+    getStats(year)
   ]);
 
   return (
@@ -48,7 +57,7 @@ export default async function ParticipantsPage() {
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold mb-4">Deltakerliste</h1>
         <p className="text-lg text-muted-foreground">
-          Alle som har meldt seg på Barteløpet 2025
+          Alle som har meldt seg på Barteløpet {year}
         </p>
       </div>
 

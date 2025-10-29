@@ -4,7 +4,7 @@
 
 // Event configuration
 export const EVENT_CONFIG = {
-  startYear: 2025,
+  startYear: 2024, // Changed from 2025 to support historical data
   currentYear: new Date().getFullYear(),
   // Event runs during November (month 10 in 0-indexed)
   eventMonth: 10,
@@ -15,18 +15,16 @@ export const EVENT_CONFIG = {
 
 /**
  * Get the current event year based on the current date
- * Returns the current year if we're in November or later, otherwise the previous year
+ * Returns the current calendar year, supporting year-round submissions
+ * controlled by the feature toggle in the database settings table.
  */
 export function getCurrentEventYear(): number {
   const now = new Date();
-  const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
 
-  // If we're before November, we're still in the previous event year
-  if (currentMonth < EVENT_CONFIG.eventMonth) {
-    return currentYear - 1;
-  }
-
+  // Always return the current calendar year
+  // The submission window is now controlled by the database feature toggle,
+  // not by hardcoded month restrictions
   return currentYear;
 }
 
@@ -109,11 +107,12 @@ export function formatYearRange(startYear: number, endYear?: number): string {
 
 /**
  * Get date range for a specific event year
+ * Returns the full calendar year to support year-round submissions
  */
 export function getYearDateRange(year: number): { start: Date; end: Date } {
   return {
-    start: new Date(year, EVENT_CONFIG.eventMonth, 1), // November 1st
-    end: new Date(year, EVENT_CONFIG.eventMonth + 1, 0, 23, 59, 59), // Last day of November
+    start: new Date(year, 0, 1), // January 1st
+    end: new Date(year, 11, 31, 23, 59, 59), // December 31st
   };
 }
 
@@ -127,16 +126,9 @@ export function isValidEventYear(year: number): boolean {
 
 /**
  * Get the next event year
+ * Returns the next calendar year
  */
 export function getNextEventYear(): number {
   const currentEventYear = getCurrentEventYear();
-  const now = new Date();
-  const currentMonth = now.getMonth();
-
-  // If we're past November, next event year is next year
-  if (currentMonth > EVENT_CONFIG.eventMonth) {
-    return currentEventYear + 1;
-  }
-
-  return currentEventYear;
+  return currentEventYear + 1;
 }

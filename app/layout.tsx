@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { NavigationWrapper } from "@/components/navigation-wrapper";
+import { Navigation } from "@/components/navigation";
 import { YearProvider } from "@/contexts/year-context";
+import { createClient } from "@/lib/supabase/server";
 import { Suspense } from "react";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  display: 'swap',
+  preload: false,
+});
 
 export const metadata: Metadata = {
   title: "Barteløpet - Virtuelt 10km for mental helse",
@@ -20,25 +25,34 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
   return (
     <html lang="nb-NO">
       <body className={inter.className}>
         <Suspense fallback={null}>
           <YearProvider>
-            <NavigationWrapper />
-            <main>{children}</main>
-            <footer className="border-t mt-16">
-              <div className="container mx-auto px-4 py-8 text-center text-sm text-muted-foreground">
-                <p>© 2025 OpenAid - Støtter mental helse gjennom Movember</p>
-              </div>
-            </footer>
+            <Navigation isAuthenticated={!!user} />
           </YearProvider>
         </Suspense>
+        <main>
+          <Suspense fallback={null}>
+            <YearProvider>
+              {children}
+            </YearProvider>
+          </Suspense>
+        </main>
+        <footer className="border-t mt-16">
+          <div className="container mx-auto px-4 py-8 text-center text-sm text-muted-foreground">
+            <p>© 2025 OpenAid - Støtter mental helse gjennom Movember</p>
+          </div>
+        </footer>
       </body>
     </html>
   );

@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { createClient } from '@/lib/supabase/client';
+import { getCurrentEventYear } from '@/lib/utils/event-year';
 
 export function CompletionForm({ participantId }: { participantId: string }) {
   const router = useRouter();
@@ -129,7 +130,7 @@ export function CompletionForm({ participantId }: { participantId: string }) {
               name="completed_date"
               type="date"
               required
-              min="2025-11-01"
+              min={`${getCurrentEventYear()}-01-01`}
               max={new Date().toISOString().split('T')[0]}
               disabled={loading}
             />
