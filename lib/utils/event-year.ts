@@ -34,17 +34,28 @@ export function getCurrentEventYear(): number {
 }
 
 /**
- * Check if we're currently in November (the edit window).
+ * Check if the submission window is currently open.
  *
- * During November, participants can edit their registrations and completions
- * for the current event year. Outside of November, data is read-only.
+ * This is controlled by a feature toggle in the database settings table.
+ * Call this function from the frontend, but note that the authoritative
+ * check happens at the database level via RLS policies.
  *
- * @returns true if current month is November, false otherwise
+ * @param supabase Supabase client instance
+ * @returns Promise<boolean> true if submission window is open
  */
-export function isNovemberEditWindow(): boolean {
-  const now = new Date();
-  const currentMonth = now.getMonth() + 1; // getMonth() is 0-indexed
-  return currentMonth === 11;
+export async function isSubmissionWindowOpen(supabase: any): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('settings')
+    .select('submission_window_open')
+    .eq('id', 1)
+    .single();
+
+  if (error || !data) {
+    console.error('Error fetching submission window status:', error);
+    return false; // Fail closed - don't allow edits if we can't check
+  }
+
+  return data.submission_window_open;
 }
 
 /**
@@ -52,13 +63,19 @@ export function isNovemberEditWindow(): boolean {
  *
  * A year is editable if:
  * 1. It's the current event year AND
- * 2. We're currently in November (the edit window)
+ * 2. The submission window is open (controlled by feature toggle)
  *
  * @param year The event year to check
- * @returns true if the year is editable, false otherwise
+ * @param supabase Supabase client instance
+ * @returns Promise<boolean> true if the year is editable
  */
-export function isYearEditable(year: number): boolean {
-  return year === getCurrentEventYear() && isNovemberEditWindow();
+export async function isYearEditable(year: number, supabase: any): Promise<boolean> {
+  const currentYear = getCurrentEventYear();
+  if (year !== currentYear) {
+    return false;
+  }
+
+  return await isSubmissionWindowOpen(supabase);
 }
 
 /**
@@ -96,33 +113,29 @@ export function isValidEventYear(year: number): boolean {
  * Get a human-readable description of the edit window status.
  *
  * @param year Optional year to check (defaults to current event year)
+ * @param windowOpen Whether the submission window is open
  * @returns A descriptive string about edit permissions
  */
-export function getEditWindowStatus(year?: number): string {
+export function getEditWindowStatus(year?: number, windowOpen?: boolean): string {
   const targetYear = year ?? getCurrentEventYear();
   const currentYear = getCurrentEventYear();
-  const inNovember = isNovemberEditWindow();
 
   if (targetYear !== currentYear) {
     return `Dataene for ${targetYear} er arkivert og kan ikke endres.`;
   }
 
-  if (inNovember) {
-    return `Du kan redigere oppføringer for ${targetYear} i løpet av november måned.`;
+  if (windowOpen) {
+    return `Du kan redigere oppføringer for ${targetYear}.`;
   } else {
-    const now = new Date();
-    const currentMonth = now.getMonth() + 1;
-
-    if (currentMonth < 11) {
-      return `Redigering åpner i november ${currentYear}.`;
-    } else {
-      return `Redigeringsperioden for ${currentYear} er avsluttet.`;
-    }
+    return `Redigeringsvinduet er stengt. Kontakt arrangør for å åpne det.`;
   }
 }
 
 /**
- * Validate that a completion date matches the event year and is in November.
+ * Validate that a completion date matches the event year.
+ *
+ * Note: No longer restricted to November - submissions can be from any month
+ * in the event year, controlled by the feature toggle instead.
  *
  * @param date The completion date (as ISO string or Date)
  * @param eventYear The event year
@@ -143,7 +156,6 @@ export function validateCompletionDate(
   }
 
   const year = completionDate.getFullYear();
-  const month = completionDate.getMonth() + 1; // getMonth() is 0-indexed
 
   // Check if date year matches event year
   if (year !== eventYear) {
@@ -153,11 +165,11 @@ export function validateCompletionDate(
     };
   }
 
-  // Check if date is in November
-  if (month !== 11) {
+  // Check if date is not in the future
+  if (completionDate > new Date()) {
     return {
       isValid: false,
-      error: `Gjennomføringsdato må være i november (måned 11), ikke måned ${month}`
+      error: 'Gjennomføringsdato kan ikke være i fremtiden'
     };
   }
 
@@ -179,14 +191,15 @@ export function formatEventYear(year: number): string {
  *
  * @param resourceYear The year of the resource being accessed
  * @param action The action being attempted ('view' | 'create' | 'update' | 'delete')
+ * @param windowOpen Whether the submission window is currently open
  * @returns Object with canPerform flag and optional reason
  */
 export function checkYearPermission(
   resourceYear: number,
-  action: 'view' | 'create' | 'update' | 'delete'
+  action: 'view' | 'create' | 'update' | 'delete',
+  windowOpen: boolean = false
 ): { canPerform: boolean; reason?: string } {
   const currentYear = getCurrentEventYear();
-  const inNovember = isNovemberEditWindow();
 
   // View is always allowed for any year
   if (action === 'view') {
@@ -204,7 +217,7 @@ export function checkYearPermission(
     return { canPerform: true };
   }
 
-  // Update and delete require current year + November
+  // Update and delete require current year + submission window open
   if (action === 'update' || action === 'delete') {
     if (resourceYear !== currentYear) {
       return {
@@ -213,10 +226,10 @@ export function checkYearPermission(
       };
     }
 
-    if (!inNovember) {
+    if (!windowOpen) {
       return {
         canPerform: false,
-        reason: `Kan kun ${action === 'update' ? 'oppdatere' : 'slette'} oppføringer i november`
+        reason: `Redigeringsvinduet er stengt. Kontakt arrangør for å ${action === 'update' ? 'oppdatere' : 'slette'} oppføringer.`
       };
     }
 

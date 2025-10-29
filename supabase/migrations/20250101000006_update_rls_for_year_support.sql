@@ -1,7 +1,7 @@
 -- Migration: Update RLS policies to support year-based access control
 -- Description: This migration updates all RLS policies to be year-aware,
 --              ensuring proper data isolation between event years and
---              implementing November-only edit restrictions.
+--              implementing feature toggle edit restrictions.
 
 -- ===========================================================================
 -- STEP 1: Drop existing RLS policies
@@ -51,22 +51,22 @@ CREATE POLICY "Anyone can register for current event year"
 COMMENT ON POLICY "Anyone can register for current event year" ON participants
   IS 'Allow registration only for the current event year (based on date)';
 
--- Updates allowed only during November for current year
-CREATE POLICY "Users can update own participant record in November only"
+-- Updates allowed only when submission window is open for current year
+CREATE POLICY "Users can update own participant record when window open"
   ON participants FOR UPDATE
   USING (
     auth.uid() = user_id
     AND event_year = get_current_event_year()
-    AND is_november_edit_window()
+    AND is_submission_window_open()
   )
   WITH CHECK (
     auth.uid() = user_id
     AND event_year = get_current_event_year()
-    AND is_november_edit_window()
+    AND is_submission_window_open()
   );
 
-COMMENT ON POLICY "Users can update own participant record in November only" ON participants
-  IS 'Allow participants to update their own record only in November of the current event year';
+COMMENT ON POLICY "Users can update own participant record when window open" ON participants
+  IS 'Allow participants to update their own record only when submission window is open for the current event year';
 
 -- ===========================================================================
 -- STEP 3: Create year-aware RLS policies for completions
@@ -96,12 +96,12 @@ CREATE POLICY "Participants can insert completions for current year"
 COMMENT ON POLICY "Participants can insert completions for current year" ON completions
   IS 'Allow participants to submit completions only for the current event year';
 
--- Update completions only in November for current year
-CREATE POLICY "Participants can update own completions in November only"
+-- Update completions only when submission window is open for current year
+CREATE POLICY "Participants can update own completions when window open"
   ON completions FOR UPDATE
   USING (
     event_year = get_current_event_year()
-    AND is_november_edit_window()
+    AND is_submission_window_open()
     AND EXISTS (
       SELECT 1 FROM participants
       WHERE id = participant_id
@@ -111,7 +111,7 @@ CREATE POLICY "Participants can update own completions in November only"
   )
   WITH CHECK (
     event_year = get_current_event_year()
-    AND is_november_edit_window()
+    AND is_submission_window_open()
     AND EXISTS (
       SELECT 1 FROM participants
       WHERE id = participant_id
@@ -120,15 +120,15 @@ CREATE POLICY "Participants can update own completions in November only"
     )
   );
 
-COMMENT ON POLICY "Participants can update own completions in November only" ON completions
-  IS 'Allow participants to update their completions only in November of the current event year';
+COMMENT ON POLICY "Participants can update own completions when window open" ON completions
+  IS 'Allow participants to update their completions only when submission window is open for the current event year';
 
--- Delete completions only in November for current year
-CREATE POLICY "Participants can delete own completions in November only"
+-- Delete completions only when submission window is open for current year
+CREATE POLICY "Participants can delete own completions when window open"
   ON completions FOR DELETE
   USING (
     event_year = get_current_event_year()
-    AND is_november_edit_window()
+    AND is_submission_window_open()
     AND EXISTS (
       SELECT 1 FROM participants
       WHERE id = participant_id
@@ -137,8 +137,8 @@ CREATE POLICY "Participants can delete own completions in November only"
     )
   );
 
-COMMENT ON POLICY "Participants can delete own completions in November only" ON completions
-  IS 'Allow participants to delete their completions only in November of the current event year';
+COMMENT ON POLICY "Participants can delete own completions when window open" ON completions
+  IS 'Allow participants to delete their completions only when submission window is open for the current event year';
 
 -- ===========================================================================
 -- STEP 4: Create year-aware RLS policies for votes
@@ -222,12 +222,12 @@ CREATE POLICY "Participants can comment in current year only"
 COMMENT ON POLICY "Participants can comment in current year only" ON photo_comments
   IS 'Allow participants to comment only on completions from the current event year';
 
--- Update comments only in November for current year
-CREATE POLICY "Participants can update own comments in November only"
+-- Update comments only when submission window is open for current year
+CREATE POLICY "Participants can update own comments when window open"
   ON photo_comments FOR UPDATE
   USING (
     event_year = get_current_event_year()
-    AND is_november_edit_window()
+    AND is_submission_window_open()
     AND EXISTS (
       SELECT 1 FROM participants
       WHERE id = participant_id
@@ -237,7 +237,7 @@ CREATE POLICY "Participants can update own comments in November only"
   )
   WITH CHECK (
     event_year = get_current_event_year()
-    AND is_november_edit_window()
+    AND is_submission_window_open()
     AND EXISTS (
       SELECT 1 FROM participants
       WHERE id = participant_id
@@ -246,15 +246,15 @@ CREATE POLICY "Participants can update own comments in November only"
     )
   );
 
-COMMENT ON POLICY "Participants can update own comments in November only" ON photo_comments
-  IS 'Allow participants to update their comments only in November of the current event year';
+COMMENT ON POLICY "Participants can update own comments when window open" ON photo_comments
+  IS 'Allow participants to update their comments only when submission window is open for the current event year';
 
--- Delete comments only in November for current year
-CREATE POLICY "Participants can delete own comments in November only"
+-- Delete comments only when submission window is open for current year
+CREATE POLICY "Participants can delete own comments when window open"
   ON photo_comments FOR DELETE
   USING (
     event_year = get_current_event_year()
-    AND is_november_edit_window()
+    AND is_submission_window_open()
     AND EXISTS (
       SELECT 1 FROM participants
       WHERE id = participant_id
@@ -263,8 +263,8 @@ CREATE POLICY "Participants can delete own comments in November only"
     )
   );
 
-COMMENT ON POLICY "Participants can delete own comments in November only" ON photo_comments
-  IS 'Allow participants to delete their comments only in November of the current event year';
+COMMENT ON POLICY "Participants can delete own comments when window open" ON photo_comments
+  IS 'Allow participants to delete their comments only when submission window is open for the current event year';
 
 -- ===========================================================================
 -- STEP 6: Create admin override policies (optional - for future use)

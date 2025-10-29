@@ -52,35 +52,49 @@ export function isCurrentYear(year: number): boolean {
 }
 
 /**
- * Check if submissions are currently allowed (during November)
+ * Check if submissions are currently allowed (controlled by feature toggle)
+ *
+ * NOTE: This is a client-side check only. The authoritative check
+ * happens at the database level. Use isSubmissionWindowOpen from
+ * event-year.ts with a Supabase client for the real status.
+ *
+ * This function is kept for backwards compatibility but always returns true.
+ * You should fetch the actual status from the settings table.
  */
 export function isSubmissionWindowOpen(): boolean {
-  const now = new Date();
-  const currentMonth = now.getMonth();
-
-  return currentMonth === EVENT_CONFIG.eventMonth;
+  // Return true by default - actual check should be done via database
+  // This prevents breaking existing code that doesn't pass supabase client
+  return true;
 }
 
 /**
  * Check if submissions are allowed for a specific year
+ *
+ * NOTE: This only checks if the year is current. The actual submission
+ * window status should be checked via the database settings table.
  */
 export function canSubmitForYear(year: number): boolean {
-  return isCurrentYear(year) && isSubmissionWindowOpen();
+  return isCurrentYear(year);
 }
 
 /**
  * Get the submission window text for a year
+ *
+ * @param year The year to check
+ * @param windowOpen Optional parameter indicating if window is open (from database)
  */
-export function getSubmissionWindowText(year: number): string {
+export function getSubmissionWindowText(year: number, windowOpen?: boolean): string {
   if (!isCurrentYear(year)) {
     return `Innsendingsvinduet for ${year} er stengt`;
   }
 
-  if (isSubmissionWindowOpen()) {
+  if (windowOpen === true) {
     return `Innsendingsvinduet er åpent for ${year}`;
+  } else if (windowOpen === false) {
+    return `Innsendingsvinduet er stengt. Kontakt arrangør.`;
   }
 
-  return `Innsendingsvinduet åpner i november ${year}`;
+  return `Innsendingsvinduet kontrolleres av arrangør`;
 }
 
 /**
