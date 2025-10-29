@@ -37,9 +37,9 @@ const FALLBACK_ROUTE: RouteData = {
 
 // Map styles
 const MAP_STYLES = {
-  dark: 'mapbox://styles/mapbox/dark-v11',
-  streets: 'mapbox://styles/mapbox/streets-v12',
-  satellite: 'mapbox://styles/mapbox/satellite-streets-v12',
+  natt: 'mapbox://styles/mapbox/dark-v11',
+  gater: 'mapbox://styles/mapbox/streets-v12',
+  satelitt: 'mapbox://styles/mapbox/satellite-streets-v12',
 };
 
 type MapStyleKey = keyof typeof MAP_STYLES;
@@ -48,7 +48,7 @@ export default function RouteMapMapbox({ year = 2025 }: { year?: number }) {
   const [routeData, setRouteData] = useState<RouteData>(FALLBACK_ROUTE);
   const [viewState, setViewState] = useState(DEFAULT_CENTER);
   const [isLoading, setIsLoading] = useState(true);
-  const [mapStyle, setMapStyle] = useState<MapStyleKey>('streets');
+  const [mapStyle, setMapStyle] = useState<MapStyleKey>('gater');
   const [isMobile, setIsMobile] = useState(false);
 
   // Detect mobile screen size
