@@ -73,12 +73,12 @@ export async function isYearEditable(year: number, supabase: any): Promise<boole
 }
 
 /**
- * Get all available event years (from 2024 to current year).
+ * Get all available event years (from 2025 to current year).
  *
  * This is useful for year selection dropdowns and filters.
  * Years are returned in descending order (most recent first).
  *
- * @returns Array of event years from 2024 to current year
+ * @returns Array of event years from 2025 to current year
  */
 export function getAvailableEventYears(): number[] {
   const currentYear = getCurrentEventYear();
@@ -94,13 +94,13 @@ export function getAvailableEventYears(): number[] {
 /**
  * Validate that an event year is valid.
  *
- * Valid years are between 2024 and 2100 (inclusive).
+ * Valid years are between 2025 and 2100 (inclusive).
  *
  * @param year The year to validate
  * @returns true if valid, false otherwise
  */
 export function isValidEventYear(year: number): boolean {
-  return Number.isInteger(year) && year >= 2024 && year <= 2100;
+  return Number.isInteger(year) && year >= 2025 && year <= 2100;
 }
 
 /**
@@ -237,7 +237,7 @@ export function checkYearPermission(
  * Constants related to event years
  */
 export const EVENT_YEAR_CONSTANTS = {
-  FIRST_YEAR: 2024, // Changed from 2025 to support historical data
+  FIRST_YEAR: 2025,
   MAX_YEAR: 2100,
-  EDIT_MONTH: 11, // November
+  EDIT_MONTH: 10,
 } as const;

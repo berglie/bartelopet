@@ -4,7 +4,7 @@
 
 // Event configuration
 export const EVENT_CONFIG = {
-  startYear: 2024, // Changed from 2025 to support historical data
+  startYear: 2025,
   currentYear: new Date().getFullYear(),
   // Event runs during November (month 10 in 0-indexed)
   eventMonth: 10,

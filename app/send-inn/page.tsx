@@ -1,4 +1,4 @@
-import { SubmissionForm } from '@/components/submission-form';
+import { RegistrationForm } from '@/components/registration-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { EditRestrictionGuard, ReadOnlyBanner } from '@/components/edit-restriction-guard';
 import { getCurrentEventYear } from '@/lib/utils/year';
@@ -11,9 +11,9 @@ export default function SubmitPage() {
       <div className="space-y-8">
         {/* Header */}
         <div className="text-center space-y-4">
-          <h1 className="text-4xl md:text-5xl font-bold">Send inn ditt løp</h1>
+          <h1 className="text-4xl md:text-5xl font-bold">Meld deg på Barteløpet</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Har du fullført 10km? Registrer deg og last opp detaljer fra løpet ditt
+            Registrer deg for å delta i Barteløpet {currentYear}
           </p>
         </div>
 
@@ -24,39 +24,39 @@ export default function SubmitPage() {
           {/* Info Card */}
           <Card className="bg-card/50 border-accent/20 backdrop-blur">
             <CardHeader>
-              <CardTitle className="text-accent">Før du sender inn</CardTitle>
-              <CardDescription>Sjekk at du har følgende klart:</CardDescription>
+              <CardTitle className="text-accent">Slik fungerer det</CardTitle>
+              <CardDescription>Følg disse enkle stegene:</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 bg-accent/20 rounded-full flex items-center justify-center shrink-0 mt-0.5">
-                  <span className="text-accent text-xs">✓</span>
+                  <span className="text-accent text-xs font-semibold">1</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  <strong className="text-foreground">Bilde fra løpet:</strong> Skjermbilde fra løpeapp eller foto fra ruten (maks 5MB)
+                  <strong className="text-foreground">Registrer deg:</strong> Fyll ut skjemaet under og få ditt startnummer
                 </p>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 bg-accent/20 rounded-full flex items-center justify-center shrink-0 mt-0.5">
-                  <span className="text-accent text-xs">✓</span>
+                  <span className="text-accent text-xs font-semibold">2</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  <strong className="text-foreground">Postadresse:</strong> For utsending av medalje
+                  <strong className="text-foreground">Løp 10km:</strong> Gjennomfør løpet når som helst i november
                 </p>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 bg-accent/20 rounded-full flex items-center justify-center shrink-0 mt-0.5">
-                  <span className="text-accent text-xs">✓</span>
+                  <span className="text-accent text-xs font-semibold">3</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  <strong className="text-foreground">Dato og tid:</strong> Når du gjennomførte løpet (valgfritt)
+                  <strong className="text-foreground">Registrer fullføring:</strong> Logg inn på dashboardet ditt og last opp bilde fra løpet
                 </p>
               </div>
             </CardContent>
           </Card>
 
-          {/* Submission Form */}
-          <SubmissionForm />
+          {/* Registration Form */}
+          <RegistrationForm />
         </EditRestrictionGuard>
       </div>
     </div>

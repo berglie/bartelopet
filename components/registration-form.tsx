@@ -216,12 +216,12 @@ export function RegistrationForm() {
         <CardContent className="space-y-4">
           <div className="text-center py-8">
             <p className="text-sm text-muted-foreground mb-2">Ditt startnummer er</p>
-            <p className="text-6xl font-bold text-primary">{bibNumber}</p>
+            <p className="text-6xl font-bold text-accent">{bibNumber}</p>
           </div>
 
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
-            <p className="font-semibold text-blue-900">📧 Bekreft e-postadressen din</p>
-            <p className="text-sm text-blue-700">
+          <div className="bg-primary/10 border border-primary rounded-lg p-4 space-y-2">
+            <p className="font-semibold text-accent">📧 Bekreft e-postadressen din</p>
+            <p className="text-sm text-foreground">
               Vi har sendt en bekreftelseslenke til din e-post. Klikk på lenken for å aktivere kontoen din og logge inn.
             </p>
           </div>
@@ -264,11 +264,11 @@ export function RegistrationForm() {
           )}
 
           {prefillData && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-sm">
+            <div className="bg-primary/10 border border-primary rounded-lg p-4 text-sm">
               <div className="flex items-start justify-between gap-2 mb-2">
                 <div className="flex-1">
-                  <p className="font-semibold text-green-900 mb-1">✅ Logget inn med Google</p>
-                  <p className="text-green-700">
+                  <p className="font-semibold text-accent mb-1">✅ Logget inn med Google</p>
+                  <p className="text-foreground">
                     Vi har hentet ditt navn og e-post fra Google. Fyll ut resten av informasjonen for å fullføre påmeldingen.
                   </p>
                 </div>
@@ -278,7 +278,7 @@ export function RegistrationForm() {
                   disabled={signingOut}
                   variant="ghost"
                   size="sm"
-                  className="text-green-900 hover:text-green-950 hover:bg-green-100"
+                  className="text-accent hover:text-accent/90 hover:bg-primary/20"
                 >
                   Logg ut
                 </Button>
@@ -287,9 +287,9 @@ export function RegistrationForm() {
           )}
 
           {error && error.includes('tilgangsfeil') && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm">
-              <p className="font-semibold text-yellow-900 mb-2">🔓 Prøv å logge ut</p>
-              <p className="text-yellow-700 mb-3">
+            <div className="bg-primary/10 border border-primary rounded-lg p-4 text-sm">
+              <p className="font-semibold text-accent mb-2">🔓 Prøv å logge ut</p>
+              <p className="text-foreground mb-3">
                 Det ser ut til at økten din er ugyldig. Klikk knappen under for å logge ut og prøve igjen.
               </p>
               <Button

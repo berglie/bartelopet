@@ -73,14 +73,14 @@ export default function LoginPage() {
     return (
       <div className="container mx-auto px-4 py-16 max-w-md">
         <Card>
-          <CardHeader>
+          <CardHeader className="text-center">
             <CardTitle>Sjekk e-posten din</CardTitle>
             <CardDescription>
               Vi har sendt en innloggingslenke til {email}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-4 text-center">
               <p className="text-sm text-muted-foreground">
                 Klikk på lenken i e-posten for å logge inn. Lenken er gyldig i 1 time.
               </p>
@@ -101,7 +101,7 @@ export default function LoginPage() {
   return (
     <div className="container mx-auto px-4 py-16 max-w-md">
       <Card>
-        <CardHeader>
+        <CardHeader className="text-center">
           <CardTitle>Logg inn</CardTitle>
           <CardDescription>
             Velg hvordan du vil logge inn
@@ -155,21 +155,10 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="bg-primary/10 border border-primary rounded-lg p-4 text-sm">
-              <p className="font-semibold text-accent mb-1">👋 Ny her?</p>
-              <p className="text-foreground">
-                Du må{' '}
-                <a href="/pamelding" className="underline font-semibold text-accent">
-                  registrere deg først
-                </a>{' '}
-                før du kan logge inn. Etter registrering får du en innloggingslenke på e-post.
-              </p>
-            </div>
-
           <form onSubmit={handleSubmit} className="space-y-4">
 
             <div className="space-y-2">
-              <Label htmlFor="email">E-postadresse</Label>
+              <Label htmlFor="email" className="block text-center">E-postadresse</Label>
               <Input
                 id="email"
                 type="email"
@@ -179,7 +168,7 @@ export default function LoginPage() {
                 required
                 disabled={loading}
               />
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground text-center">
                 Bruk samme e-postadresse som du registrerte deg med
               </p>
             </div>
@@ -194,7 +183,7 @@ export default function LoginPage() {
               </p>
               <a
                 href="/pamelding"
-                className="text-sm text-primary hover:underline font-semibold"
+                className="text-sm text-accent hover:underline font-semibold"
               >
                 Meld deg på Barteløpet her →
               </a>
