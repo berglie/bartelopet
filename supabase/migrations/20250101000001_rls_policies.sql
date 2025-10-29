@@ -27,7 +27,7 @@ CREATE POLICY "Participants can insert their own completions"
   WITH CHECK (
     EXISTS (
       SELECT 1 FROM participants
-      WHERE id = completion_id
+      WHERE id = participant_id
       AND user_id = auth.uid()
     )
   );

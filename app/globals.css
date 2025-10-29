@@ -4,48 +4,39 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 20 14.3% 4.1%;
-    --card: 0 0% 100%;
-    --card-foreground: 20 14.3% 4.1%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 20 14.3% 4.1%;
-    --primary: 25 29% 43%;
-    --primary-foreground: 24 9.8% 10%;
-    --secondary: 168 35% 39%;
-    --secondary-foreground: 24 9.8% 10%;
-    --muted: 30 20% 88%;
-    --muted-foreground: 25 5.3% 44.7%;
-    --accent: 168 35% 39%;
-    --accent-foreground: 168 35% 15%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 20 5.9% 90%;
-    --input: 20 5.9% 90%;
-    --ring: 25 29% 43%;
-    --radius: 0.5rem;
-  }
+    /* Mustache Bar Theme - Dark vintage barbershop vibes */
+    --background: 25 30% 8%;  /* Deep espresso brown */
+    --foreground: 35 25% 95%; /* Warm cream */
 
-  .dark {
-    --background: 20 14.3% 4.1%;
-    --foreground: 60 9.1% 97.8%;
-    --card: 20 14.3% 4.1%;
-    --card-foreground: 60 9.1% 97.8%;
-    --popover: 20 14.3% 4.1%;
-    --popover-foreground: 60 9.1% 97.8%;
-    --primary: 24 59% 53%;
-    --primary-foreground: 24 9.8% 10%;
-    --secondary: 168 35% 39%;
-    --secondary-foreground: 60 9.1% 97.8%;
-    --muted: 24 9.8% 10%;
-    --muted-foreground: 60 4.8% 95.9%;
-    --accent: 168 35% 39%;
-    --accent-foreground: 60 9.1% 97.8%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 60 9.1% 97.8%;
-    --border: 24 5.7% 26%;
-    --input: 24 5.7% 26%;
-    --ring: 24 59% 53%;
+    --card: 25 28% 12%;       /* Rich dark chocolate */
+    --card-foreground: 35 25% 95%;
+
+    --popover: 25 28% 12%;
+    --popover-foreground: 35 25% 95%;
+
+    /* Rich chocolate brown - vintage feel */
+    --primary: 30 35% 20%;
+    --primary-foreground: 35 25% 95%;
+
+    /* Amber/honey mustache gold - the star of the show! */
+    --accent: 35 85% 55%;
+    --accent-foreground: 25 30% 8%;
+
+    /* Warm tan/caramel */
+    --secondary: 30 25% 45%;
+    --secondary-foreground: 35 25% 95%;
+
+    --muted: 30 20% 25%;
+    --muted-foreground: 35 15% 60%;
+
+    --destructive: 0 62.8% 50.6%;
+    --destructive-foreground: 35 25% 95%;
+
+    --border: 30 25% 18%;
+    --input: 30 25% 15%;
+    --ring: 35 85% 55%;
+
+    --radius: 0.75rem;
   }
 }
 
@@ -64,3 +55,6 @@
     text-wrap: balance;
   }
 }
+
+/* Mapbox GL CSS */
+@import 'mapbox-gl/dist/mapbox-gl.css';

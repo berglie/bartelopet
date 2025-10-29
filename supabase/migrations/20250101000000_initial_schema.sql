@@ -1,9 +1,7 @@
--- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 -- Create participants table
+-- Note: Using gen_random_uuid() which is built-in to PostgreSQL/Supabase
 CREATE TABLE participants (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE UNIQUE,
   email TEXT NOT NULL UNIQUE,
   full_name TEXT NOT NULL,
@@ -17,7 +15,7 @@ CREATE TABLE participants (
 
 -- Create completions table
 CREATE TABLE completions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   participant_id UUID REFERENCES participants(id) ON DELETE CASCADE NOT NULL UNIQUE,
   completed_date DATE NOT NULL,
   duration_text TEXT,
@@ -33,18 +31,15 @@ CREATE TABLE completions (
 
 -- Create votes table
 CREATE TABLE votes (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   voter_id UUID REFERENCES participants(id) ON DELETE CASCADE NOT NULL,
   completion_id UUID REFERENCES completions(id) ON DELETE CASCADE NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-  -- Ensure one vote per participant
-  UNIQUE(voter_id),
+  -- Ensure one vote per participant (can only vote once total)
+  UNIQUE(voter_id)
 
-  -- Ensure voters can't vote for their own completion
-  CONSTRAINT no_self_voting CHECK (
-    voter_id != (SELECT participant_id FROM completions WHERE id = completion_id)
-  )
+  -- Note: Self-voting prevention is enforced via trigger below
 );
 
 -- Create indexes
@@ -121,3 +116,21 @@ CREATE TRIGGER update_vote_counts_trigger
   AFTER INSERT OR DELETE ON votes
   FOR EACH ROW
   EXECUTE FUNCTION update_vote_counts();
+
+-- Create function to prevent self-voting
+CREATE OR REPLACE FUNCTION prevent_self_voting()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Check if voter is trying to vote for their own completion
+  IF NEW.voter_id = (SELECT participant_id FROM completions WHERE id = NEW.completion_id) THEN
+    RAISE EXCEPTION 'Cannot vote for your own completion';
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Apply trigger to prevent self-voting
+CREATE TRIGGER prevent_self_voting_trigger
+  BEFORE INSERT ON votes
+  FOR EACH ROW
+  EXECUTE FUNCTION prevent_self_voting();
