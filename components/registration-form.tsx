@@ -30,6 +30,9 @@ export function RegistrationForm() {
     const supabase = createClient();
 
     try {
+      // Check if user is already authenticated
+      const { data: { user } } = await supabase.auth.getUser();
+
       // Get the next bib number
       const { data: maxBib } = await supabase
         .from('participants')
@@ -40,35 +43,117 @@ export function RegistrationForm() {
 
       const nextBibNumber = maxBib ? maxBib.bib_number + 1 : 1001;
 
-      // Insert the participant
-      const { data: participant, error: insertError } = await supabase
-        .from('participants')
-        .insert({
-          ...data,
-          bib_number: nextBibNumber,
-        })
-        .select()
-        .single();
+      let participant;
 
-      if (insertError) {
-        if (insertError.code === '23505') {
-          setError('Denne e-postadressen er allerede registrert');
-        } else {
-          setError('Noe gikk galt ved registrering. Prøv igjen.');
+      if (user) {
+        // User is already authenticated (came from magic link or confirmation)
+        // Insert participant and link to existing auth user
+        const { data: newParticipant, error: insertError } = await supabase
+          .from('participants')
+          .insert({
+            user_id: user.id, // Link to existing auth user
+            full_name: data.full_name,
+            email: data.email,
+            postal_address: data.postal_address,
+            phone_number: data.phone_number,
+            bib_number: nextBibNumber,
+          })
+          .select()
+          .single();
+
+        if (insertError) {
+          if (insertError.code === '23505') {
+            setError('Denne e-postadressen er allerede registrert');
+          } else {
+            console.error('Insert error:', insertError);
+            setError('Noe gikk galt ved registrering. Prøv igjen.');
+          }
+          return;
         }
-        return;
+
+        participant = newParticipant;
+
+        // User is already logged in, redirect to dashboard immediately
+        setBibNumber(participant.bib_number);
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 2000);
+
+      } else {
+        // User is NOT authenticated (normal registration flow)
+        // Create new auth user with proper signup
+        console.log('🆕 Creating new user with signUp');
+
+        // Generate a secure random password (user won't use it, only magic links)
+        const tempPassword = crypto.randomUUID() + crypto.randomUUID();
+
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email: data.email,
+          password: tempPassword,
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
+            data: {
+              full_name: data.full_name,
+            },
+          },
+        });
+
+        if (signUpError) {
+          console.error('Signup error:', signUpError);
+          if (signUpError.message.includes('already registered')) {
+            setError('Denne e-postadressen er allerede registrert. Prøv å logge inn i stedet.');
+          } else {
+            setError('Kunne ikke opprette bruker. Prøv igjen.');
+          }
+          return;
+        }
+
+        if (!signUpData.user) {
+          setError('Kunne ikke opprette bruker. Prøv igjen.');
+          return;
+        }
+
+        console.log('✅ User created:', signUpData.user.id);
+
+        // Insert participant record linked to the new user
+        const { data: newParticipant, error: insertError } = await supabase
+          .from('participants')
+          .insert({
+            user_id: signUpData.user.id, // Link to newly created auth user
+            full_name: data.full_name,
+            email: data.email,
+            postal_address: data.postal_address,
+            phone_number: data.phone_number,
+            bib_number: nextBibNumber,
+          })
+          .select()
+          .single();
+
+        if (insertError) {
+          console.error('Insert error:', insertError);
+
+          // If participant insert fails, we should clean up the auth user
+          // But Supabase doesn't allow deleting users from client
+          // The user will exist but have no participant record
+          // They can complete registration via /pamelding when they confirm email
+
+          if (insertError.code === '23505') {
+            setError('Denne e-postadressen er allerede registrert');
+          } else {
+            setError('Noe gikk galt ved registrering. Prøv igjen.');
+          }
+          return;
+        }
+
+        participant = newParticipant;
+        setBibNumber(participant.bib_number);
+
+        console.log('✅ Participant created:', participant.id);
+        console.log('📧 Confirmation email sent to:', data.email);
       }
 
-      setBibNumber(participant.bib_number);
-
-      // Send magic link for future login
-      await supabase.auth.signInWithOtp({
-        email: data.email,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
     } catch (err) {
+      console.error('Registration error:', err);
       setError('Noe gikk galt. Prøv igjen.');
     } finally {
       setLoading(false);
@@ -88,20 +173,27 @@ export function RegistrationForm() {
             <p className="text-6xl font-bold text-primary">{bibNumber}</p>
           </div>
 
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
+            <p className="font-semibold text-blue-900">📧 Bekreft e-postadressen din</p>
+            <p className="text-sm text-blue-700">
+              Vi har sendt en bekreftelseslenke til din e-post. Klikk på lenken for å aktivere kontoen din og logge inn.
+            </p>
+          </div>
+
           <div className="bg-muted p-4 rounded-lg space-y-2">
             <p className="font-semibold">Neste steg:</p>
             <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
-              <li>Sjekk e-posten din for innloggingslenke</li>
-              <li>Logg inn på dashboardet ditt</li>
+              <li>Sjekk e-posten din og klikk på bekreftelseslenken</li>
+              <li>Du vil bli automatisk innlogget</li>
               <li>Løp 10km i november</li>
               <li>Last opp bilde og historien din</li>
               <li>Stem på andre deltakere</li>
             </ol>
           </div>
 
-          <Button onClick={() => router.push('/login')} className="w-full">
-            Gå til innlogging
-          </Button>
+          <div className="text-center text-sm text-muted-foreground">
+            <p>Ikke mottatt e-post? Sjekk søppelpost-mappen din.</p>
+          </div>
         </CardContent>
       </Card>
     );

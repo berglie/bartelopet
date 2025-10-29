@@ -44,7 +44,7 @@ export default function TestVippsPage() {
               <ol className="text-sm text-gray-600 space-y-2 list-decimal list-inside">
                 <li>Sørg for at du har lagt til Vipps credentials i <code className="bg-gray-100 px-1 py-0.5 rounded">.env.local</code></li>
                 <li>Kjør database-migrering: <code className="bg-gray-100 px-1 py-0.5 rounded">supabase migration up</code></li>
-                <li>Klikk på "Logg inn med Vipps" over</li>
+                <li>Klikk på &quot;Logg inn med Vipps&quot; over</li>
                 <li>Godkjenn i Vipps test-miljø</li>
                 <li>Du blir sendt tilbake til appen</li>
               </ol>
