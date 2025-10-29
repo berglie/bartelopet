@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
 import { Star, X, Upload, ImageIcon } from 'lucide-react'
 import { validateImageFiles, formatFileSize, IMAGE_CONSTRAINTS } from '@/lib/constants/images'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/cn'
 
 export interface ImageUploadState {
   id: string

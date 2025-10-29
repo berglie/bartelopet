@@ -1,6 +1,6 @@
 'use client';
 
-import { GalleryGrid } from '@/components/gallery-grid';
+import { GalleryGridMulti } from '@/components/gallery-grid-multi';
 import { useSelectedYear } from '@/contexts/year-context';
 import { getYearDateRange } from '@/lib/utils/year';
 import { useEffect, useState } from 'react';
@@ -66,5 +66,5 @@ export function GalleryClient({ initialCompletions, initialUserVoteId }: Gallery
     );
   }
 
-  return <GalleryGrid completions={completions} userVoteId={userVoteId} />;
+  return <GalleryGridMulti completions={completions} userVoteId={userVoteId} />;
 }
