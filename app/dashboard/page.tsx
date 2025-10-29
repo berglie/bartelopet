@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CompletionForm } from '@/components/completion-form';
-import { CompletionDisplay } from '@/components/completion-display';
+import { CompletionDisplayMulti } from '@/components/completion-display-multi';
 import Link from 'next/link';
 
 export default async function DashboardPage() {
@@ -98,7 +98,7 @@ export default async function DashboardPage() {
             </CardHeader>
           </Card>
 
-          <CompletionDisplay completion={completion} />
+          <CompletionDisplayMulti completion={completion} />
 
           <div className="flex gap-4">
             <Button asChild className="flex-1">

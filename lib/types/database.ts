@@ -22,6 +22,7 @@ export interface Completion {
   comment: string | null
   vote_count: number
   comment_count: number
+  image_count: number
   created_at: string
   updated_at: string
 }
@@ -33,8 +34,30 @@ export interface Vote {
   created_at: string
 }
 
+// Completion Images (multi-image support)
+export interface CompletionImage {
+  id: string
+  completion_id: string
+  participant_id: string
+  event_year: number
+  image_url: string
+  is_starred: boolean
+  display_order: number
+  caption: string | null
+  uploaded_at: string
+}
+
+export type CompletionImageInsert = Omit<CompletionImage, 'id' | 'uploaded_at'>
+
+export type CompletionImageUpdate = Partial<Pick<CompletionImage, 'caption' | 'display_order' | 'is_starred'>>
+
 // Extended types with relations
 export interface CompletionWithParticipant extends Completion {
+  participant: Participant
+}
+
+export interface CompletionWithImages extends Completion {
+  images: CompletionImage[]
   participant: Participant
 }
 
