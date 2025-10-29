@@ -155,11 +155,11 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm">
-              <p className="font-semibold text-blue-900 mb-1">👋 Ny her?</p>
-              <p className="text-blue-700">
+            <div className="bg-primary/10 border border-primary rounded-lg p-4 text-sm">
+              <p className="font-semibold text-accent mb-1">👋 Ny her?</p>
+              <p className="text-foreground">
                 Du må{' '}
-                <a href="/pamelding" className="underline font-semibold">
+                <a href="/pamelding" className="underline font-semibold text-accent">
                   registrere deg først
                 </a>{' '}
                 før du kan logge inn. Etter registrering får du en innloggingslenke på e-post.

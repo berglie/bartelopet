@@ -40,7 +40,6 @@ const MAP_STYLES = {
   dark: 'mapbox://styles/mapbox/dark-v11',
   streets: 'mapbox://styles/mapbox/streets-v12',
   satellite: 'mapbox://styles/mapbox/satellite-streets-v12',
-  outdoors: 'mapbox://styles/mapbox/outdoors-v12',
 };
 
 type MapStyleKey = keyof typeof MAP_STYLES;
@@ -49,7 +48,7 @@ export default function RouteMapMapbox({ year = 2025 }: { year?: number }) {
   const [routeData, setRouteData] = useState<RouteData>(FALLBACK_ROUTE);
   const [viewState, setViewState] = useState(DEFAULT_CENTER);
   const [isLoading, setIsLoading] = useState(true);
-  const [mapStyle, setMapStyle] = useState<MapStyleKey>('dark');
+  const [mapStyle, setMapStyle] = useState<MapStyleKey>('streets');
 
   useEffect(() => {
     // Try to load GPX file from public folder (year-specific)

@@ -61,7 +61,7 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader>
             <CardDescription>Startnummer</CardDescription>
-            <CardTitle className="text-4xl text-primary">
+            <CardTitle className="text-4xl text-accent">
               {participant.bib_number}
             </CardTitle>
           </CardHeader>
@@ -70,7 +70,7 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader>
             <CardDescription>Status</CardDescription>
-            <CardTitle className={participant.has_completed ? 'text-green-600' : 'text-muted-foreground'}>
+            <CardTitle className={participant.has_completed ? 'text-accent' : 'text-muted-foreground'}>
               {participant.has_completed ? 'Fullført ✓' : 'Ikke fullført'}
             </CardTitle>
           </CardHeader>

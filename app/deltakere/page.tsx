@@ -66,13 +66,13 @@ export default async function ParticipantsPage({
         <Card>
           <CardHeader>
             <CardDescription>Totalt påmeldte</CardDescription>
-            <CardTitle className="text-4xl text-primary">{stats.total}</CardTitle>
+            <CardTitle className="text-4xl text-accent">{stats.total}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
           <CardHeader>
             <CardDescription>Har fullført</CardDescription>
-            <CardTitle className="text-4xl text-green-600">{stats.completed}</CardTitle>
+            <CardTitle className="text-4xl text-accent">{stats.completed}</CardTitle>
           </CardHeader>
         </Card>
       </div>
@@ -92,13 +92,14 @@ export default async function ParticipantsPage({
                   className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors"
                 >
                   <div className="flex items-center gap-4">
-                    <span className="font-mono font-semibold text-primary min-w-[60px]">
+                    <span className="font-mono font-semibold text-accent min-w-[60px]">
                       #{participant.bib_number}
                     </span>
                     <span className="font-medium">{participant.full_name}</span>
                   </div>
                   {participant.has_completed && (
                     <div className="flex items-center gap-2 text-green-600">
+                      <span className="text-xl">🏆</span>
                       <Check className="h-5 w-5" />
                       <span className="text-sm font-medium">Fullført</span>
                     </div>
