@@ -54,9 +54,10 @@ export function validateYear(year: number): NextResponse | null {
  * Check if an edit operation is allowed for a given year.
  *
  * @param year The year being edited
- * @returns NextResponse with error if not allowed, null if allowed
+ * @param supabase Supabase client instance
+ * @returns Promise<NextResponse | null> NextResponse with error if not allowed, null if allowed
  */
-export function checkEditPermission(year: number): NextResponse | null {
+export async function checkEditPermission(year: number, supabase: any): Promise<NextResponse | null> {
   const currentYear = getCurrentEventYear();
 
   if (year !== currentYear) {
@@ -69,7 +70,7 @@ export function checkEditPermission(year: number): NextResponse | null {
     );
   }
 
-  if (!isYearEditable(year)) {
+  if (!(await isYearEditable(year, supabase))) {
     return NextResponse.json(
       {
         error: 'Utenfor redigeringsperiode',

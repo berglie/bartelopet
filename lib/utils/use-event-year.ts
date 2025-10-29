@@ -12,7 +12,7 @@ import { useMemo, useCallback } from 'react';
 import {
   getCurrentEventYear,
   getAvailableEventYears,
-  isYearEditable,
+  isYearEditableSync,
   formatEventYear,
   getEditWindowStatus,
 } from './event-year';
@@ -85,8 +85,8 @@ export function useEventYear() {
     [eventYear]
   );
 
-  // Check if year is editable
-  const canEdit = useMemo(() => isYearEditable(eventYear), [eventYear]);
+  // Check if year is editable (client-side check)
+  const canEdit = useMemo(() => isYearEditableSync(eventYear), [eventYear]);
 
   // Get formatted year string
   const formattedYear = useMemo(() => formatEventYear(eventYear), [eventYear]);

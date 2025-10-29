@@ -53,7 +53,7 @@ export async function isSubmissionWindowOpen(supabase: any): Promise<boolean> {
 }
 
 /**
- * Check if a specific year is currently editable.
+ * Check if a specific year is currently editable (server-side).
  *
  * A year is editable if:
  * 1. It's the current event year AND
@@ -70,6 +70,21 @@ export async function isYearEditable(year: number, supabase: any): Promise<boole
   }
 
   return await isSubmissionWindowOpen(supabase);
+}
+
+/**
+ * Check if a specific year is currently editable (client-side, sync version).
+ *
+ * A year is editable if it's the current event year.
+ * This is a simplified client-side check that doesn't verify the submission window.
+ * For accurate server-side checks, use isYearEditable() instead.
+ *
+ * @param year The event year to check
+ * @returns boolean true if the year matches current year
+ */
+export function isYearEditableSync(year: number): boolean {
+  const currentYear = getCurrentEventYear();
+  return year === currentYear;
 }
 
 /**

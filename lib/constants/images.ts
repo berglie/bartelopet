@@ -102,7 +102,7 @@ export function validateImageFiles(
     }
 
     // Type check
-    if (!IMAGE_CONSTRAINTS.ALLOWED_TYPES.includes(file.type)) {
+    if (!IMAGE_CONSTRAINTS.ALLOWED_TYPES.includes(file.type as any)) {
       errors.push({
         type: 'invalid_type',
         message: `${file.name} har ugyldig filtype (kun JPEG, PNG, WebP tillatt)`,
@@ -112,7 +112,7 @@ export function validateImageFiles(
 
     // Extension check
     const ext = '.' + file.name.split('.').pop()?.toLowerCase()
-    if (!IMAGE_CONSTRAINTS.ALLOWED_EXTENSIONS.includes(ext)) {
+    if (!IMAGE_CONSTRAINTS.ALLOWED_EXTENSIONS.includes(ext as any)) {
       errors.push({
         type: 'invalid_extension',
         message: `${file.name} har ugyldig filendelse`,
