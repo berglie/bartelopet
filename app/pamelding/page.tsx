@@ -24,7 +24,7 @@ export default async function RegistrationPage() {
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold mb-4">Påmelding</h1>
         <p className="text-lg text-muted-foreground">
-          Fyll ut skjemaet under for å melde deg på Barteløpet 2024
+          Fyll ut skjemaet under for å melde deg på Barteløpet 2025
         </p>
       </div>
 

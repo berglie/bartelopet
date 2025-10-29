@@ -26,7 +26,7 @@ CREATE TABLE completions (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
   -- Ensure completion date is reasonable
-  CONSTRAINT valid_completion_date CHECK (completed_date >= '2024-11-01' AND completed_date <= NOW()::DATE)
+  CONSTRAINT valid_completion_date CHECK (completed_date >= '2025-11-01' AND completed_date <= NOW()::DATE)
 );
 
 -- Create votes table

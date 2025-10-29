@@ -7,15 +7,13 @@ export interface Completion {
   created_at: string;
   updated_at: string;
   participant_id: string;
-  distance_km: number;
-  duration_minutes: number | null;
-  location: string | null;
-  notes: string | null;
-  image_url: string;
-  thumbnail_url: string;
+  completed_date: string; // Date (ISO format YYYY-MM-DD)
+  duration_text: string | null;
+  photo_url: string;
+  comment: string | null;
   vote_count: number;
-  is_featured: boolean;
-  completed_at: string;
+  comment_count: number;
+  event_year: number; // Event year this completion belongs to
 
   // Relationships
   participant?: ParticipantPublic;
@@ -24,21 +22,18 @@ export interface Completion {
 
 export interface CompletionCreate {
   participant_id: string;
-  distance_km: number;
-  duration_minutes?: number;
-  location?: string;
-  notes?: string;
-  image_url: string;
-  thumbnail_url: string;
-  completed_at: string;
+  completed_date: string; // Date in YYYY-MM-DD format
+  duration_text?: string;
+  photo_url: string;
+  comment?: string;
+  event_year?: number; // Optional, defaults to current event year
 }
 
 export interface CompletionUpdate {
-  distance_km?: number;
-  duration_minutes?: number;
-  location?: string;
-  notes?: string;
-  is_featured?: boolean;
+  completed_date?: string;
+  duration_text?: string;
+  photo_url?: string;
+  comment?: string;
 }
 
 export interface CompletionWithParticipant extends Completion {

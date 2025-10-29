@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Navigation } from "@/components/navigation";
+import { NavigationWrapper } from "@/components/navigation-wrapper";
+import { YearProvider } from "@/contexts/year-context";
+import { Suspense } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,13 +28,17 @@ export default function RootLayout({
   return (
     <html lang="nb-NO">
       <body className={inter.className}>
-        <Navigation />
-        <main>{children}</main>
-        <footer className="border-t mt-16">
-          <div className="container mx-auto px-4 py-8 text-center text-sm text-muted-foreground">
-            <p>© 2025 OpenAid - Støtter mental helse gjennom Movember</p>
-          </div>
-        </footer>
+        <Suspense fallback={null}>
+          <YearProvider>
+            <NavigationWrapper />
+            <main>{children}</main>
+            <footer className="border-t mt-16">
+              <div className="container mx-auto px-4 py-8 text-center text-sm text-muted-foreground">
+                <p>© 2025 OpenAid - Støtter mental helse gjennom Movember</p>
+              </div>
+            </footer>
+          </YearProvider>
+        </Suspense>
       </body>
     </html>
   );

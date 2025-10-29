@@ -1,11 +1,20 @@
+'use client';
+
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import { MustacheSVG } from '@/components/mustache-icon';
+import { YearSelector } from '@/components/year-selector';
+import { usePathname } from 'next/navigation';
 
-export async function Navigation() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+interface NavigationProps {
+  isAuthenticated?: boolean;
+}
+
+export function Navigation({ isAuthenticated = false }: NavigationProps) {
+  const pathname = usePathname();
+
+  // Show year selector on pages where it's relevant
+  const showYearSelector = ['/galleri', '/deltakere', '/'].includes(pathname);
 
   return (
     <nav className="border-b border-border/50 backdrop-blur-lg bg-background/80 sticky top-0 z-50">
@@ -23,7 +32,10 @@ export async function Navigation() {
             <Link href="/deltakere" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Deltakere
             </Link>
-            {user ? (
+
+            {showYearSelector && <YearSelector variant="compact" />}
+
+            {isAuthenticated ? (
               <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
                 <Link href="/dashboard">Dashboard</Link>
               </Button>
@@ -40,10 +52,11 @@ export async function Navigation() {
           </div>
 
           {/* Mobile menu */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center gap-2">
+            {showYearSelector && <YearSelector variant="compact" />}
             <Button asChild size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
-              <Link href={user ? "/dashboard" : "/send-inn"}>
-                {user ? "Dashboard" : "Send inn"}
+              <Link href={isAuthenticated ? "/dashboard" : "/send-inn"}>
+                {isAuthenticated ? "Dashboard" : "Send inn"}
               </Link>
             </Button>
           </div>

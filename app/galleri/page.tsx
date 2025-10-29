@@ -1,10 +1,13 @@
 import { createClient } from '@/lib/supabase/server';
-import { GalleryGrid } from '@/components/gallery-grid';
+import { GalleryClient } from './page-client';
+import { getCurrentEventYear, getYearDateRange } from '@/lib/utils/year';
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
 async function getCompletions() {
   const supabase = await createClient();
+  const currentYear = getCurrentEventYear();
+  const { start, end } = getYearDateRange(currentYear);
 
   const { data: completions, error } = await supabase
     .from('completions')
@@ -16,6 +19,8 @@ async function getCompletions() {
         bib_number
       )
     `)
+    .gte('completed_date', start.toISOString())
+    .lte('completed_date', end.toISOString())
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -66,15 +71,7 @@ export default async function GalleryPage() {
         </p>
       </div>
 
-      {completions.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-lg text-muted-foreground">
-            Ingen bilder lastet opp ennå. Vær den første!
-          </p>
-        </div>
-      ) : (
-        <GalleryGrid completions={completions} userVoteId={userVoteId} />
-      )}
+      <GalleryClient initialCompletions={completions} initialUserVoteId={userVoteId} />
     </div>
   );
 }

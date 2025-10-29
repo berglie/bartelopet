@@ -48,7 +48,7 @@ export default async function ParticipantsPage() {
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold mb-4">Deltakerliste</h1>
         <p className="text-lg text-muted-foreground">
-          Alle som har meldt seg på Barteløpet 2024
+          Alle som har meldt seg på Barteløpet 2025
         </p>
       </div>
 

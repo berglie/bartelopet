@@ -187,7 +187,7 @@ export function RegistrationForm() {
       <Card>
         <CardHeader>
           <CardTitle>Registrering vellykket! 🎉</CardTitle>
-          <CardDescription>Du er nå påmeldt Barteløpet 2024</CardDescription>
+          <CardDescription>Du er nå påmeldt Barteløpet 2025</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-center py-8">

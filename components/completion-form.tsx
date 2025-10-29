@@ -129,7 +129,7 @@ export function CompletionForm({ participantId }: { participantId: string }) {
               name="completed_date"
               type="date"
               required
-              min="2024-11-01"
+              min="2025-11-01"
               max={new Date().toISOString().split('T')[0]}
               disabled={loading}
             />

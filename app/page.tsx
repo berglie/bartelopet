@@ -38,7 +38,7 @@ export default async function HomePage() {
             {/* Badge */}
             <div className="inline-flex items-center gap-3 bg-accent/10 border border-accent/30 px-5 py-2 rounded-full backdrop-blur-sm">
               <MustacheSVG className="h-4 w-8 text-accent" />
-              <span className="text-sm font-medium text-accent">Movember 2024 • Støtt Barteprakt</span>
+              <span className="text-sm font-medium text-accent">Movember 2025 • Støtt Barteprakt</span>
             </div>
 
             {/* Title */}
@@ -269,7 +269,7 @@ export default async function HomePage() {
             <CardContent className="p-12 md:p-16 text-center space-y-8">
               <div className="inline-flex items-center gap-3 bg-background/50 px-5 py-2 rounded-full border border-accent/30">
                 <MustacheSVG className="h-5 w-10 text-accent" />
-                <span className="text-sm font-medium text-accent">Movember 2024 • Barteprakt</span>
+                <span className="text-sm font-medium text-accent">Movember 2025 • Barteprakt</span>
               </div>
 
               <div className="space-y-4">

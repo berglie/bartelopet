@@ -5,36 +5,48 @@ export interface Participant {
   updated_at: string;
   email: string;
   full_name: string;
-  display_name: string | null;
-  avatar_url: string | null;
-  bio: string | null;
-  target_distance_km: number;
-  current_distance_km: number;
-  total_completions: number;
-  total_votes_received: number;
-  is_active: boolean;
-  user_id: string; // Supabase auth user ID
+  postal_address: string;
+  phone_number: string | null;
+  bib_number: number;
+  has_completed: boolean;
+  event_year: number; // Event year this participant registered for
+  user_id: string | null; // Supabase auth user ID (nullable for pre-auth participants)
 }
 
 export interface ParticipantCreate {
   email: string;
   full_name: string;
-  display_name?: string;
-  target_distance_km: number;
+  postal_address: string;
+  phone_number?: string;
+  bib_number: number;
+  event_year?: number; // Optional, defaults to current event year
+  user_id?: string | null;
 }
 
 export interface ParticipantUpdate {
-  display_name?: string;
-  avatar_url?: string;
-  bio?: string;
-  target_distance_km?: number;
+  full_name?: string;
+  postal_address?: string;
+  phone_number?: string;
+  email?: string;
 }
 
 export interface ParticipantPublic {
   id: string;
-  display_name: string;
-  avatar_url: string | null;
-  current_distance_km: number;
-  total_completions: number;
-  total_votes_received: number;
+  full_name: string;
+  bib_number: number;
+  has_completed: boolean;
+  event_year: number;
+}
+
+// Participant history across years
+export interface ParticipantHistory {
+  event_year: number;
+  participant_id: string;
+  email: string;
+  full_name: string;
+  bib_number: number;
+  has_completed: boolean;
+  registration_date: string;
+  completion_date: string | null;
+  vote_count: number;
 }
