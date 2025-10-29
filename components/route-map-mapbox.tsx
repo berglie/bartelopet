@@ -49,6 +49,18 @@ export default function RouteMapMapbox({ year = 2025 }: { year?: number }) {
   const [viewState, setViewState] = useState(DEFAULT_CENTER);
   const [isLoading, setIsLoading] = useState(true);
   const [mapStyle, setMapStyle] = useState<MapStyleKey>('streets');
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // md breakpoint
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     // Try to load GPX file from public folder (year-specific)
@@ -59,7 +71,13 @@ export default function RouteMapMapbox({ year = 2025 }: { year?: number }) {
         if (gpxRoute) {
           setRouteData(gpxRoute);
           const center = getRouteCenter(gpxRoute);
-          const zoom = getRouteZoom(gpxRoute);
+          let zoom = getRouteZoom(gpxRoute);
+
+          // Zoom out slightly on mobile devices to show more of the route
+          if (isMobile) {
+            zoom = Math.max(zoom - 0.7, 11); // Reduce by 0.7 levels, minimum zoom 11
+          }
+
           setViewState({ ...center, zoom });
           console.log(`✅ GPX route loaded successfully: ${gpxPath}`);
         } else {
@@ -72,7 +90,7 @@ export default function RouteMapMapbox({ year = 2025 }: { year?: number }) {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [year]);
+  }, [year, isMobile]);
 
   // Show helpful message if token is missing
   if (!MAPBOX_TOKEN) {
