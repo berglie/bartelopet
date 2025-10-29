@@ -12,14 +12,12 @@ export type Database = {
           user_id: string
           email: string
           full_name: string
-          display_name: string | null
-          avatar_url: string | null
-          bio: string | null
-          target_distance_km: number
-          current_distance_km: number
-          total_completions: number
-          total_votes_received: number
-          is_active: boolean
+          postal_address: string
+          phone_number: string | null
+          bib_number: number
+          has_completed: boolean
+          vipps_sub: string | null
+          auth_provider: 'email' | 'vipps' | 'both'
           created_at: string
           updated_at: string
         }
@@ -28,14 +26,12 @@ export type Database = {
           user_id: string
           email: string
           full_name: string
-          display_name?: string | null
-          avatar_url?: string | null
-          bio?: string | null
-          target_distance_km?: number
-          current_distance_km?: number
-          total_completions?: number
-          total_votes_received?: number
-          is_active?: boolean
+          postal_address: string
+          phone_number?: string | null
+          bib_number: number
+          has_completed?: boolean
+          vipps_sub?: string | null
+          auth_provider?: 'email' | 'vipps' | 'both'
           created_at?: string
           updated_at?: string
         }
@@ -44,14 +40,12 @@ export type Database = {
           user_id?: string
           email?: string
           full_name?: string
-          display_name?: string | null
-          avatar_url?: string | null
-          bio?: string | null
-          target_distance_km?: number
-          current_distance_km?: number
-          total_completions?: number
-          total_votes_received?: number
-          is_active?: boolean
+          postal_address?: string
+          phone_number?: string | null
+          bib_number?: number
+          has_completed?: boolean
+          vipps_sub?: string | null
+          auth_provider?: 'email' | 'vipps' | 'both'
           created_at?: string
           updated_at?: string
         }
@@ -60,45 +54,33 @@ export type Database = {
         Row: {
           id: string
           participant_id: string
-          distance_km: number
-          duration_minutes: number | null
-          location: string | null
-          notes: string | null
-          image_url: string
-          thumbnail_url: string
+          completed_date: string
+          duration_text: string | null
+          photo_url: string
+          comment: string | null
           vote_count: number
-          is_featured: boolean
-          completed_at: string
           created_at: string
           updated_at: string
         }
         Insert: {
           id?: string
           participant_id: string
-          distance_km: number
-          duration_minutes?: number | null
-          location?: string | null
-          notes?: string | null
-          image_url: string
-          thumbnail_url: string
+          completed_date: string
+          duration_text?: string | null
+          photo_url: string
+          comment?: string | null
           vote_count?: number
-          is_featured?: boolean
-          completed_at: string
           created_at?: string
           updated_at?: string
         }
         Update: {
           id?: string
           participant_id?: string
-          distance_km?: number
-          duration_minutes?: number | null
-          location?: string | null
-          notes?: string | null
-          image_url?: string
-          thumbnail_url?: string
+          completed_date?: string
+          duration_text?: string | null
+          photo_url?: string
+          comment?: string | null
           vote_count?: number
-          is_featured?: boolean
-          completed_at?: string
           created_at?: string
           updated_at?: string
         }
@@ -106,21 +88,53 @@ export type Database = {
       votes: {
         Row: {
           id: string
-          participant_id: string
+          voter_id: string
           completion_id: string
           created_at: string
         }
         Insert: {
           id?: string
-          participant_id: string
+          voter_id: string
           completion_id: string
           created_at?: string
         }
         Update: {
           id?: string
-          participant_id?: string
+          voter_id?: string
           completion_id?: string
           created_at?: string
+        }
+      }
+      vipps_sessions: {
+        Row: {
+          id: string
+          state: string
+          code_verifier: string
+          code_challenge: string
+          redirect_uri: string
+          user_id: string | null
+          created_at: string
+          expires_at: string
+        }
+        Insert: {
+          id?: string
+          state: string
+          code_verifier: string
+          code_challenge: string
+          redirect_uri: string
+          user_id?: string | null
+          created_at?: string
+          expires_at: string
+        }
+        Update: {
+          id?: string
+          state?: string
+          code_verifier?: string
+          code_challenge?: string
+          redirect_uri?: string
+          user_id?: string | null
+          created_at?: string
+          expires_at?: string
         }
       }
     }
