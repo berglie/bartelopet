@@ -44,10 +44,11 @@ const nextConfig = {
             value: [
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://api.mapbox.com",
+              "worker-src 'self' blob: https://api.mapbox.com",
               "style-src 'self' 'unsafe-inline' https://api.mapbox.com",
               "img-src 'self' data: blob: https://*.supabase.co https://api.mapbox.com",
               "font-src 'self' data:",
-              "connect-src 'self' https://*.supabase.co https://api.vipps.no https://api.mapbox.com wss://*.supabase.co",
+              "connect-src 'self' https://*.supabase.co https://api.vipps.no https://api.mapbox.com https://events.mapbox.com wss://*.supabase.co",
               "frame-ancestors 'self'",
               "base-uri 'self'",
               "form-action 'self'",
