@@ -960,7 +960,7 @@ SMTP_FROM=noreply@bartelopet.no
       <a href="{{ dashboard_url }}" class="button">Gå til ditt dashboard</a>
     </p>
 
-    <p><strong>Adresse for medalje:</strong><br>{{ address }}</p>
+    <p><strong>Adresse for pokal:</strong><br>{{ address }}</p>
 
     <p>Vi gleder oss til å se ditt bilde!</p>
 

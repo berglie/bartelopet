@@ -346,7 +346,7 @@ export function RegistrationForm() {
               disabled={loading}
             />
             <p className="text-sm text-muted-foreground">
-              Medaljen sendes til denne adressen
+              Pokalen sendes til denne adressen
             </p>
           </div>
 

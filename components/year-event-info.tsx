@@ -71,7 +71,7 @@ export function YearEventInfo({
             <div>
               <p className="font-semibold">Rute: Stavanger sentrum</p>
               <p className="text-sm text-muted-foreground">
-                10km gjennom Stavanger - flatt terreng, asfaltert
+                10km gjennom Stavanger - ikoniske steder, asfaltert
               </p>
             </div>
           </div>

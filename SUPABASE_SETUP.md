@@ -827,8 +827,8 @@ Velkommen til Barteløpet! Ditt startnummer: {{ .BibNumber }}
       </div>
 
       <div class="info-box">
-        <h2>🏅 Medalje</h2>
-        <p>Alle som fullfører får medalje tilsendt til denne adressen:<br>
+        <h2>🏆 Pokal</h2>
+        <p>Alle som fullfører får pokal levert til denne adressen:<br>
         <strong>{{ .Address }}</strong></p>
       </div>
 

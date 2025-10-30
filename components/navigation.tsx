@@ -33,7 +33,7 @@ export function Navigation({ isAuthenticated = false }: NavigationProps) {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <Link href={getUrlWithYear("/")} className="flex items-center gap-2 font-bold text-xl text-foreground hover:text-accent transition-colors group">
-            <MustacheSVG className="h-5 w-10 text-accent group-hover:scale-110 transition-transform" />
+            <MustacheSVG className="h-8 w-16 text-accent group-hover:scale-110 transition-transform" />
             <span>Barteløpet</span>
           </Link>
 

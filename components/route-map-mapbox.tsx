@@ -179,7 +179,7 @@ export default function RouteMapMapbox({ year = 2025 }: { year?: number }) {
       {/* Route info overlay */}
       <div className="absolute bottom-6 left-6 bg-card/95 backdrop-blur-sm px-6 py-3 rounded-xl shadow-lg border border-primary/30">
         <p className="text-sm font-semibold text-accent">📍 Stavanger Sentrum</p>
-        <p className="text-xs text-muted-foreground mt-1">10km løype • Flatt terreng • Asfaltert</p>
+        <p className="text-xs text-muted-foreground mt-1">10km løype • Ikoniske steder • Asfaltert</p>
       </div>
     </div>
   );

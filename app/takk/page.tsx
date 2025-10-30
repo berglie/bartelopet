@@ -63,9 +63,9 @@ export default function ThankYouPage({
               <div className="flex items-start gap-3">
                 <Award className="h-5 w-5 text-accent shrink-0 mt-0.5" />
                 <div className="space-y-1">
-                  <p className="text-sm font-medium">Medalje på vei</p>
+                  <p className="text-sm font-medium">Pokal på vei</p>
                   <p className="text-xs text-muted-foreground">
-                    Din medalje sendes til oppgitt adresse
+                    Din pokal sendes til oppgitt adresse
                   </p>
                 </div>
               </div>
