@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from '@/app/_shared/lib/supabase/server';
 
 /**
  * POST /api/vipps/link-account

@@ -1,9 +1,11 @@
-import { getParticipants, getParticipantsStats, ParticipantsStatsCards, ParticipantsList } from '@/features/participants'
-import { getCurrentEventYear } from '@/lib/utils/year'
+import { getParticipants, getParticipantsStats } from './_utils/queries'
+import { ParticipantsStatsCards } from './_components/ParticipantsStats'
+import { ParticipantsList } from './_components/ParticipantsList'
+import { getCurrentEventYear } from '@/app/_shared/lib/utils/year'
 
 export const revalidate = 300 // Revalidate every 5 minutes
 
-export default async function ParticipantsPage({
+export default async function DeltakerePage({
   searchParams,
 }: {
   searchParams: { year?: string }

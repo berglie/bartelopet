@@ -1,6 +1,6 @@
-import { createClient } from '@/lib/supabase/server';
-import { GalleryClient } from './page-client';
-import { getCurrentEventYear, getYearDateRange } from '@/lib/utils/year';
+import { createClient } from '@/app/_shared/lib/supabase/server';
+import { GalleryClient } from './_components/GalleryClient';
+import { getCurrentEventYear, getYearDateRange } from '@/app/_shared/lib/utils/year';
 
 export const revalidate = 60; // Revalidate every 60 seconds
 

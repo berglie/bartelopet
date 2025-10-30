@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { getCurrentEventYear, isValidEventYear } from '@/lib/utils/year';
+import { getCurrentEventYear, isValidEventYear } from '@/app/_shared/lib/utils/year';
 
 interface YearContextValue {
   selectedYear: number;

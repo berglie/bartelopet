@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Navigation } from "@/components/navigation";
+import { Navigation } from "@/app/_components/navigation";
 import { YearProvider } from "@/contexts/year-context";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/app/_shared/lib/supabase/server";
 import Link from "next/link";
 
 const inter = Inter({

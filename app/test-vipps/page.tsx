@@ -1,4 +1,5 @@
-import { VippsLoginButton, VippsButtonScript } from '@/components/auth'
+import { VippsLoginButton } from './_components/vipps-login-button'
+import { VippsButtonScript } from './_components/vipps-button-script'
 import Link from 'next/link'
 
 export default function TestVippsPage() {

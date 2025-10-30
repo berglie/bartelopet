@@ -1,5 +1,5 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/app/_shared/components/ui/button';
+import { Card, CardContent } from '@/app/_shared/components/ui/card';
 import Link from 'next/link';
 import { Award, Mail, Trophy } from 'lucide-react';
 

@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { createClient } from '@/lib/supabase/client';
+import { Button } from '@/app/_shared/components/ui/button';
+import { Input } from '@/app/_shared/components/ui/input';
+import { Label } from '@/app/_shared/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/_shared/components/ui/card';
+import { createClient } from '@/app/_shared/lib/supabase/client';
 import { useSearchParams } from 'next/navigation';
 
 export default function LoginPage() {

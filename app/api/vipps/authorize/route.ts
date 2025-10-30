@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from '@/app/_shared/lib/supabase/server';
 import { nanoid } from 'nanoid';
 import crypto from 'crypto';
-import { checkRateLimit, getClientIp } from '@/lib/utils/rate-limit';
+import { checkRateLimit, getClientIp } from '@/app/_shared/lib/utils/rate-limit';
 
 /**
  * Generate PKCE code verifier (random string)
@@ -137,7 +137,7 @@ export async function GET(request: NextRequest) {
  *
  * Example with Vercel KV:
  * ```
- * import { ratelimit } from '@/lib/ratelimit';
+ * import { ratelimit } from '@/app/_shared/lib/ratelimit';
  * const { success } = await ratelimit.limit(ip);
  * if (!success) return new Response('Too Many Requests', { status: 429 });
  * ```

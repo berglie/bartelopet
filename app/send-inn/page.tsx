@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { RegistrationForm } from '@/components/registration-form';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { EditRestrictionGuard, ReadOnlyBanner } from '@/components/edit-restriction-guard';
-import { getCurrentEventYear } from '@/lib/utils/year';
-import { Button } from '@/components/ui/button';
-import { createClient } from '@/lib/supabase/client';
+import { RegistrationForm } from '@/app/pamelding/_components/registration-form';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/_shared/components/ui/card';
+import { EditRestrictionGuard, ReadOnlyBanner } from './_components/edit-restriction-guard';
+import { getCurrentEventYear } from '@/app/_shared/lib/utils/year';
+import { Button } from '@/app/_shared/components/ui/button';
+import { createClient } from '@/app/_shared/lib/supabase/client';
 
 export default function SubmitPage() {
   const currentYear = getCurrentEventYear();

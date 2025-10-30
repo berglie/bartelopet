@@ -1,12 +1,12 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@/app/_shared/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
-import type { CompletionImage, CompletionImageInsert } from '@/lib/types/database'
-import { IMAGE_CONSTRAINTS } from '@/lib/constants/images'
-import { validateAndSanitizeImage, generateSecureFilename } from '@/lib/utils/file-validation'
-import { sanitizeSupabaseError } from '@/lib/utils/error-handler'
-import { checkRateLimit } from '@/lib/utils/rate-limit'
+import type { CompletionImage, CompletionImageInsert } from '@/app/_shared/lib/types/database'
+import { IMAGE_CONSTRAINTS } from '@/app/_shared/lib/constants/images'
+import { validateAndSanitizeImage, generateSecureFilename } from '@/app/_shared/lib/utils/file-validation'
+import { sanitizeSupabaseError } from '@/app/_shared/lib/utils/error-handler'
+import { checkRateLimit } from '@/app/_shared/lib/utils/rate-limit'
 
 export type ActionResponse<T = void> = {
   success: boolean

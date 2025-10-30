@@ -1,4 +1,5 @@
-import { PrivacyPolicy, privacyPolicyMetadata } from '@/features/public-pages'
+import { PrivacyPolicy } from '@/app/_shared/components/PrivacyPolicy'
+import { privacyPolicyMetadata } from '@/app/_shared/lib/metadata'
 
 export const metadata = privacyPolicyMetadata
 

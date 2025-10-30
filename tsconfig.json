@@ -18,19 +18,7 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"],
-      "@features/*": ["./features/*"],
-      "@shared/*": ["./features/shared/*"],
-      "@public-pages/*": ["./features/public-pages/*"],
-      "@participants/*": ["./features/participants/*"],
-      "@gallery/*": ["./features/gallery/*"],
-      "@auth/*": ["./features/auth/*"],
-      "@registration/*": ["./features/registration/*"],
-      "@completions/*": ["./features/completions/*"],
-      "@voting/*": ["./features/voting/*"],
-      "@dashboard/*": ["./features/dashboard/*"],
-      "@comments/*": ["./features/comments/*"],
-      "@year-management/*": ["./features/year-management/*"]
+      "@/*": ["./*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

@@ -1,11 +1,11 @@
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { createClient } from '@/lib/supabase/server';
-import { RouteMap } from '@/components/route-map';
+import { Button } from '@/app/_shared/components/ui/button';
+import { Card, CardContent } from '@/app/_shared/components/ui/card';
+import { createClient } from '@/app/_shared/lib/supabase/server';
+import { RouteMap } from '@/app/_shared/components/route-map';
 import { MapPin, Users, Trophy, Upload, Award, ExternalLink, Heart } from 'lucide-react';
-import { MustacheSVG } from '@/components/mustache-icon';
-import { getCurrentEventYear, getYearDateRange } from '@/lib/utils/year';
+import { MustacheSVG } from '@/app/_shared/components/mustache-icon';
+import { getCurrentEventYear, getYearDateRange } from '@/app/_shared/lib/utils/year';
 
 const DONATION_GOAL = 20000;
 const SPLEIS_URL = 'https://spleis.no/barteløpet2025';

@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@/app/_shared/lib/supabase/server'
 
 type ActionResponse<T = void> = {
   success: boolean

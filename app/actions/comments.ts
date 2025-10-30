@@ -1,10 +1,10 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
-import type { PhotoCommentWithParticipant } from '@/lib/types/database'
-import { checkRateLimit } from '@/lib/utils/rate-limit'
-import { sanitizeSupabaseError } from '@/lib/utils/error-handler'
+import { createClient } from '@/app/_shared/lib/supabase/server'
+import type { PhotoCommentWithParticipant } from '@/app/_shared/lib/types/database'
+import { checkRateLimit } from '@/app/_shared/lib/utils/rate-limit'
+import { sanitizeSupabaseError } from '@/app/_shared/lib/utils/error-handler'
 
 // Response type for consistent error handling
 type ActionResponse<T = void> = {

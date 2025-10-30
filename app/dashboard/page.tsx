@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { CompletionForm } from '@/components/completion-form';
-import { CompletionDisplayMulti } from '@/components/completion-display-multi';
+import { createClient } from '@/app/_shared/lib/supabase/server';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/_shared/components/ui/card';
+import { Button } from '@/app/_shared/components/ui/button';
+import { CompletionForm } from '@/app/pamelding/_components/completion-form';
+import { CompletionDisplayMulti } from './_components/completion-display-multi';
 import Link from 'next/link';
 
 export default async function DashboardPage() {
