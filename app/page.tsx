@@ -72,7 +72,7 @@ export default async function HomePage({
             </div>
 
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Løp gjennom sentrum i november. Last opp bilder. Støtt Mental Helse.
+              Løp gjennom sentrum i november. Vinn premier. Støtt Mental Helse.
             </p>
 
             {/* CTA */}
@@ -289,12 +289,12 @@ export default async function HomePage({
             <CardContent className="p-12 md:p-16 text-center space-y-8">
               <div className="inline-flex items-center gap-3 bg-background/50 px-5 py-2 rounded-full border border-accent/30">
                 <MustacheSVG className="h-5 w-10 text-accent" />
-                <span className="text-sm font-medium text-accent">Movember {year} • Barteprakt</span>
+                <span className="text-sm font-medium text-accent">Movember {year} • Løp for Mental Helse Ungdom</span>
               </div>
 
               <div className="space-y-4">
                 <h2 className="text-3xl md:text-4xl font-bold">
-                  <span className="text-accent">Støtt Barteprakt</span> for Mental Helse
+                  Løp for <span className="text-accent">Mental Helse Ungdom</span>
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                   I november lar vi bartene gro for å øke bevisstheten rundt mental helse.
