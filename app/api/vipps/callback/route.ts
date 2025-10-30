@@ -251,7 +251,7 @@ export async function GET(request: NextRequest) {
       // Existing Vipps user - sign them in
       // Note: OAuth users should use OAuth flow, not password login
       // This is a fallback that maintains compatibility with existing accounts
-      const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
+      const { error: signInError } = await supabase.auth.signInWithPassword({
         email: existingByVipps.email,
         password: userInfo.sub, // Legacy: existing accounts use vipps_sub
       });
