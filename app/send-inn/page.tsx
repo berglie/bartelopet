@@ -117,7 +117,7 @@ export default function SubmitPage() {
                   <span className="text-accent text-xs font-semibold">2</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  <strong className="text-foreground">Løp 10km:</strong> Gjennomfør løpet når som helst i november
+                  <strong className="text-foreground">Løp:</strong> Gjennomfør løpet når som helst i november
                 </p>
               </div>
               <div className="flex items-start gap-3">

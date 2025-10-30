@@ -115,7 +115,7 @@ export default async function DashboardPage() {
             <CardHeader>
               <CardTitle>Registrer fullført løp</CardTitle>
               <CardDescription>
-                Har du fullført 10km? Fyll ut skjemaet under for å registrere løpet ditt
+                Har du fullført løypen? Fyll ut skjemaet under for å registrere løpet ditt
               </CardDescription>
             </CardHeader>
           </Card>

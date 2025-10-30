@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { createClient } from '@/lib/supabase/client';
+import Link from 'next/link';
 
 export function RegistrationForm() {
   const router = useRouter();
@@ -18,6 +20,7 @@ export function RegistrationForm() {
     email: string;
     full_name: string;
   } | null>(null);
+  const [consentAccepted, setConsentAccepted] = useState(false);
 
   // Load OAuth user data if logged in
   useEffect(() => {
@@ -52,6 +55,13 @@ export function RegistrationForm() {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    // Validate consent
+    if (!consentAccepted) {
+      setError('Du må akseptere vilkårene og personvernerklæringen for å registrere deg');
+      setLoading(false);
+      return;
+    }
 
     const formData = new FormData(e.currentTarget);
     const data = {
@@ -231,7 +241,7 @@ export function RegistrationForm() {
             <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
               <li>Sjekk e-posten din og klikk på bekreftelseslenken</li>
               <li>Du vil bli automatisk innlogget</li>
-              <li>Løp 10km i november</li>
+              <li>Løp løypen i november</li>
               <li>Last opp bilde og historien din</li>
               <li>Stem på andre deltakere</li>
             </ol>
@@ -361,7 +371,43 @@ export function RegistrationForm() {
             />
           </div>
 
-          <Button type="submit" className="w-full" disabled={loading}>
+          <div className="space-y-3 pt-2">
+            <div className="flex items-start space-x-3 bg-muted/50 p-4 rounded-lg border">
+              <Checkbox
+                id="consent"
+                checked={consentAccepted}
+                onCheckedChange={(checked) => setConsentAccepted(checked as boolean)}
+                disabled={loading}
+                className="mt-1"
+              />
+              <div className="flex-1">
+                <Label
+                  htmlFor="consent"
+                  className="text-sm font-normal cursor-pointer leading-relaxed text-foreground"
+                >
+                  Jeg har lest og aksepterer{' '}
+                  <Link
+                    href="/vilkar"
+                    target="_blank"
+                    className="text-accent hover:text-accent/90 hover:underline font-medium underline"
+                  >
+                    vilkårene for bruk
+                  </Link>
+                  {' '}og{' '}
+                  <Link
+                    href="/personvern"
+                    target="_blank"
+                    className="text-accent hover:text-accent/90 hover:underline font-medium underline"
+                  >
+                    personvernerklæringen
+                  </Link>
+                  . Jeg samtykker til at mine opplysninger behandles i henhold til personvernerklæringen.
+                </Label>
+              </div>
+            </div>
+          </div>
+
+          <Button type="submit" className="w-full" disabled={loading || !consentAccepted}>
             {loading ? 'Registrerer...' : 'Meld meg på'}
           </Button>
         </form>

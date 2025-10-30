@@ -5,28 +5,32 @@ import { createClient } from '@/lib/supabase/server';
 import { RouteMap } from '@/components/route-map';
 import { MapPin, Users, Trophy, Upload, Award, ExternalLink, Heart } from 'lucide-react';
 import { MustacheSVG } from '@/components/mustache-icon';
-import { getSpleisData, formatAmount, calculateProgress, SPLEIS_PROJECT_URL } from '@/lib/spleis';
 import { getCurrentEventYear, getYearDateRange } from '@/lib/utils/year';
+
+const DONATION_GOAL = 20000;
+const SPLEIS_URL = 'https://spleis.no/barteløpet2025';
+
+function formatAmount(amount: number): string {
+  return new Intl.NumberFormat('nb-NO', {
+    style: 'currency',
+    currency: 'NOK',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
 
 async function getStats(year: number) {
   const supabase = await createClient();
   const { start, end } = getYearDateRange(year);
 
-  const [
-    { count: completionCount },
-    spleisData
-  ] = await Promise.all([
-    supabase
-      .from('completions')
-      .select('*', { count: 'exact', head: true })
-      .gte('completed_date', start.toISOString())
-      .lte('completed_date', end.toISOString()),
-    getSpleisData()
-  ]);
+  const { count: completionCount } = await supabase
+    .from('completions')
+    .select('*', { count: 'exact', head: true })
+    .gte('completed_date', start.toISOString())
+    .lte('completed_date', end.toISOString());
 
   return {
-    completions: completionCount || 0,
-    spleis: spleisData
+    completions: completionCount || 0
   };
 }
 
@@ -57,18 +61,18 @@ export default async function HomePage({
                 <MustacheSVG className="h-32 w-64 md:h-40 md:w-80 text-accent" />
               </div>
             {/* Title */}
-            <div className="space-y-0">
+            <div className="space-y-4">
               <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-foreground">
                 Barteløpet
               </h1>
 
               <p className="text-2xl md:text-3xl text-muted-foreground font-light">
-                10km for <span className="text-accent font-normal">barteprakt</span> & mental helse
+                Ta utfordringen - støtt <span className="text-accent font-normal">mental helse</span>
               </p>
             </div>
 
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Løp 10km på egen hånd i november. Last opp bevis. Støtt forskning på mental helse.
+              Løp gjennom sentrum i november. Last opp bilder. Støtt Mental Helse.
             </p>
 
             {/* CTA */}
@@ -114,7 +118,7 @@ export default async function HomePage({
                 <span className="text-sm font-medium text-primary-foreground">Din rute</span>
               </div>
               <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
-                10km gjennom{' '}
+                Løp gjennom{' '}
                 <span className="text-accent">Stavanger</span>
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -187,7 +191,7 @@ export default async function HomePage({
                     </div>
                     <span className="text-6xl font-bold text-accent/20">01</span>
                   </div>
-                  <h3 className="text-2xl font-bold">Løp 10km</h3>
+                  <h3 className="text-2xl font-bold">Løp</h3>
                   <p className="text-muted-foreground leading-relaxed">
                     Gjennomfør ruten når det passer deg i løpet av november
                   </p>
@@ -298,66 +302,24 @@ export default async function HomePage({
                 </p>
               </div>
 
-              {/* Donation Progress */}
+              {/* Donation Goal */}
               <div className="bg-background/80 backdrop-blur-sm p-8 rounded-xl border border-accent/20 max-w-2xl mx-auto space-y-4">
-                {stats.spleis && (
-                  <>
-                    <div className="flex justify-between items-baseline mb-2">
-                      <span className="text-sm text-muted-foreground">Samlet inn</span>
-                      <span className="text-sm text-muted-foreground">
-                        Mål: {formatAmount(stats.spleis.moneygoal)}
-                      </span>
-                    </div>
-
-                    {/* Progress Bar */}
-                    {stats.spleis.collected_amount !== undefined && (
-                      <>
-                        <div className="relative h-3 bg-muted rounded-full overflow-hidden">
-                          <div
-                            className="absolute inset-y-0 left-0 bg-gradient-to-r from-accent to-accent/80 transition-all duration-500"
-                            style={{ width: `${calculateProgress(stats.spleis.collected_amount, stats.spleis.moneygoal)}%` }}
-                          />
-                        </div>
-
-                        <div className="text-center">
-                          <p className="text-4xl font-bold text-accent mb-1">
-                            {formatAmount(stats.spleis.collected_amount)}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {calculateProgress(stats.spleis.collected_amount, stats.spleis.moneygoal)}% av målet nådd
-                          </p>
-                        </div>
-                      </>
-                    )}
-
-                    {stats.spleis.collected_amount === undefined && (
-                      <div className="text-center">
-                        <p className="text-2xl font-bold text-accent mb-1">
-                          Mål: {formatAmount(stats.spleis.moneygoal)}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Støtt Mental Helse Ungdom
-                        </p>
-                      </div>
-                    )}
-                  </>
-                )}
-
-                {!stats.spleis && (
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-accent mb-1">
-                      Støtt Barteprakt
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Doner til Mental Helse Ungdom
-                    </p>
-                  </div>
-                )}
+                <div className="text-center space-y-3">
+                  <p className="text-sm text-muted-foreground uppercase tracking-wider">
+                    Innsamlingsmål
+                  </p>
+                  <p className="text-5xl font-bold text-accent mb-2">
+                    {formatAmount(DONATION_GOAL)}
+                  </p>
+                  <p className="text-base text-muted-foreground">
+                    til Mental Helse Ungdom
+                  </p>
+                </div>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 h-12 px-8 shadow-lg shadow-accent/20">
-                  <a href={SPLEIS_PROJECT_URL} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center">
+                  <a href={SPLEIS_URL} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center">
                     <Heart className="mr-2 h-5 w-5" />
                     Doner nå
                     <ExternalLink className="ml-2 h-4 w-4" />

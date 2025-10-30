@@ -5,6 +5,7 @@ import { Navigation } from "@/components/navigation";
 import { YearProvider } from "@/contexts/year-context";
 import { createClient } from "@/lib/supabase/server";
 import { Suspense } from "react";
+import Link from "next/link";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -13,13 +14,13 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Barteløpet - Virtuelt 10km for mental helse",
-  description: "Delta i Barteløpet for Movember - løp 10km for mental helse, del dine bilder og stem på andre deltakere",
+  title: "Barteløpet - Virtuelt løp for mental helse",
+  description: "Delta i Barteløpet for Movember - løp for mental helse, del dine bilder og stem på andre deltakere",
   keywords: ["barteløpet", "løp", "movember", "mental helse", "veldedighet", "Stavanger", "Norge"],
   authors: [{ name: "Barteløpet" }],
   openGraph: {
-    title: "Barteløpet - Virtuelt 10km for mental helse",
-    description: "Delta i Movember-kampanjen! Løp 10km for mental helse forskning.",
+    title: "Barteløpet - Virtuelt løp for mental helse",
+    description: "Delta i Movember-kampanjen! Løp for mental helse forskning.",
     type: "website",
     locale: "nb_NO",
   },
@@ -49,8 +50,20 @@ export default async function RootLayout({
           </Suspense>
         </main>
         <footer className="border-t mt-16">
-          <div className="container mx-auto px-4 py-8 text-center text-sm text-muted-foreground">
-            <p>© 2025 OpenAid - Støtter mental helse gjennom Movember</p>
+          <div className="container mx-auto px-4 py-8">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+              <p className="text-sm text-muted-foreground">
+                © 2025 ÅpenAid - Støtter mental helse gjennom Movember
+              </p>
+              <div className="flex gap-4 text-sm">
+                <Link href="/vilkar" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Vilkår for bruk
+                </Link>
+                <Link href="/personvern" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Personvern
+                </Link>
+              </div>
+            </div>
           </div>
         </footer>
       </body>
