@@ -4,6 +4,9 @@ import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import type { CompletionImage, CompletionImageInsert } from '@/lib/types/database'
 import { IMAGE_CONSTRAINTS } from '@/lib/constants/images'
+import { validateAndSanitizeImage, generateSecureFilename } from '@/lib/utils/file-validation'
+import { sanitizeSupabaseError } from '@/lib/utils/error-handler'
+import { checkRateLimit } from '@/lib/utils/rate-limit'
 
 export type ActionResponse<T = void> = {
   success: boolean
@@ -29,6 +32,7 @@ export async function uploadCompletionImages(
   starredIndex: number = 0
 ): Promise<ActionResponse<string[]>> {
   const supabase = await createClient()
+  let userId: string | undefined
 
   try {
     // Get the current user
@@ -38,6 +42,7 @@ export async function uploadCompletionImages(
     if (!user) {
       return { success: false, error: 'Ikke autentisert' }
     }
+    userId = user.id
 
     // Get participant data
     const { data: participant, error: participantError } = await supabase
@@ -74,28 +79,49 @@ export async function uploadCompletionImages(
       }
     }
 
+    // Rate limiting check for uploads
+    const rateLimitResult = await checkRateLimit('upload', user.id)
+    if (!rateLimitResult.success) {
+      return {
+        success: false,
+        error: `For mange opplastinger. Prøv igjen om ${Math.ceil(
+          (rateLimitResult.reset - Date.now()) / 60000
+        )} minutter.`,
+      }
+    }
+
     const uploadedImageIds: string[] = []
 
     // Upload each image
     for (let i = 0; i < images.length; i++) {
       const image = images[i]
 
-      // Convert base64 to buffer
-      const base64Data = image.fileData.split(',')[1]
-      const buffer = Buffer.from(base64Data, 'base64')
+      // Validate and sanitize image (server-side security check)
+      const validationResult = await validateAndSanitizeImage(image.fileData)
 
-      // Generate unique filename
-      const fileExt = image.fileName.split('.').pop()
-      const timestamp = Date.now()
-      const uniqueId = crypto.randomUUID()
-      const newFileName = `${uniqueId}-${i + 1}.${fileExt}`
-      const filePath = `multi/${completion.event_year}/${participant.id}/${completionId}/${newFileName}`
+      if (!validationResult.success || !validationResult.buffer) {
+        // Cleanup previously uploaded images on failure
+        for (const imageId of uploadedImageIds) {
+          await supabase.from('completion_images').delete().eq('id', imageId)
+        }
+        return {
+          success: false,
+          error: validationResult.error || 'Ugyldig bildefil',
+        }
+      }
 
-      // Upload to Supabase Storage
+      // Use validated and sanitized buffer
+      const buffer = validationResult.buffer
+
+      // Generate secure filename (no user-controlled characters)
+      const secureFileName = generateSecureFilename(buffer, participant.id, 'jpg')
+      const filePath = `multi/${completion.event_year}/${participant.id}/${completionId}/${secureFileName}`
+
+      // Upload to Supabase Storage with forced MIME type
       const { error: uploadError } = await supabase.storage
         .from('completion-photos')
         .upload(filePath, buffer, {
-          contentType: image.fileType,
+          contentType: 'image/jpeg', // Force JPEG (file was re-encoded)
           cacheControl: '31536000', // 1 year
           upsert: false,
         })
@@ -105,7 +131,13 @@ export async function uploadCompletionImages(
         for (const imageId of uploadedImageIds) {
           await supabase.from('completion_images').delete().eq('id', imageId)
         }
-        return { success: false, error: `Opplasting feilet: ${uploadError.message}` }
+        return {
+          success: false,
+          error: sanitizeSupabaseError(uploadError, {
+            location: 'uploadCompletionImages',
+            userId: user.id,
+          }),
+        }
       }
 
       // Get public URL
@@ -136,7 +168,13 @@ export async function uploadCompletionImages(
         for (const imageId of uploadedImageIds) {
           await supabase.from('completion_images').delete().eq('id', imageId)
         }
-        return { success: false, error: `Database-feil: ${insertError?.message}` }
+        return {
+          success: false,
+          error: sanitizeSupabaseError(insertError, {
+            location: 'uploadCompletionImages:insert',
+            userId: user.id,
+          }),
+        }
       }
 
       uploadedImageIds.push(insertedImage.id)
@@ -148,10 +186,12 @@ export async function uploadCompletionImages(
 
     return { success: true, data: uploadedImageIds }
   } catch (error) {
-    console.error('Upload error:', error)
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Ukjent feil oppstod',
+      error: sanitizeSupabaseError(error, {
+        location: 'uploadCompletionImages',
+        userId: userId,
+      }),
     }
   }
 }

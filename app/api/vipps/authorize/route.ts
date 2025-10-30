@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { nanoid } from 'nanoid';
 import crypto from 'crypto';
+import { checkRateLimit, getClientIp } from '@/lib/utils/rate-limit';
 
 /**
  * Generate PKCE code verifier (random string)
@@ -32,6 +33,25 @@ function generateCodeChallenge(verifier: string): string {
  */
 export async function GET(request: NextRequest) {
   try {
+    // Rate limiting check for OAuth endpoint (prevent abuse)
+    const clientIp = getClientIp(request);
+    const rateLimitResult = await checkRateLimit('oauth', clientIp);
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: 'For mange forsøk. Prøv igjen senere.' },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': rateLimitResult.limit.toString(),
+            'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+            'X-RateLimit-Reset': rateLimitResult.reset.toString(),
+            'Retry-After': Math.ceil((rateLimitResult.reset - Date.now()) / 1000).toString(),
+          }
+        }
+      );
+    }
+
     // Validate required environment variables
     const clientId = process.env.VIPPS_CLIENT_ID;
     const redirectUri = process.env.VIPPS_REDIRECT_URI;

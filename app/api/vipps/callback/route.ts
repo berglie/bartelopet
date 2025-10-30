@@ -249,9 +249,11 @@ export async function GET(request: NextRequest) {
 
     if (existingByVipps) {
       // Existing Vipps user - sign them in
+      // Note: OAuth users should use OAuth flow, not password login
+      // This is a fallback that maintains compatibility with existing accounts
       const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
         email: existingByVipps.email,
-        password: userInfo.sub, // Use Vipps sub as password for OAuth users
+        password: userInfo.sub, // Legacy: existing accounts use vipps_sub
       });
 
       if (signInError) {
@@ -295,14 +297,21 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(redirectUrl);
     }
 
-    // Create Supabase auth user
+    // Create Supabase auth user with secure random password
+    // OAuth users should never use password login - this is just for account creation
+    // Generate secure random password using Web Crypto API (Edge Runtime compatible)
+    const randomBytes = new Uint8Array(32);
+    crypto.getRandomValues(randomBytes);
+    const securePassword = Array.from(randomBytes, byte => byte.toString(16).padStart(2, '0')).join('');
+
     const { data: authData, error: signUpError } = await supabase.auth.signUp({
       email: userInfo.email,
-      password: userInfo.sub, // Use Vipps sub as password for OAuth users
+      password: securePassword, // Secure random password (user won't use it)
       options: {
         data: {
           full_name: userInfo.name,
           provider: 'vipps',
+          vipps_sub: userInfo.sub, // Store in metadata instead
         },
       },
     });

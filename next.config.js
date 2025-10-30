@@ -39,6 +39,24 @@ const nextConfig = {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin'
           },
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://api.mapbox.com",
+              "style-src 'self' 'unsafe-inline' https://api.mapbox.com",
+              "img-src 'self' data: blob: https://*.supabase.co https://api.mapbox.com",
+              "font-src 'self' data:",
+              "connect-src 'self' https://*.supabase.co https://api.vipps.no https://api.mapbox.com wss://*.supabase.co",
+              "frame-ancestors 'self'",
+              "base-uri 'self'",
+              "form-action 'self'",
+            ].join('; ')
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(self)'
+          },
         ],
       },
     ];

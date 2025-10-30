@@ -3,6 +3,8 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import type { PhotoCommentWithParticipant } from '@/lib/types/database'
+import { checkRateLimit } from '@/lib/utils/rate-limit'
+import { sanitizeSupabaseError } from '@/lib/utils/error-handler'
 
 // Response type for consistent error handling
 type ActionResponse<T = void> = {
@@ -95,6 +97,17 @@ export async function addComment(
       }
     }
 
+    // Rate limiting check for comments
+    const rateLimitResult = await checkRateLimit('comment', user.id)
+    if (!rateLimitResult.success) {
+      return {
+        success: false,
+        error: `For mange kommentarer. Prøv igjen om ${Math.ceil(
+          (rateLimitResult.reset - Date.now()) / 60000
+        )} minutter.`,
+      }
+    }
+
     // Get participant information
     const { data: participant, error: participantError } = await supabase
       .from('participants')
@@ -170,10 +183,12 @@ export async function addComment(
       .single()
 
     if (insertError) {
-      console.error('Error inserting comment:', insertError)
       return {
         success: false,
-        error: 'Kunne ikke legge til kommentar'
+        error: sanitizeSupabaseError(insertError, {
+          location: 'addComment',
+          userId: user.id,
+        }),
       }
     }
 
@@ -189,10 +204,12 @@ export async function addComment(
       data: typedComment
     }
   } catch (error) {
-    console.error('Unexpected error in addComment:', error)
     return {
       success: false,
-      error: 'En uventet feil oppstod'
+      error: sanitizeSupabaseError(error, {
+        location: 'addComment:catch',
+        userId: undefined,
+      }),
     }
   }
 }
