@@ -153,7 +153,7 @@ export function GalleryGridMulti({
     [completions.length]
   )
 
-  const handleQuickVote = async (completionId: string, participantId: string) => {
+  const handleQuickVote = useCallback(async (completionId: string, participantId: string) => {
     setLoading(completionId)
 
     try {
@@ -199,13 +199,33 @@ export function GalleryGridMulti({
           // Remove vote
           await supabase.from('votes').delete().eq('id', existingVote.id)
           setVotedId(null)
+          // Update vote count locally
+          setCompletionsWithImages((prev) =>
+            prev.map((c) =>
+              c.id === completionId ? { ...c, vote_count: Math.max(0, c.vote_count - 1) } : c
+            )
+          )
         } else {
-          // Change vote
-          await supabase
-            .from('votes')
-            .update({ completion_id: completionId })
-            .eq('id', existingVote.id)
+          // Change vote: Delete old vote and insert new one
+          // This ensures the triggers fire correctly to update vote counts
+          await supabase.from('votes').delete().eq('id', existingVote.id)
+          await supabase.from('votes').insert({
+            voter_id: currentParticipant.id,
+            completion_id: completionId,
+          })
           setVotedId(completionId)
+          // Update vote counts locally for both old and new completions
+          setCompletionsWithImages((prev) =>
+            prev.map((c) => {
+              if (c.id === existingVote.completion_id) {
+                return { ...c, vote_count: Math.max(0, c.vote_count - 1) }
+              }
+              if (c.id === completionId) {
+                return { ...c, vote_count: c.vote_count + 1 }
+              }
+              return c
+            })
+          )
         }
       } else {
         // Create new vote
@@ -214,6 +234,12 @@ export function GalleryGridMulti({
           completion_id: completionId,
         })
         setVotedId(completionId)
+        // Update vote count locally
+        setCompletionsWithImages((prev) =>
+          prev.map((c) =>
+            c.id === completionId ? { ...c, vote_count: c.vote_count + 1 } : c
+          )
+        )
       }
 
       router.refresh()
@@ -223,7 +249,7 @@ export function GalleryGridMulti({
     } finally {
       setLoading(null)
     }
-  }
+  }, [router])
 
   const handleVote = useCallback(
     async (completionId: string) => {
@@ -232,7 +258,7 @@ export function GalleryGridMulti({
         await handleQuickVote(completionId, completion.participant.id)
       }
     },
-    [completionsWithImages]
+    [completionsWithImages, handleQuickVote]
   )
 
   const currentCompletion = completionsWithImages[currentImageIndex] as
