@@ -108,7 +108,7 @@ export default async function HomePage({
       </section>
 
       {/* Map Section - CENTERPIECE */}
-      <section className="py-20 md:py-32 border-b border-border/50">
+      <section className="py-12 md:py-20 border-b border-border/50">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto space-y-12">
             {/* Header */}
@@ -205,7 +205,7 @@ export default async function HomePage({
       </section>
 
       {/* How it Works */}
-      <section className="py-20 md:py-32 border-b border-border/50">
+      <section className="py-12 md:py-20 border-b border-border/50">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto space-y-16">
             <div className="text-center space-y-4">
@@ -279,7 +279,7 @@ export default async function HomePage({
       </section>
 
       {/* Prizes */}
-      <section className="py-20 md:py-32 border-b border-border/50">
+      <section className="py-12 md:py-20 border-b border-border/50">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto space-y-16">
             <div className="text-center space-y-4">
@@ -329,7 +329,7 @@ export default async function HomePage({
       </section>
 
       {/* Movember CTA */}
-      <section className="py-20 md:py-32">
+      <section className="py-12 md:py-20">
         <div className="container mx-auto px-4">
           <Card className="max-w-4xl mx-auto bg-gradient-to-br from-primary/20 via-card to-accent/10 border-accent/20 backdrop-blur">
             <CardContent className="p-12 md:p-16 text-center space-y-8">
