@@ -27,9 +27,9 @@ export default async function DashboardPage() {
     redirect('/pamelding');
   }
 
-  // Get completion if exists
+  // Get completion if exists (using view to get counts)
   const { data: completion } = await supabase
-    .from('completions')
+    .from('completions_with_counts')
     .select('*')
     .eq('participant_id', participant.id)
     .single();

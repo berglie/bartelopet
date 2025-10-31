@@ -10,7 +10,7 @@ async function getCompletions() {
   const { start, end } = getYearDateRange(currentYear);
 
   const { data: completions, error } = await supabase
-    .from('completions')
+    .from('completions_with_counts')
     .select(`
       *,
       participant:participants(
@@ -19,6 +19,7 @@ async function getCompletions() {
         bib_number
       )
     `)
+    .eq('event_year', currentYear)
     .gte('completed_date', start.toISOString())
     .lte('completed_date', end.toISOString())
     .order('created_at', { ascending: false });
@@ -37,20 +38,24 @@ async function getUserVote() {
 
   if (!user) return null;
 
-  // Get participant ID from user
+  const currentYear = getCurrentEventYear();
+
+  // Get participant ID from user for current year
   const { data: participant } = await supabase
     .from('participants')
     .select('id')
     .eq('user_id', user.id)
+    .eq('event_year', currentYear)
     .single();
 
   if (!participant) return null;
 
-  // Get user's vote
+  // Get user's vote for current year
   const { data: vote } = await supabase
-    .from('votes')
+    .from('photo_votes')
     .select('completion_id')
     .eq('voter_id', participant.id)
+    .eq('event_year', currentYear)
     .single();
 
   return vote?.completion_id || null;

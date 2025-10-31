@@ -365,7 +365,10 @@ export function ImageViewerDialogMulti({
 
       {/* Comments sidebar */}
       {showComments && (
-        <div className="fixed inset-y-0 right-0 z-50 w-full max-w-md overflow-y-auto bg-background shadow-2xl sm:w-96">
+        <div 
+          className="fixed inset-y-0 right-0 z-50 w-full max-w-md overflow-y-auto bg-background shadow-2xl sm:w-96"
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className="p-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Kommentarer</h3>

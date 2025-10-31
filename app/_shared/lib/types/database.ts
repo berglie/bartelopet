@@ -23,6 +23,7 @@ export interface Completion {
   vote_count: number
   comment_count: number
   image_count: number
+  event_year: number
   created_at: string
   updated_at: string
 }
@@ -68,7 +69,7 @@ export interface ParticipantWithCompletion extends Participant {
 // Insert types (for creating new records)
 export type ParticipantInsert = Omit<Participant, 'id' | 'created_at' | 'updated_at' | 'has_completed'>
 
-export type CompletionInsert = Omit<Completion, 'id' | 'created_at' | 'updated_at' | 'vote_count' | 'comment_count'>
+export type CompletionInsert = Omit<Completion, 'id' | 'created_at' | 'updated_at' | 'vote_count' | 'comment_count' | 'image_count'>
 
 export type VoteInsert = Omit<Vote, 'id' | 'created_at'>
 

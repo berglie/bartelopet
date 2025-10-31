@@ -29,6 +29,7 @@ type Completion = {
   vote_count: number
   comment_count: number
   image_count: number
+  event_year: number
   participant: {
     id: string
     user_id: string | null
@@ -88,7 +89,7 @@ export function GalleryGridMulti({
 
       // Fetch images for all completions in one query
       const { data: allImages } = await supabase
-        .from('completion_images')
+        .from('photos')
         .select('*')
         .in(
           'completion_id',
@@ -186,18 +187,23 @@ export function GalleryGridMulti({
         return
       }
 
-      // Check if already voted
+      // Find the completion to get event_year
+      const completion = completionsWithImages.find((c) => c.id === completionId)
+      const eventYear = completion?.event_year || 2025
+
+      // Check if already voted for this event year
       const { data: existingVote } = await supabase
-        .from('votes')
+        .from('photo_votes')
         .select('id, completion_id')
         .eq('voter_id', currentParticipant.id)
+        .eq('event_year', eventYear)
         .single()
 
       if (existingVote) {
         // Check if voting for the same completion
         if (existingVote.completion_id === completionId) {
           // Remove vote
-          await supabase.from('votes').delete().eq('id', existingVote.id)
+          await supabase.from('photo_votes').delete().eq('id', existingVote.id)
           setVotedId(null)
           // Update vote count locally
           setCompletionsWithImages((prev) =>
@@ -208,10 +214,11 @@ export function GalleryGridMulti({
         } else {
           // Change vote: Delete old vote and insert new one
           // This ensures the triggers fire correctly to update vote counts
-          await supabase.from('votes').delete().eq('id', existingVote.id)
-          await supabase.from('votes').insert({
+          await supabase.from('photo_votes').delete().eq('id', existingVote.id)
+          await supabase.from('photo_votes').insert({
             voter_id: currentParticipant.id,
             completion_id: completionId,
+            event_year: eventYear,
           })
           setVotedId(completionId)
           // Update vote counts locally for both old and new completions
@@ -229,9 +236,10 @@ export function GalleryGridMulti({
         }
       } else {
         // Create new vote
-        await supabase.from('votes').insert({
+        await supabase.from('photo_votes').insert({
           voter_id: currentParticipant.id,
           completion_id: completionId,
+          event_year: eventYear,
         })
         setVotedId(completionId)
         // Update vote count locally

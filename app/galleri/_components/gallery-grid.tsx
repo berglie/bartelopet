@@ -18,6 +18,7 @@ type Completion = {
   comment: string | null;
   vote_count: number;
   comment_count: number;
+  event_year: number;
   participant: {
     id: string;
     user_id: string | null;
@@ -110,7 +111,7 @@ export function GalleryGrid({
       if (votedId) {
         // Remove existing vote
         await supabase
-          .from('votes')
+          .from('photo_votes')
           .delete()
           .eq('voter_id', currentParticipant.id);
       }
@@ -118,10 +119,11 @@ export function GalleryGrid({
       if (votedId !== completionId) {
         // Add new vote
         const { error } = await supabase
-          .from('votes')
+          .from('photo_votes')
           .insert({
             voter_id: currentParticipant.id,
             completion_id: completionId,
+            event_year: completion?.event_year || 2025,
           });
 
         if (error) {
@@ -173,11 +175,14 @@ export function GalleryGrid({
       return;
     }
 
+    // Find the completion to get event_year
+    const completion = completions.find(c => c.id === completionId);
+
     try {
       if (votedId) {
         // Remove existing vote
         await supabase
-          .from('votes')
+          .from('photo_votes')
           .delete()
           .eq('voter_id', currentParticipant.id);
       }
@@ -185,10 +190,11 @@ export function GalleryGrid({
       if (votedId !== completionId) {
         // Add new vote
         const { error } = await supabase
-          .from('votes')
+          .from('photo_votes')
           .insert({
             voter_id: currentParticipant.id,
             completion_id: completionId,
+            event_year: completion?.event_year || 2025,
           });
 
         if (error) {

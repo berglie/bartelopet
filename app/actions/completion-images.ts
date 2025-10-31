@@ -102,7 +102,7 @@ export async function uploadCompletionImages(
       if (!validationResult.success || !validationResult.buffer) {
         // Cleanup previously uploaded images on failure
         for (const imageId of uploadedImageIds) {
-          await supabase.from('completion_images').delete().eq('id', imageId)
+          await supabase.from('photos').delete().eq('id', imageId)
         }
         return {
           success: false,
@@ -129,7 +129,7 @@ export async function uploadCompletionImages(
       if (uploadError) {
         // Cleanup previously uploaded images on failure
         for (const imageId of uploadedImageIds) {
-          await supabase.from('completion_images').delete().eq('id', imageId)
+          await supabase.from('photos').delete().eq('id', imageId)
         }
         return {
           success: false,
@@ -157,7 +157,7 @@ export async function uploadCompletionImages(
       }
 
       const { data: insertedImage, error: insertError } = await supabase
-        .from('completion_images')
+        .from('photos')
         .insert(imageInsert)
         .select('id')
         .single()
@@ -166,7 +166,7 @@ export async function uploadCompletionImages(
         // Cleanup on failure
         await supabase.storage.from('completion-photos').remove([filePath])
         for (const imageId of uploadedImageIds) {
-          await supabase.from('completion_images').delete().eq('id', imageId)
+          await supabase.from('photos').delete().eq('id', imageId)
         }
         return {
           success: false,
@@ -312,7 +312,7 @@ export async function updateStarredImage(
     // Reset votes if requested
     if (resetVotes) {
       const { error: deleteVotesError } = await supabase
-        .from('votes')
+        .from('photo_votes')
         .delete()
         .eq('completion_id', completionId)
 
@@ -321,15 +321,7 @@ export async function updateStarredImage(
         // Don't fail the entire operation if vote deletion fails
       }
 
-      // Update vote count
-      const { error: updateVoteCountError } = await supabase
-        .from('completions')
-        .update({ vote_count: 0 })
-        .eq('id', completionId)
-
-      if (updateVoteCountError) {
-        console.error('Error updating vote count:', updateVoteCountError)
-      }
+      // Vote count is now calculated dynamically via view, no need to update
     }
 
     // Revalidate cache
@@ -466,7 +458,7 @@ export async function reorderImages(
     // Update display_order for each image
     for (let i = 0; i < imageIds.length; i++) {
       const { error } = await supabase
-        .from('completion_images')
+        .from('photos')
         .update({ display_order: i })
         .eq('id', imageIds[i])
         .eq('completion_id', completionId)

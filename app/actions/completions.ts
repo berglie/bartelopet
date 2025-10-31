@@ -68,7 +68,7 @@ export async function updateCompletion(
 
     if (photoChanged) {
       const { error: deleteVotesError } = await supabase
-        .from('votes')
+        .from('photo_votes')
         .delete()
         .eq('completion_id', completionId)
 

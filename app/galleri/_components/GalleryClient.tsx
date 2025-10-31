@@ -27,7 +27,7 @@ export function GalleryClient({ initialCompletions, initialUserVoteId }: Gallery
 
       // Fetch completions for the year
       const { data: completions } = await supabase
-        .from('completions')
+        .from('completions_with_counts')
         .select(`
           *,
           participant:participants(
@@ -36,6 +36,7 @@ export function GalleryClient({ initialCompletions, initialUserVoteId }: Gallery
             bib_number
           )
         `)
+        .eq('event_year', selectedYear)
         .gte('completed_date', start.toISOString())
         .lte('completed_date', end.toISOString())
         .order('created_at', { ascending: false });

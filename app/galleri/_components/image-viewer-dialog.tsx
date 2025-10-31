@@ -325,7 +325,10 @@ export function ImageViewerDialog({
 
             {/* Comments section */}
             {showComments && (
-              <div className="mt-6 max-h-[300px] overflow-y-auto rounded-lg bg-black/60 p-4 backdrop-blur-md md:max-h-[400px]">
+              <div 
+                className="mt-6 max-h-[300px] overflow-y-auto rounded-lg bg-black/60 p-4 backdrop-blur-md md:max-h-[400px]"
+                onClick={(e) => e.stopPropagation()}
+              >
                 {commentsLoading ? (
                   <div className="flex items-center justify-center py-8">
                     <div className="h-8 w-8 animate-spin rounded-full border-4 border-white/20 border-t-white" />
