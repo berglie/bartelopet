@@ -72,7 +72,7 @@ export default async function HomePage({
             </div>
 
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Løp gjennom sentrum i november. Vinn premier. Støtt Mental Helse.
+              Delta ved å donere et valgfritt beløp for startnummeret. Løp gjennom sentrum i november. Vinn premier. Støtt Mental Helse.
             </p>
 
             {/* CTA */}
@@ -210,17 +210,32 @@ export default async function HomePage({
           <div className="max-w-6xl mx-auto space-y-16">
             <div className="text-center space-y-4">
               <h2 className="text-4xl md:text-5xl font-bold">Slik fungerer det</h2>
-              <p className="text-lg text-muted-foreground">Tre enkle steg</p>
+              <p className="text-lg text-muted-foreground">Fire enkle steg</p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-4 gap-8">
+              <Card className="bg-card/50 border-border/50 backdrop-blur group hover:border-accent/50 transition-all">
+                <CardContent className="p-8 space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center shrink-0">
+                      <Heart className="h-6 w-6 text-accent" />
+                    </div>
+                    <span className="text-6xl font-bold text-accent/20">01</span>
+                  </div>
+                  <h3 className="text-2xl font-bold">Doner</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Doner et valgfritt beløp for startnummeret ditt og støtt Mental Helse Ungdom
+                  </p>
+                </CardContent>
+              </Card>
+
               <Card className="bg-card/50 border-border/50 backdrop-blur group hover:border-accent/50 transition-all">
                 <CardContent className="p-8 space-y-4">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center shrink-0">
                       <MapPin className="h-6 w-6 text-accent" />
                     </div>
-                    <span className="text-6xl font-bold text-accent/20">01</span>
+                    <span className="text-6xl font-bold text-accent/20">02</span>
                   </div>
                   <h3 className="text-2xl font-bold">Løp</h3>
                   <p className="text-muted-foreground leading-relaxed">
@@ -235,7 +250,7 @@ export default async function HomePage({
                     <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center shrink-0">
                       <Upload className="h-6 w-6 text-accent" />
                     </div>
-                    <span className="text-6xl font-bold text-accent/20">02</span>
+                    <span className="text-6xl font-bold text-accent/20">03</span>
                   </div>
                   <h3 className="text-2xl font-bold">Send inn</h3>
                   <p className="text-muted-foreground leading-relaxed">
@@ -250,7 +265,7 @@ export default async function HomePage({
                     <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center shrink-0">
                       <Trophy className="h-6 w-6 text-accent" />
                     </div>
-                    <span className="text-6xl font-bold text-accent/20">03</span>
+                    <span className="text-6xl font-bold text-accent/20">04</span>
                   </div>
                   <h3 className="text-2xl font-bold">Stem & Vinn</h3>
                   <p className="text-muted-foreground leading-relaxed">
@@ -304,7 +319,7 @@ export default async function HomePage({
                   <div className="text-6xl">🎁</div>
                   <h3 className="text-2xl font-bold">Swag</h3>
                   <p className="text-muted-foreground">
-                    Merch sponset av lokale bedrifter deles ut til heldige deltakere
+                    Merch sponset av lokale bedrifter
                   </p>
                 </CardContent>
               </Card>
