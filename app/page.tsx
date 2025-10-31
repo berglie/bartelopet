@@ -3,7 +3,7 @@ import { Button } from '@/app/_shared/components/ui/button';
 import { Card, CardContent } from '@/app/_shared/components/ui/card';
 import { createClient } from '@/app/_shared/lib/supabase/server';
 import { RouteMap } from '@/app/_shared/components/route-map';
-import { MapPin, Users, Trophy, Upload, Award, ExternalLink, Heart } from 'lucide-react';
+import { MapPin, Users, Trophy, Upload, Award, ExternalLink, Heart, Download, BookOpen } from 'lucide-react';
 import { MustacheSVG } from '@/app/_shared/components/mustache-icon';
 import { getCurrentEventYear, getYearDateRange } from '@/app/_shared/lib/utils/year';
 
@@ -129,6 +129,37 @@ export default async function HomePage({
             {/* Map */}
             <div className="relative">
               <RouteMap year={year} />
+            </div>
+
+            {/* Route Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Button asChild size="lg" variant="default" className="h-12 px-6">
+                <a 
+                  href="https://www.strava.com/routes/3294997454532404222" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2"
+                >
+                  <ExternalLink className="h-5 w-5" />
+                  Strava-rute
+                </a>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="h-12 px-6">
+                <a 
+                  href="/bartelopet-route-2025.gpx" 
+                  download
+                  className="flex items-center gap-2"
+                >
+                  <Download className="h-5 w-5" />
+                  Last ned GPX
+                </a>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="h-12 px-6">
+                <Link href="/hvordan" className="flex items-center gap-2">
+                  <BookOpen className="h-5 w-5" />
+                  Hvordan bruke ruten
+                </Link>
+              </Button>
             </div>
 
             {/* Route Info */}
