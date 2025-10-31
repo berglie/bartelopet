@@ -8,6 +8,7 @@ import { Label } from '@/app/_shared/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/_shared/components/ui/card';
 import { Checkbox } from '@/app/_shared/components/ui/checkbox';
 import { createClient } from '@/app/_shared/lib/supabase/client';
+import { getCurrentEventYear } from '@/app/_shared/lib/utils/event-year';
 import Link from 'next/link';
 
 export function RegistrationForm() {
@@ -94,10 +95,14 @@ export function RegistrationForm() {
       // Check if user is already authenticated
       const { data: { user } } = await supabase.auth.getUser();
 
-      // Get the next bib number
+      // Get the current event year
+      const currentEventYear = getCurrentEventYear();
+
+      // Get the next bib number for the current event year
       const { data: maxBib, error: maxBibError } = await supabase
         .from('participants')
         .select('bib_number')
+        .eq('event_year', currentEventYear)
         .order('bib_number', { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -114,7 +119,7 @@ export function RegistrationForm() {
         return;
       }
 
-      const nextBibNumber = maxBib ? maxBib.bib_number + 1 : 1001;
+      const nextBibNumber = maxBib ? maxBib.bib_number + 1 : 1;
 
       let participant;
 
@@ -130,6 +135,7 @@ export function RegistrationForm() {
             postal_address: data.postal_address,
             phone_number: data.phone_number,
             bib_number: nextBibNumber,
+            event_year: currentEventYear,
           })
           .select()
           .single();
@@ -198,6 +204,7 @@ export function RegistrationForm() {
             postal_address: data.postal_address,
             phone_number: data.phone_number,
             bib_number: nextBibNumber,
+            event_year: currentEventYear,
           })
           .select()
           .single();

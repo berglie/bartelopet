@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/app/_shared/lib/supabase/server';
+import { getCurrentEventYear } from '@/app/_shared/lib/utils/event-year';
 
 /**
  * Vipps OAuth token response
@@ -297,6 +298,28 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(redirectUrl);
     }
 
+    // Get the current event year
+    const currentEventYear = getCurrentEventYear();
+
+    // Get the next bib number for the current event year
+    const { data: maxBib, error: maxBibError } = await supabase
+      .from('participants')
+      .select('bib_number')
+      .eq('event_year', currentEventYear)
+      .order('bib_number', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (maxBibError) {
+      console.error('Failed to get max bib number:', maxBibError);
+      const redirectUrl = new URL('/login', request.url);
+      redirectUrl.searchParams.set('error', 'bib_number_error');
+      redirectUrl.searchParams.set('message', 'Kunne ikke generere startnummer');
+      return NextResponse.redirect(redirectUrl);
+    }
+
+    const nextBibNumber = maxBib ? maxBib.bib_number + 1 : 1;
+
     // Create Supabase auth user with secure random password
     // OAuth users should never use password login - this is just for account creation
     // Generate secure random password using Web Crypto API (Edge Runtime compatible)
@@ -325,15 +348,20 @@ export async function GET(request: NextRequest) {
     }
 
     // Create participant record
+    // Note: postal_address is required but Vipps doesn't provide it
+    // Using a placeholder - this may need to be handled differently
     const { error: participantError } = await supabase
       .from('participants')
       .insert({
         user_id: authData.user.id,
         email: userInfo.email,
         full_name: userInfo.name || 'Vipps Bruker',
+        postal_address: 'Ikke oppgitt', // Vipps doesn't provide postal address
         vipps_sub: userInfo.sub,
         auth_provider: 'vipps',
         phone_number: userInfo.phone_number,
+        bib_number: nextBibNumber,
+        event_year: currentEventYear,
       });
 
     if (participantError) {
