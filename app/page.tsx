@@ -78,7 +78,7 @@ export default async function HomePage({
             {/* CTA */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 h-12 px-8 text-base shadow-lg shadow-accent/20">
-                <Link href="/send-inn" className="flex items-center justify-center">
+                <Link href="/pamelding" className="flex items-center justify-center">
                   <Upload className="mr-2 h-5 w-5" />
                   Send inn ditt løp
                 </Link>
@@ -326,7 +326,7 @@ export default async function HomePage({
                   </a>
                 </Button>
                 <Button asChild size="lg" variant="outline" className="h-12 px-8 border-border/50">
-                  <Link href="/send-inn" className="flex items-center justify-center">
+                  <Link href="/pamelding" className="flex items-center justify-center">
                     <Award className="mr-2 h-5 w-5" />
                     Send inn løp
                   </Link>

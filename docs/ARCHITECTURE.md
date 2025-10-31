@@ -48,8 +48,7 @@ Database mutations use server actions in `app/actions/` for type-safe server-sid
 Routes use Norwegian names matching the domain:
 - `/deltakere` - Participants list
 - `/galleri` - Photo gallery
-- `/pamelding` - Registration
-- `/send-inn` - Submit completion
+- `/pamelding` - Registration and completion submission
 - `/dashboard` - User dashboard
 
 ## Key Features

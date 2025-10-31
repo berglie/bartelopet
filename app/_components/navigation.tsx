@@ -57,7 +57,7 @@ export function Navigation({ isAuthenticated = false }: NavigationProps) {
                   Logg inn
                 </Link>
                 <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
-                  <Link href="/send-inn">Send inn løp</Link>
+                  <Link href="/pamelding">Send inn løp</Link>
                 </Button>
               </>
             )}
@@ -67,7 +67,7 @@ export function Navigation({ isAuthenticated = false }: NavigationProps) {
           <div className="md:hidden flex items-center gap-2">
             {showYearSelector && <YearSelector variant="compact" />}
             <Button asChild size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
-              <Link href={isAuthenticated ? "/dashboard" : "/send-inn"}>
+              <Link href={isAuthenticated ? "/dashboard" : "/pamelding"}>
                 {isAuthenticated ? "Dashboard" : "Send inn"}
               </Link>
             </Button>

@@ -561,11 +561,11 @@ CREATE POLICY "Users can delete own avatar"
 | Setting | Value | Notes |
 |---------|-------|-------|
 | **Site URL** | `http://localhost:3000` | For development |
-| **Redirect URLs** | `http://localhost:3000/auth-callback` | Auth callback |
+| **Redirect URLs** | `http://localhost:3000/auth/callback` | Auth callback |
 
 **For production, add:**
 - Site URL: `https://bartelopet.no` (your domain)
-- Redirect URLs: `https://bartelopet.no/auth-callback`
+- Redirect URLs: `https://bartelopet.no/auth/callback`
 
 3. Click **"Save"**
 
