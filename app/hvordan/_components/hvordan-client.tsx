@@ -89,24 +89,24 @@ export function HvordanClient() {
               <div className="space-y-2">
                 <h3 className="font-semibold text-lg">1. Åpne ruten i Strava-appen</h3>
                 <p className="text-muted-foreground">
-                  Klikk på lenken ovenfor for å åpne ruten i Strava, eller søk etter "Barten" i Strava-appen.
+                  Klikk på lenken ovenfor for å åpne ruten i Strava, eller søk etter &quot;Barten&quot; i Strava-appen.
                 </p>
               </div>
 
               <div className="space-y-2">
                 <h3 className="font-semibold text-lg">2. Lagre ruten</h3>
                 <p className="text-muted-foreground">
-                  I Strava-appen, trykk på "Lagre"-knappen for å lagre ruten til dine favorittruter.
+                  I Strava-appen, trykk på &quot;Lagre&quot;-knappen for å lagre ruten til dine favorittruter.
                 </p>
               </div>
 
               <div className="space-y-2">
                 <h3 className="font-semibold text-lg">3. Start en aktivitet med ruten</h3>
                 <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
-                  <li>Åpne Strava-appen og trykk på "+" for å starte en ny aktivitet</li>
-                  <li>Velg "Løp" eller "Gå"</li>
-                  <li>I innstillingsmenyen, velg "Bruk rute"</li>
-                  <li>Velg "Barten"-ruten fra listen over lagrede ruter</li>
+                  <li>Åpne Strava-appen og trykk på &quot;+&quot; for å starte en ny aktivitet</li>
+                  <li>Velg &quot;Løp&quot; eller &quot;Gå&quot;</li>
+                  <li>I innstillingsmenyen, velg &quot;Bruk rute&quot;</li>
+                  <li>Velg &quot;Barten&quot;-ruten fra listen over lagrede ruter</li>
                   <li>Start opptaket og følg ruten på kartet</li>
                 </ul>
               </div>
@@ -135,7 +135,7 @@ export function HvordanClient() {
               <div className="space-y-2">
                 <h3 className="font-semibold text-lg">1. Last ned GPX-filen</h3>
                 <p className="text-muted-foreground">
-                  Klikk på "Last ned GPX-fil"-knappen ovenfor for å laste ned ruten som en GPX-fil.
+                  Klikk på &quot;Last ned GPX-fil&quot;-knappen ovenfor for å laste ned ruten som en GPX-fil.
                 </p>
               </div>
 
@@ -143,7 +143,7 @@ export function HvordanClient() {
                 <h3 className="font-semibold text-lg">2. Garmin Connect</h3>
                 <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
                   <li>Logg inn på <a href="https://connect.garmin.com" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Garmin Connect</a></li>
-                  <li>Gå til "Training" → "Courses" → "Import"</li>
+                  <li>Gå til &quot;Training&quot; → &quot;Courses&quot; → &quot;Import&quot;</li>
                   <li>Last opp GPX-filen du nettopp lastet ned</li>
                   <li>Ruten vil nå være tilgjengelig på Garmin Connect</li>
                   <li>Synkroniser klokken din for å overføre ruten</li>
@@ -154,7 +154,7 @@ export function HvordanClient() {
                 <h3 className="font-semibold text-lg">3. Polar Flow</h3>
                 <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
                   <li>Logg inn på <a href="https://flow.polar.com" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Polar Flow</a></li>
-                  <li>Gå til "Training" → "Routes" → "Import route"</li>
+                  <li>Gå til &quot;Training&quot; → &quot;Routes&quot; → &quot;Import route&quot;</li>
                   <li>Last opp GPX-filen</li>
                   <li>Synkroniser klokken din for å få ruten tilgjengelig</li>
                 </ul>

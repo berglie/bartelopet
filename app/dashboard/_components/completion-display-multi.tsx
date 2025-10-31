@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import { Card, CardContent } from '@/app/_shared/components/ui/card'
 import { Button } from '@/app/_shared/components/ui/button'
@@ -30,18 +30,18 @@ export function CompletionDisplayMulti({ completion }: { completion: Completion 
   const [images, setImages] = useState<CompletionImage[]>([])
   const [loadingImages, setLoadingImages] = useState(true)
 
-  useEffect(() => {
-    fetchImages()
-  }, [completion.id])
-
-  const fetchImages = async () => {
+  const fetchImages = useCallback(async () => {
     setLoadingImages(true)
     const result = await getCompletionImages(completion.id)
     if (result.success && result.data) {
       setImages(result.data)
     }
     setLoadingImages(false)
-  }
+  }, [completion.id])
+
+  useEffect(() => {
+    fetchImages()
+  }, [fetchImages])
 
   const handleSuccess = () => {
     fetchImages()

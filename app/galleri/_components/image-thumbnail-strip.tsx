@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { Star } from 'lucide-react'
 import { cn } from '@/app/_shared/lib/utils/cn'
 import type { CompletionImage } from '@/app/_shared/lib/types/database'
@@ -37,10 +38,12 @@ export function ImageThumbnailStrip({
               )}
               style={{ width: '80px', height: '80px' }}
             >
-              <img
+              <Image
                 src={image.image_url}
                 alt={`Bilde ${index + 1}`}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                sizes="80px"
               />
 
               {/* Starred badge */}

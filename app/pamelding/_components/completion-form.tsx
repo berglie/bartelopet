@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Button } from '@/app/_shared/components/ui/button';
 import { Input } from '@/app/_shared/components/ui/input';
 import { Label } from '@/app/_shared/components/ui/label';
@@ -163,10 +164,13 @@ export function CompletionForm({ participantId }: { participantId: string }) {
 
           {imagePreview && (
             <div className="relative aspect-video w-full max-w-md mx-auto overflow-hidden rounded-lg border">
-              <img
+              <Image
                 src={imagePreview}
                 alt="Forhåndsvisning"
-                className="object-cover w-full h-full"
+                fill
+                className="object-cover"
+                unoptimized
+                sizes="(max-width: 768px) 100vw, 512px"
               />
             </div>
           )}

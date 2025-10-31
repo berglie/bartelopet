@@ -257,7 +257,7 @@ export function GalleryGridMulti({
     } finally {
       setLoading(null)
     }
-  }, [router])
+  }, [router, completionsWithImages])
 
   const handleVote = useCallback(
     async (completionId: string) => {
