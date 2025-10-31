@@ -49,7 +49,7 @@ export default async function HomePage({
       <section className="relative overflow-hidden border-b border-border/50">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/5" />
 
-        <div className="container mx-auto px-4 py-16 md:py-216 relative">
+        <div className="container mx-auto px-4 pt-8 pb-16 md:pt-12 md:pb-20 relative">
           <div className="max-w-4xl mx-auto text-center space-y-2">
             {/* Badge */}
            {/*  <div className="inline-flex items-center gap-3 bg-accent/10 border border-accent/30 px-5 py-2 rounded-full backdrop-blur-sm">
@@ -335,7 +335,10 @@ export default async function HomePage({
             <CardContent className="p-12 md:p-16 text-center space-y-8">
               <div className="inline-flex items-center gap-3 bg-background/50 px-5 py-2 rounded-full border border-accent/30">
                 <MustacheSVG className="h-5 w-10 text-accent" />
-                <span className="text-sm font-medium text-accent">Movember {year} • Løp for Mental Helse Ungdom</span>
+                <span className="text-sm font-medium text-accent">
+                  Movember {year}
+                  <span className="hidden md:inline"> • Løp for Mental Helse Ungdom</span>
+                </span>
               </div>
 
               <div className="space-y-4">
@@ -354,7 +357,7 @@ export default async function HomePage({
                   <p className="text-sm text-muted-foreground uppercase tracking-wider">
                     Innsamlingsmål
                   </p>
-                  <p className="text-5xl font-bold text-accent mb-2">
+                  <p className="text-3xl md:text-5xl font-bold text-accent mb-2">
                     {formatAmount(DONATION_GOAL)}
                   </p>
                   <p className="text-base text-muted-foreground">
