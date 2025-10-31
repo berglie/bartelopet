@@ -12,18 +12,16 @@ const GPX_FILE_PATH = '/bartelopet-route-2025.gpx';
 
 export function HvordanClient() {
   useEffect(() => {
+    // Check if script is already loaded
+    if (document.querySelector('script[src="https://strava-embeds.com/embed.js"]')) {
+      return;
+    }
+
     // Load Strava embed script
     const script = document.createElement('script');
     script.src = 'https://strava-embeds.com/embed.js';
     script.async = true;
     document.body.appendChild(script);
-
-    return () => {
-      // Cleanup script on unmount
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
-    };
   }, []);
 
   return (
@@ -47,13 +45,16 @@ export function HvordanClient() {
         <Card className="bg-card/50 border-border/50 backdrop-blur">
           <CardContent className="p-6 md:p-8">
             <h2 className="text-2xl font-bold mb-4">Ruten</h2>
-            <div className="w-full">
+            <div className="w-full min-h-[400px]">
               <div 
                 className="strava-embed-placeholder" 
                 data-embed-type="route" 
                 data-embed-id={STRAVA_ROUTE_ID}
-                data-style="standard" 
-                data-map-hash="11.86/58.96725/5.73104" 
+                data-units="metric"
+                data-full-width="true"
+                data-style="dark"
+                data-terrain="3d"
+                data-map-hash="11.81/58.96725/5.73104"
                 data-from-embed="true"
               />
             </div>
