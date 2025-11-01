@@ -74,9 +74,9 @@ export function CompletionForm({ participantId }: { participantId: string }) {
         .from('completions')
         .insert({
           participant_id: participantId,
-          completed_date: formData.get('completed_date'),
-          duration_text: formData.get('duration_text') || null,
-          comment: formData.get('comment') || null,
+          completed_date: formData.get('completed_date') as string,
+          duration_text: formData.get('duration_text') as string || null,
+          comment: formData.get('comment') as string || null,
           event_year: getCurrentEventYear(),
         })
         .select('id')

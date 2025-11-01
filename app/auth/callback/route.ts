@@ -73,19 +73,21 @@ export async function GET(request: Request) {
 
       if (user) {
         // Check if participant exists and needs linking
-        const { data: participant } = await supabase
-          .from('participants')
-          .select('*')
-          .eq('email', user.email)
-          .maybeSingle();
-
-        if (participant && !participant.user_id) {
-          // Link participant to auth user
-          console.log('🔗 Linking participant to auth user');
-          await supabase
+        if (user.email) {
+          const { data: participant } = await supabase
             .from('participants')
-            .update({ user_id: user.id })
-            .eq('email', user.email);
+            .select('*')
+            .eq('email', user.email)
+            .maybeSingle();
+
+          if (participant && !participant.user_id) {
+            // Link participant to auth user
+            console.log('🔗 Linking participant to auth user');
+            await supabase
+              .from('participants')
+              .update({ user_id: user.id })
+              .eq('email', user.email);
+          }
         }
 
         // Check if participant record exists at all
@@ -166,18 +168,20 @@ export async function GET(request: Request) {
     console.log('✅ Email confirmed, user authenticated:', user.id);
 
     // Link participant record to auth user
-    const { data: participant } = await supabase
-      .from('participants')
-      .select('*')
-      .eq('email', user.email)
-      .maybeSingle();
-
-    if (participant && !participant.user_id) {
-      console.log('🔗 Linking participant to confirmed user');
-      await supabase
+    if (user.email) {
+      const { data: participant } = await supabase
         .from('participants')
-        .update({ user_id: user.id })
-        .eq('email', user.email);
+        .select('*')
+        .eq('email', user.email)
+        .maybeSingle();
+
+      if (participant && !participant.user_id) {
+        console.log('🔗 Linking participant to confirmed user');
+        await supabase
+          .from('participants')
+          .update({ user_id: user.id })
+          .eq('email', user.email);
+      }
     }
 
     // Check if participant record exists

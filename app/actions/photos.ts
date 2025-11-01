@@ -384,13 +384,12 @@ export async function deleteCompletionImage(
     }
 
     // Check if this is the last image
-    const { data: completion } = await supabase
-      .from('completions')
-      .select('image_count')
-      .eq('id', completionId)
-      .single()
+    const { count: imageCount } = await supabase
+      .from('photos')
+      .select('*', { count: 'exact', head: true })
+      .eq('completion_id', completionId)
 
-    if (!completion || completion.image_count <= 1) {
+    if (!imageCount || imageCount <= 1) {
       return { success: false, error: 'Kan ikke slette det siste bildet' }
     }
 

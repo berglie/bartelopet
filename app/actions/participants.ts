@@ -31,7 +31,7 @@ export async function getParticipantDetailAction(
       .eq('participant_id', participant.id)
       .single()
 
-    if (completionWithCounts && !viewError) {
+    if (completionWithCounts && !viewError && completionWithCounts.id) {
       console.log('Found completion in view:', completionWithCounts)
 
       // Fetch the images from the photos table
@@ -60,8 +60,8 @@ export async function getParticipantDetailAction(
         ...participant,
         completion: {
           id: completionWithCounts.id,
-          completion_date: completionWithCounts.completed_date || completionWithCounts.created_at,
-          duration_minutes: completionWithCounts.duration_minutes,
+          completion_date: completionWithCounts.completed_date || completionWithCounts.created_at || '',
+          duration_minutes: null, // duration_text exists but we need duration_minutes - set to null for now
           submission_comment: completionWithCounts.comment || null,
           comment_count: completionWithCounts.comment_count || 0,
           vote_count: completionWithCounts.vote_count || 0,
@@ -75,7 +75,7 @@ export async function getParticipantDetailAction(
         .select(`
           id,
           created_at,
-          duration_minutes,
+          duration_text,
           comment
         `)
         .eq('participant_id', participant.id)
@@ -109,7 +109,7 @@ export async function getParticipantDetailAction(
           completion: {
             id: completion.id,
             completion_date: completion.created_at,
-            duration_minutes: completion.duration_minutes,
+            duration_minutes: null, // duration_text exists but we need duration_minutes - set to null for now
             submission_comment: completion.comment || null,
             comment_count: commentCount.count || 0,
             vote_count: voteCount.count || 0,

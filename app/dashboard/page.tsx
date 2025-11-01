@@ -119,9 +119,17 @@ export default async function DashboardPage() {
       </div>
 
       {/* Main Content */}
-      {completion ? (
+      {completion && completion.id && completion.participant_id ? (
         <div className="space-y-6">
-          <CompletionDisplayMulti completion={completion} />
+          <CompletionDisplayMulti completion={{
+            id: completion.id,
+            participant_id: completion.participant_id,
+            completed_date: completion.completed_date || completion.created_at || '',
+            duration_text: completion.duration_text,
+            comment: completion.comment,
+            vote_count: completion.vote_count || 0,
+            image_count: completion.image_count || 0,
+          }} />
 
           <div className="flex gap-4">
             <Button asChild className="flex-1">
