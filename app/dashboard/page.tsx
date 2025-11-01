@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/app/_shared/lib/supabase/server';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/_shared/components/ui/card';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/app/_shared/components/ui/card';
 import { Button } from '@/app/_shared/components/ui/button';
 import { CompletionForm } from '@/app/pamelding/_components/completion-form';
 import { CompletionDisplayMulti } from './_components/completion-display-multi';
@@ -46,7 +46,10 @@ export default async function DashboardPage() {
       {/* Header */}
       <div className="flex justify-between items-start mb-8">
         <div>
-          <h1 className="text-4xl font-bold mb-2">Mitt Dashboard</h1>
+          <h1 className="text-4xl font-bold mb-2">
+            <span className="md:hidden">Dashboard</span>
+            <span className="hidden md:inline">Mitt Dashboard</span>
+          </h1>
           <p className="text-lg text-muted-foreground">Velkommen, {participant.full_name}!</p>
         </div>
         <form action={signOut}>
@@ -56,48 +59,68 @@ export default async function DashboardPage() {
         </form>
       </div>
 
-      {/* Participant Info */}
-      <div className="grid md:grid-cols-3 gap-6 mb-8">
-        <Card>
-          <CardHeader>
-            <CardDescription>Startnummer</CardDescription>
-            <CardTitle className="text-4xl text-accent">
-              {participant.bib_number}
-            </CardTitle>
+      {/* Participant Info - Single card on mobile, three cards on desktop */}
+      <div className="mb-8">
+        {/* Mobile view - single card */}
+        <Card className="md:hidden">
+          <CardHeader className="p-4">
+            <div className="flex justify-between items-start">
+              <div className="text-center flex-1">
+                <CardDescription className="text-xs mb-1">Startnummer</CardDescription>
+                <CardTitle className="text-2xl text-accent">
+                  #{participant.bib_number}
+                </CardTitle>
+              </div>
+              <div className="text-center flex-1">
+                <CardDescription className="text-xs mb-1">Status</CardDescription>
+                <CardTitle className={`text-2xl ${participant.has_completed ? 'text-accent' : 'text-muted-foreground'}`}>
+                  {participant.has_completed ? '✓' : '✗'}
+                </CardTitle>
+              </div>
+              <div className="text-center flex-1">
+                <CardDescription className="text-xs mb-1">Stemmer</CardDescription>
+                <CardTitle className="text-2xl text-accent">
+                  {completion?.vote_count || 0}
+                </CardTitle>
+              </div>
+            </div>
           </CardHeader>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardDescription>Status</CardDescription>
-            <CardTitle className={participant.has_completed ? 'text-accent' : 'text-muted-foreground'}>
-              {participant.has_completed ? 'Fullført ✓' : 'Ikke fullført'}
-            </CardTitle>
-          </CardHeader>
-        </Card>
+        {/* Desktop view - three separate cards */}
+        <div className="hidden md:grid md:grid-cols-3 gap-6">
+          <Card>
+            <CardHeader>
+              <CardDescription>Startnummer</CardDescription>
+              <CardTitle className="text-4xl text-accent">
+                {participant.bib_number}
+              </CardTitle>
+            </CardHeader>
+          </Card>
 
-        <Card>
-          <CardHeader>
-            <CardDescription>Stemmer</CardDescription>
-            <CardTitle className="text-4xl text-accent">
-              {completion?.vote_count || 0}
-            </CardTitle>
-          </CardHeader>
-        </Card>
+          <Card>
+            <CardHeader>
+              <CardDescription>Status</CardDescription>
+              <CardTitle className={`text-4xl ${participant.has_completed ? 'text-accent' : 'text-muted-foreground'}`}>
+                {participant.has_completed ? '✓' : '✗'}
+              </CardTitle>
+            </CardHeader>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardDescription>Stemmer</CardDescription>
+              <CardTitle className="text-4xl text-accent">
+                {completion?.vote_count || 0}
+              </CardTitle>
+            </CardHeader>
+          </Card>
+        </div>
       </div>
 
       {/* Main Content */}
       {completion ? (
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Ditt fullførte løp</CardTitle>
-              <CardDescription>
-                Du har registrert løpet ditt. Gratulerer! 🎉
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
           <CompletionDisplayMulti completion={completion} />
 
           <div className="flex gap-4">
