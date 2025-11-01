@@ -64,7 +64,7 @@ export default function RouteMapMapbox({ year = 2025 }: { year?: number }) {
 
   useEffect(() => {
     // Try to load GPX file from public folder (year-specific)
-    const gpxPath = `/bartelopet-route-${year}.gpx`;
+    const gpxPath = `/bartelopet-${year}.gpx`;
 
     loadGPXRoute(gpxPath)
       .then((gpxRoute) => {

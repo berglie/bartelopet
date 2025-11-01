@@ -99,7 +99,7 @@ export default async function HomePage({
               </div>
               <div className="w-px bg-border" />
               <div className="text-center">
-                <div className="text-5xl font-bold text-accent mb-1">{stats.completions * 12}</div>
+                <div className="text-5xl font-bold text-accent mb-1">{stats.completions * 11}</div>
                 <div className="text-sm text-muted-foreground uppercase tracking-wider">Km løpt</div>
               </div>
             </div>
@@ -122,7 +122,7 @@ export default async function HomePage({
                 <span className="text-accent">Stavanger</span>
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Løypen går gjennom sentrum og forbi flere ikoniske steder.
+                Løypen på 11 km går gjennom sentrum og forbi flere ikoniske steder.
               </p>
             </div>
 
@@ -135,7 +135,7 @@ export default async function HomePage({
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button asChild size="lg" variant="default" className="h-12 px-6">
                 <a 
-                  href="https://www.strava.com/routes/3294997454532404222" 
+                  href="https://www.strava.com/routes/3419817784051532462" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="flex items-center gap-2"
@@ -146,7 +146,7 @@ export default async function HomePage({
               </Button>
               <Button asChild size="lg" variant="outline" className="h-12 px-6">
                 <a 
-                  href="/bartelopet-route-2025.gpx" 
+                  href="/bartelopet-2025.gpx" 
                   download
                   className="flex items-center gap-2"
                 >

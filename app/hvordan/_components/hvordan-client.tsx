@@ -6,9 +6,9 @@ import { MapPin, Download, ExternalLink, Smartphone, Watch } from 'lucide-react'
 import Link from 'next/link';
 import { useEffect } from 'react';
 
-const STRAVA_ROUTE_ID = '3294997454532404222';
-const STRAVA_ROUTE_URL = 'https://www.strava.com/routes/3294997454532404222';
-const GPX_FILE_PATH = '/bartelopet-route-2025.gpx';
+const STRAVA_ROUTE_ID = '3419817784051532462';
+const STRAVA_ROUTE_URL = 'https://www.strava.com/routes/3419817784051532462';
+const GPX_FILE_PATH = '/bartelopet-2025.gpx';
 
 export function HvordanClient() {
   useEffect(() => {
