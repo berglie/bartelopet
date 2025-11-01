@@ -34,6 +34,13 @@ export function GalleryClient({ initialCompletions, initialUserVoteId }: Gallery
             id,
             full_name,
             bib_number
+          ),
+          images:photos(
+            id,
+            image_url,
+            is_starred,
+            caption,
+            display_order
           )
         `)
         .eq('event_year', selectedYear)

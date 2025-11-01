@@ -24,7 +24,6 @@ type Completion = {
   id: string
   completed_date: string
   duration_text: string | null
-  photo_url: string
   comment: string | null
   vote_count: number
   comment_count: number
@@ -42,11 +41,10 @@ type Completion = {
     created_at: string
     updated_at: string
   }
-}
-
-type CompletionWithImages = Completion & {
   images: CompletionImage[]
 }
+
+type CompletionWithImages = Completion
 
 export function GalleryGridMulti({
   completions,
@@ -81,54 +79,10 @@ export function GalleryGridMulti({
     fetchUser()
   }, [])
 
-  // Fetch images for all completions
+  // Set completions directly since images are already fetched
   useEffect(() => {
-    const fetchAllImages = async () => {
-      setLoadingImages(true)
-      const supabase = createClient()
-
-      // Fetch images for all completions in one query
-      const { data: allImages } = await supabase
-        .from('photos')
-        .select('*')
-        .in(
-          'completion_id',
-          completions.map((c) => c.id)
-        )
-        .order('display_order', { ascending: true })
-
-      // Group images by completion_id
-      const imagesByCompletion: Record<string, CompletionImage[]> = {}
-      allImages?.forEach((img) => {
-        if (!imagesByCompletion[img.completion_id]) {
-          imagesByCompletion[img.completion_id] = []
-        }
-        imagesByCompletion[img.completion_id].push(img)
-      })
-
-      // Combine completions with their images
-      const withImages: CompletionWithImages[] = completions.map((completion) => ({
-        ...completion,
-        images: imagesByCompletion[completion.id] || [
-          {
-            id: 'fallback',
-            completion_id: completion.id,
-            participant_id: completion.participant.id,
-            event_year: new Date().getFullYear(),
-            image_url: completion.photo_url,
-            is_starred: true,
-            display_order: 0,
-            caption: null,
-            uploaded_at: completion.completed_date,
-          },
-        ],
-      }))
-
-      setCompletionsWithImages(withImages)
-      setLoadingImages(false)
-    }
-
-    fetchAllImages()
+    setCompletionsWithImages(completions)
+    setLoadingImages(false)
   }, [completions])
 
   const handleImageClick = useCallback((index: number, withComments = false) => {
@@ -296,14 +250,20 @@ export function GalleryGridMulti({
                   onClick={() => handleImageClick(index)}
                 >
                   {/* Main starred image */}
-                  <Image
-                    src={starredImage?.image_url || completion.photo_url}
-                    alt={`${completion.participant.full_name}s løp`}
-                    fill
-                    className="object-cover transition-transform group-hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    priority={index === 0}
-                  />
+                  {starredImage ? (
+                    <Image
+                      src={starredImage.image_url}
+                      alt={`${completion.participant.full_name}s løp`}
+                      fill
+                      className="object-cover transition-transform group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      priority={index === 0}
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                      <p className="text-muted-foreground">Ingen bilder</p>
+                    </div>
+                  )}
 
                   {/* Starred badge */}
                   {starredImage && completion.images.length > 1 && (

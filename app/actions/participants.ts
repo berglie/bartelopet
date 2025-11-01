@@ -53,18 +53,8 @@ export async function getParticipantDetailAction(
         })
       }
 
-      // If no images found in photos table, create fallback from photo_url
+      // All images are in the photos table only - no fallback
       let finalImages = images || []
-      if (finalImages.length === 0 && completionWithCounts.photo_url) {
-        console.log('No images in photos table, using photo_url as fallback:', completionWithCounts.photo_url)
-        finalImages = [{
-          id: 'fallback-' + completionWithCounts.id,
-          image_url: completionWithCounts.photo_url,
-          is_starred: true,
-          caption: null,
-          display_order: 0
-        }]
-      }
 
       return {
         ...participant,

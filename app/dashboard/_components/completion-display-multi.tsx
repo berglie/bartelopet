@@ -17,7 +17,6 @@ type Completion = {
   participant_id: string
   completed_date: string
   duration_text: string | null
-  photo_url: string
   comment: string | null
   vote_count: number
   image_count: number
@@ -64,14 +63,18 @@ export function CompletionDisplayMulti({ completion }: { completion: Completion 
                   <div className="w-full h-full flex items-center justify-center bg-muted">
                     <div className="h-8 w-8 animate-spin rounded-full border-4 border-muted-foreground/20 border-t-muted-foreground" />
                   </div>
-                ) : (
+                ) : starredImage ? (
                   <Image
-                    src={starredImage?.image_url || completion.photo_url}
+                    src={starredImage.image_url}
                     alt="Hovedbilde fra løpet"
                     fill
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-muted">
+                    <p className="text-muted-foreground">Ingen bilder</p>
+                  </div>
                 )}
 
                 {/* Starred badge */}

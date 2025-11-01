@@ -476,6 +476,10 @@ export function RegistrationForm() {
                     personvernerklæringen
                   </Link>
                   . Jeg samtykker til at mine opplysninger behandles i henhold til personvernerklæringen.
+                  {' '}
+                  <span className="block mt-2">
+                    Premier vil bli utlevert i starten av desember. Arrangøren fratar ansvar fra at utlevering kan ta lengre tid.
+                  </span>
                 </Label>
               </div>
             </div>

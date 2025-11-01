@@ -48,7 +48,7 @@ export default async function DashboardPage() {
         <div>
           <h1 className="text-4xl font-bold mb-2">
             <span className="md:hidden">Dashboard</span>
-            <span className="hidden md:inline">Mitt Dashboard</span>
+            <span className="hidden md:inline">Min Side</span>
           </h1>
           <p className="text-lg text-muted-foreground">Velkommen, {participant.full_name}!</p>
         </div>

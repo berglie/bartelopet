@@ -54,8 +54,13 @@ export function ImageViewerDialogMulti({
 
   // Images for this completion
   const completionImages = completion.images || []
-  const currentImage = completionImages[currentImageIndex] || { image_url: completion.photo_url, caption: null, is_starred: true }
+  const currentImage = completionImages[currentImageIndex]
   const hasMultipleImages = completionImages.length > 1
+
+  // If no image is available, don't render the dialog
+  if (!currentImage) {
+    return null
+  }
 
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50

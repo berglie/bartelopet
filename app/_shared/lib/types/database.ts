@@ -18,7 +18,6 @@ export interface Completion {
   participant_id: string
   completed_date: string
   duration_text: string | null
-  photo_url: string
   comment: string | null
   vote_count: number
   comment_count: number
@@ -92,4 +91,4 @@ export type PhotoCommentInsert = Omit<PhotoComment, 'id' | 'created_at' | 'updat
 // Update types (for updating records)
 export type ParticipantUpdate = Partial<Pick<Participant, 'postal_address' | 'phone_number'>>
 
-export type CompletionUpdate = Partial<Pick<Completion, 'completed_date' | 'duration_text' | 'photo_url' | 'comment'>>
+export type CompletionUpdate = Partial<Pick<Completion, 'completed_date' | 'duration_text' | 'comment'>>

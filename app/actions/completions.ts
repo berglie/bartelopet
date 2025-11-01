@@ -13,7 +13,6 @@ interface UpdateCompletionData {
   completed_date?: string
   duration_text?: string | null
   comment?: string | null
-  photo_url?: string
 }
 
 export async function updateCompletion(
@@ -112,53 +111,6 @@ export async function updateCompletion(
   }
 }
 
-export async function uploadPhoto(
-  fileData: string,
-  fileName: string,
-  fileType: string,
-  participantId: string
-): Promise<ActionResponse<string>> {
-  try {
-    const supabase = await createClient()
-
-    // Convert base64 to buffer
-    const base64Data = fileData.split(',')[1]
-    const buffer = Buffer.from(base64Data, 'base64')
-
-    const fileExt = fileName.split('.').pop()
-    const timestamp = Date.now()
-    const newFileName = participantId + '-' + timestamp + '.' + fileExt
-    const filePath = 'completions/' + newFileName
-
-    const { error: uploadError } = await supabase.storage
-      .from('completion-photos')
-      .upload(filePath, buffer, {
-        contentType: fileType,
-        cacheControl: '3600',
-        upsert: false
-      })
-
-    if (uploadError) {
-      console.error('Error uploading photo:', uploadError)
-      return {
-        success: false,
-        error: 'Kunne ikke laste opp bildet'
-      }
-    }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('completion-photos')
-      .getPublicUrl(filePath)
-
-    return {
-      success: true,
-      data: publicUrl
-    }
-  } catch (error) {
-    console.error('Unexpected error in uploadPhoto:', error)
-    return {
-      success: false,
-      error: 'En uventet feil oppstod'
-    }
-  }
-}
+// DEPRECATED: Use uploadCompletionImages from @/app/actions/photos instead
+// This function has been removed as photos should be stored in the photos table
+// with the proper directory structure: multi/year/participantId/photo.jpg

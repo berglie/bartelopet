@@ -115,7 +115,7 @@ export async function uploadCompletionImages(
 
       // Generate secure filename (no user-controlled characters)
       const secureFileName = generateSecureFilename(buffer, participant.id, 'jpg')
-      const filePath = `multi/${completion.event_year}/${participant.id}/${completionId}/${secureFileName}`
+      const filePath = `multi/${completion.event_year}/${participant.id}/${secureFileName}`
 
       // Upload to Supabase Storage with forced MIME type
       const { error: uploadError } = await supabase.storage
@@ -145,7 +145,7 @@ export async function uploadCompletionImages(
         data: { publicUrl },
       } = supabase.storage.from('completion-photos').getPublicUrl(filePath)
 
-      // Insert into completion_images table
+      // Insert into photos table
       const imageInsert: CompletionImageInsert = {
         completion_id: completionId,
         participant_id: participant.id,
@@ -182,7 +182,7 @@ export async function uploadCompletionImages(
 
     // Revalidate cache
     revalidatePath('/galleri')
-    revalidatePath('/min-side')
+    revalidatePath('/dashboard')
 
     return { success: true, data: uploadedImageIds }
   } catch (error) {
@@ -209,10 +209,10 @@ export async function addCompletionImage(
   const supabase = await createClient()
 
   try {
-    // Get current image count
+    // Verify completion exists
     const { data: completion, error: completionError } = await supabase
       .from('completions')
-      .select('image_count')
+      .select('id')
       .eq('id', completionId)
       .single()
 
@@ -220,8 +220,14 @@ export async function addCompletionImage(
       return { success: false, error: 'Finner ikke innsending' }
     }
 
+    // Get current image count from photos table
+    const { count: currentImageCount } = await supabase
+      .from('photos')
+      .select('*', { count: 'exact', head: true })
+      .eq('completion_id', completionId)
+
     // Check if adding this image would exceed the limit
-    if (completion.image_count >= IMAGE_CONSTRAINTS.MAX_IMAGES_PER_COMPLETION) {
+    if ((currentImageCount || 0) >= IMAGE_CONSTRAINTS.MAX_IMAGES_PER_COMPLETION) {
       return {
         success: false,
         error: `Maksimalt ${IMAGE_CONSTRAINTS.MAX_IMAGES_PER_COMPLETION} bilder tillatt`,
@@ -326,7 +332,7 @@ export async function updateStarredImage(
 
     // Revalidate cache
     revalidatePath('/galleri')
-    revalidatePath('/min-side')
+    revalidatePath('/dashboard')
 
     return { success: true }
   } catch (error) {
@@ -414,7 +420,7 @@ export async function deleteCompletionImage(
 
     // Revalidate cache
     revalidatePath('/galleri')
-    revalidatePath('/min-side')
+    revalidatePath('/dashboard')
 
     return { success: true }
   } catch (error) {
@@ -471,7 +477,7 @@ export async function reorderImages(
 
     // Revalidate cache
     revalidatePath('/galleri')
-    revalidatePath('/min-side')
+    revalidatePath('/dashboard')
 
     return { success: true }
   } catch (error) {
@@ -533,7 +539,7 @@ export async function updateImageCaption(
 
     // Revalidate cache
     revalidatePath('/galleri')
-    revalidatePath('/min-side')
+    revalidatePath('/dashboard')
 
     return { success: true }
   } catch (error) {

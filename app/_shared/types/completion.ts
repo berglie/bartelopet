@@ -2,6 +2,7 @@ import type { ParticipantPublic } from './participant';
 import type { Vote } from './vote';
 
 // Completion types
+// NOTE: Photos are stored ONLY in the photos table, NOT in completions
 export interface Completion {
   id: string;
   created_at: string;
@@ -9,7 +10,6 @@ export interface Completion {
   participant_id: string;
   completed_date: string; // Date (ISO format YYYY-MM-DD)
   duration_text: string | null;
-  photo_url: string;
   comment: string | null;
   vote_count: number;
   comment_count: number;
@@ -24,16 +24,16 @@ export interface CompletionCreate {
   participant_id: string;
   completed_date: string; // Date in YYYY-MM-DD format
   duration_text?: string;
-  photo_url: string;
   comment?: string;
   event_year?: number; // Optional, defaults to current event year
+  // NOTE: Photos are uploaded separately to the photos table
 }
 
 export interface CompletionUpdate {
   completed_date?: string;
   duration_text?: string;
-  photo_url?: string;
   comment?: string;
+  // NOTE: Photos are managed separately in the photos table
 }
 
 export interface CompletionWithParticipant extends Completion {
