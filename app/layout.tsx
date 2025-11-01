@@ -48,6 +48,9 @@ export default async function RootLayout({
                   © 2025 ÅpenAid - Støtter mental helse gjennom Movember
                 </p>
                 <div className="flex gap-4 text-sm">
+                  <Link href="/kontakt" className="text-muted-foreground hover:text-foreground transition-colors">
+                    Kontakt
+                  </Link>
                   <Link href="/vilkar" className="text-muted-foreground hover:text-foreground transition-colors">
                     Vilkår for bruk
                   </Link>
