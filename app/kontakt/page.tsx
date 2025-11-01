@@ -72,7 +72,8 @@ export default function KontaktPage() {
   const isFormValid =
     formData.name.length >= 2 &&
     formData.email.length > 0 &&
-    formData.message.length >= 10;
+    formData.message.length >= 10 &&
+    formData.message.length <= 1000;
 
   return (
     <div className="min-h-screen">
@@ -183,9 +184,13 @@ export default function KontaktPage() {
                         <span className={`text-xs ${
                           formData.message.length < 10
                             ? 'text-muted-foreground'
-                            : 'text-accent'
+                            : formData.message.length > 1000
+                              ? 'text-destructive font-medium'
+                              : formData.message.length > 900
+                                ? 'text-yellow-500 font-medium'
+                                : 'text-accent'
                         }`}>
-                          {formData.message.length}/10 tegn
+                          {formData.message.length}/1000 tegn
                         </span>
                       </div>
                       <Textarea
@@ -197,6 +202,7 @@ export default function KontaktPage() {
                         onChange={handleChange}
                         placeholder="Skriv din melding her..."
                         className="resize-none"
+                        maxLength={1000}
                       />
                     </div>
 

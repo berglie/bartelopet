@@ -1,44 +1,182 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { checkRateLimit, getClientIp } from '@/app/_shared/lib/utils/rate-limit';
 
 const contactSchema = z.object({
-  name: z.string().min(2, 'Navn må være minst 2 tegn'),
-  email: z.string().email('Ugyldig e-postadresse'),
-  message: z.string().min(10, 'Meldingen må være minst 10 tegn'),
+  name: z.string().min(2, 'Navn må være minst 2 tegn').max(100, 'Navn kan ikke være lengre enn 100 tegn'),
+  email: z.string().email('Ugyldig e-postadresse').max(254, 'E-post kan ikke være lengre enn 254 tegn'), // RFC 5321 max length
+  message: z.string().min(10, 'Meldingen må være minst 10 tegn').max(1000, 'Meldingen kan ikke være lengre enn 1000 tegn'),
 });
+
+// Escape HTML special characters to prevent XSS and ensure proper display
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+// Format message for HTML display (escape + preserve line breaks)
+function formatMessageForHtml(message: string): string {
+  return escapeHtml(message).replace(/\n/g, '<br>');
+}
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting check - prevent spam/abuse
+    const clientIp = getClientIp(request);
+    const rateLimitResult = await checkRateLimit('api', clientIp);
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'For mange forsøk. Vennligst prøv igjen senere.',
+        },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': rateLimitResult.limit.toString(),
+            'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+            'X-RateLimit-Reset': rateLimitResult.reset.toString(),
+            'Retry-After': Math.ceil((rateLimitResult.reset - Date.now()) / 1000).toString(),
+          },
+        }
+      );
+    }
+
     const body = await request.json();
 
     // Validate input
     const validatedData = contactSchema.parse(body);
 
-    // Send email using Resend API
-    const response = await fetch('https://api.resend.com/emails', {
+    // Additional email validation to prevent header injection
+    // Remove any newlines or carriage returns that could be used for header injection
+    const sanitizedEmail = validatedData.email.replace(/[\r\n]/g, '').trim();
+    const sanitizedName = validatedData.name.replace(/[\r\n]/g, '').trim();
+    
+    // Validate email format again after sanitization
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(sanitizedEmail)) {
+      return NextResponse.json(
+        { success: false, message: 'Ugyldig e-postadresse' },
+        { status: 400 }
+      );
+    }
+
+    // Check for API key (should be server-only, not NEXT_PUBLIC_)
+    const resendApiKey = process.env.RESEND_API_KEY || process.env.RESEND_API_KEY;
+    if (!resendApiKey) {
+      console.error('Resend API key is missing');
+      return NextResponse.json(
+        { success: false, message: 'E-posttjenesten er ikke konfigurert. Kontakt administrator.' },
+        { status: 500 }
+      );
+    }
+
+    // Get admin email from environment variable (defaults to fallback if not set)
+    const adminEmail = process.env.CONTACT_FORM_ADMIN_EMAIL || 'berglie.stian@gmail.com';
+    
+    // Validate admin email format
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(adminEmail)) {
+      console.error('Invalid admin email configuration:', adminEmail);
+      return NextResponse.json(
+        { success: false, message: 'E-posttjenesten er ikke konfigurert korrekt. Kontakt administrator.' },
+        { status: 500 }
+      );
+    }
+
+    // Send email to admin using Resend API
+    const adminEmailResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_RESEND_API_KEY}`,
+        'Authorization': `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
         from: 'Barteløpet Kontaktskjema <onboarding@resend.dev>',
-        to: ['berglie.stian@gmail.com'],
-        reply_to: validatedData.email,
-        subject: `Kontaktskjema: ${validatedData.name}`,
+        to: [adminEmail],
+        reply_to: sanitizedEmail, // Use sanitized email to prevent header injection
+        subject: `Kontaktskjema: ${sanitizedName}`,
+        text: `Ny melding fra kontaktskjemaet\n\nFra: ${sanitizedName}\nE-post: ${sanitizedEmail}\n\nMelding:\n${validatedData.message}`,
         html: `
           <h2>Ny melding fra kontaktskjemaet</h2>
-          <p><strong>Fra:</strong> ${validatedData.name}</p>
-          <p><strong>E-post:</strong> ${validatedData.email}</p>
+          <p><strong>Fra:</strong> ${escapeHtml(sanitizedName)}</p>
+          <p><strong>E-post:</strong> ${escapeHtml(sanitizedEmail)}</p>
           <p><strong>Melding:</strong></p>
-          <p>${validatedData.message.replace(/\n/g, '<br>')}</p>
+          <p>${formatMessageForHtml(validatedData.message)}</p>
         `,
       }),
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      console.error('Resend API error:', error);
+    // Send confirmation email to sender
+    const confirmationEmailResponse = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${resendApiKey}`,
+      },
+      body: JSON.stringify({
+        from: 'Barteløpet <onboarding@resend.dev>',
+        to: [sanitizedEmail], // Use sanitized email
+        subject: 'Bekreftelse på din henvendelse - Barteløpet',
+        text: `Hei ${sanitizedName},\n\nVi har mottatt din melding og kommer tilbake til deg så snart som mulig.\n\nDin melding:\n${validatedData.message}\n\nHvis du har spørsmål i mellomtiden, kan du svare direkte på denne e-posten.\n\nMed vennlig hilsen,\nBarteløpet-teamet\n\nBesøk barteløpet.no`,
+        html: `
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+                .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+                .message-box { background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #667eea; margin: 20px 0; }
+                .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 14px; }
+                h1 { margin: 0; font-size: 24px; }
+                h2 { color: #667eea; font-size: 18px; margin-top: 0; }
+                .button { display: inline-block; background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px; }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <div class="header">
+                  <h1>Takk for din henvendelse!</h1>
+                </div>
+                <div class="content">
+                  <p>Hei ${escapeHtml(sanitizedName)},</p>
+                  <p>Vi har mottatt din melding og kommer tilbake til deg så snart som mulig.</p>
+
+                  <div class="message-box">
+                    <h2>Din melding:</h2>
+                    <p>${formatMessageForHtml(validatedData.message)}</p>
+                  </div>
+
+                  <p>Hvis du har spørsmål i mellomtiden, kan du svare direkte på denne e-posten.</p>
+
+                  <p>Med vennlig hilsen,<br>Barteløpet-teamet</p>
+
+                  <a href="https://barteløpet.no" class="button">Besøk barteløpet.no</a>
+                </div>
+                <div class="footer">
+                  <p>Dette er en automatisk bekreftelse fra Barteløpet</p>
+                  <p>© ${new Date().getFullYear()} ÅpenAid - Støtter mental helse gjennom Movember</p>
+                </div>
+              </div>
+            </body>
+          </html>
+        `,
+      }),
+    });
+
+    // Check if both emails were sent successfully
+    if (!adminEmailResponse.ok || !confirmationEmailResponse.ok) {
+      const adminError = !adminEmailResponse.ok ? await adminEmailResponse.json() : null;
+      const confirmError = !confirmationEmailResponse.ok ? await confirmationEmailResponse.json() : null;
+
+      console.error('Resend API error:', { adminError, confirmError });
 
       // Fallback: Log to console if email fails
       console.log('Contact form submission:', validatedData);
@@ -55,7 +193,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        message: 'Takk for din henvendelse! Vi kommer tilbake til deg så snart som mulig.'
+        message: 'Takk for din henvendelse! Du vil motta en bekreftelse på e-post.'
       },
       { status: 200 }
     );

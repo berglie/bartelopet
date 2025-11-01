@@ -232,9 +232,36 @@ See [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) for detailed instructions on creati
 
 ## Optional Variables
 
-### Email Configuration (Optional)
+### Resend Email Configuration (Optional)
 
-If using custom SMTP instead of Supabase email:
+For contact form email functionality:
+
+```bash
+# Resend API Key (Required if using contact form)
+# Get from: https://resend.com/api-keys
+RESEND_API_KEY=re_xxxxxxxxxxxxx
+
+# Contact form recipient email (Optional, defaults to fallback)
+# This is where contact form submissions are sent
+CONTACT_FORM_ADMIN_EMAIL=admin@bartelopet.no
+```
+
+**Purpose:** Send emails via Resend API (contact form, notifications)
+
+**Required:** ❌ No (only if using contact form feature)
+
+**Security Notes:**
+- ⚠️ Use `RESEND_API_KEY` (not `RESEND_API_KEY`) to keep it server-side only
+- ⚠️ `CONTACT_FORM_ADMIN_EMAIL` should not be hardcoded in source code
+- ⚠️ Never commit API keys to Git
+
+**Visibility:** 🔒 Secret (server-side only)
+
+---
+
+### SMTP Configuration (Alternative, Optional)
+
+If using custom SMTP instead of Resend or Supabase email:
 
 ```bash
 # SMTP Configuration (Optional)
@@ -247,7 +274,7 @@ SMTP_FROM=Barteløpet <noreply@bartelopet.no>
 
 **Purpose:** Send emails via custom SMTP server
 
-**Required:** ❌ No (Supabase handles emails by default)
+**Required:** ❌ No (Resend or Supabase handles emails by default)
 
 **Use When:**
 - You want custom email provider (e.g., SendGrid, Mailgun)
