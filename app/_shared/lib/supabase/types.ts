@@ -16,8 +16,7 @@ export type Database = {
           phone_number: string | null
           bib_number: number
           has_completed: boolean
-          vipps_sub: string | null
-          auth_provider: 'email' | 'vipps' | 'both'
+          auth_provider: 'email' | 'both'
           created_at: string
           updated_at: string
         }
@@ -30,8 +29,7 @@ export type Database = {
           phone_number?: string | null
           bib_number: number
           has_completed?: boolean
-          vipps_sub?: string | null
-          auth_provider?: 'email' | 'vipps' | 'both'
+          auth_provider?: 'email' | 'both'
           created_at?: string
           updated_at?: string
         }
@@ -44,8 +42,7 @@ export type Database = {
           phone_number?: string | null
           bib_number?: number
           has_completed?: boolean
-          vipps_sub?: string | null
-          auth_provider?: 'email' | 'vipps' | 'both'
+          auth_provider?: 'email' | 'both'
           created_at?: string
           updated_at?: string
         }
@@ -103,38 +100,6 @@ export type Database = {
           voter_id?: string
           completion_id?: string
           created_at?: string
-        }
-      }
-      vipps_sessions: {
-        Row: {
-          id: string
-          state: string
-          code_verifier: string
-          code_challenge: string
-          redirect_uri: string
-          user_id: string | null
-          created_at: string
-          expires_at: string
-        }
-        Insert: {
-          id?: string
-          state: string
-          code_verifier: string
-          code_challenge: string
-          redirect_uri: string
-          user_id?: string | null
-          created_at?: string
-          expires_at: string
-        }
-        Update: {
-          id?: string
-          state?: string
-          code_verifier?: string
-          code_challenge?: string
-          redirect_uri?: string
-          user_id?: string | null
-          created_at?: string
-          expires_at?: string
         }
       }
     }

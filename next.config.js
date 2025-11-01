@@ -74,7 +74,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline' https://api.mapbox.com",
               "img-src 'self' data: blob: https://*.supabase.co https://api.mapbox.com https://strava-embeds.com",
               "font-src 'self' data:",
-              "connect-src 'self' https://*.supabase.co https://api.vipps.no https://api.mapbox.com https://events.mapbox.com wss://*.supabase.co https://vercel.live https://strava-embeds.com",
+              "connect-src 'self' https://*.supabase.co https://api.mapbox.com https://events.mapbox.com wss://*.supabase.co https://vercel.live https://strava-embeds.com",
               "frame-src 'self' https://strava-embeds.com",
               "frame-ancestors 'self'",
               "base-uri 'self'",

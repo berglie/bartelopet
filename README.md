@@ -25,7 +25,6 @@ barteløpet/
 ├── lib/                 # Core libraries
 │   ├── supabase/       # Database client
 │   ├── utils/          # Utilities
-│   └── vipps/          # Vipps integration
 ├── types/               # TypeScript definitions
 ├── supabase/           # Database migrations
 └── public/             # Static assets
@@ -93,13 +92,6 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 # Upstash Redis (for rate limiting)
 UPSTASH_REDIS_REST_URL=your_upstash_url
 UPSTASH_REDIS_REST_TOKEN=your_upstash_token
-
-# Vipps OAuth (optional)
-VIPPS_CLIENT_ID=your_vipps_client_id
-VIPPS_CLIENT_SECRET=your_vipps_client_secret
-VIPPS_REDIRECT_URI=http://localhost:3000/auth/vipps-callback
-VIPPS_MERCHANT_SERIAL_NUMBER=your_merchant_serial_number
-VIPPS_SUBSCRIPTION_KEY=your_subscription_key
 
 # Application
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
