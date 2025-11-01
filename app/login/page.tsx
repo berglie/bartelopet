@@ -25,6 +25,8 @@ export default function LoginPage() {
         auth_failed: 'Innlogging feilet. Vennligst prøv igjen.',
         verification_failed: messageParam || 'Kunne ikke verifisere innloggingslenken.',
         invalid_link: 'Innloggingslenken er ugyldig eller utløpt. Vennligst be om en ny.',
+        confirmation_failed: messageParam || 'Kunne ikke bekrefte e-postadressen. Vennligst prøv igjen.',
+        oauth_failed: messageParam || 'OAuth innlogging feilet. Vennligst prøv igjen.',
       };
       setError(errorMessages[errorParam] || 'En ukjent feil oppstod');
     }

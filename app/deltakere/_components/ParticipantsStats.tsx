@@ -16,17 +16,17 @@ export function ParticipantsStatsCards({ stats, year }: ParticipantsStatsProps) 
         </p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto mb-12">
+      <div className="grid grid-cols-2 gap-3 md:gap-6 max-w-2xl mx-auto mb-12">
         <Card>
-          <CardHeader>
-            <CardDescription>Totalt påmeldte</CardDescription>
-            <CardTitle className="text-4xl text-accent">{stats.total}</CardTitle>
+          <CardHeader className="p-4 md:p-6">
+            <CardDescription className="text-xs md:text-sm">Totalt påmeldte</CardDescription>
+            <CardTitle className="text-2xl md:text-4xl text-accent">{stats.total}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
-          <CardHeader>
-            <CardDescription>Har fullført</CardDescription>
-            <CardTitle className="text-4xl text-accent">{stats.completed}</CardTitle>
+          <CardHeader className="p-4 md:p-6">
+            <CardDescription className="text-xs md:text-sm">Har fullført</CardDescription>
+            <CardTitle className="text-2xl md:text-4xl text-accent">{stats.completed}</CardTitle>
           </CardHeader>
         </Card>
       </div>

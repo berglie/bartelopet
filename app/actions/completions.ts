@@ -29,7 +29,7 @@ export async function updateCompletion(
     if (authError || !user) {
       return {
         success: false,
-        error: 'Du ma vaere innlogget for a redigere'
+        error: 'Dumå væreinnlogget for å redigere'
       }
     }
 
@@ -42,7 +42,7 @@ export async function updateCompletion(
     if (participantError || !participant) {
       return {
         success: false,
-        error: 'Du ma vaere registrert som deltaker'
+        error: 'Dumå væreregistrert som deltaker'
       }
     }
 

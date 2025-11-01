@@ -28,7 +28,7 @@ export function AddCommentForm({
     e.preventDefault()
 
     if (!isLoggedIn) {
-      setError('Du ma vaere innlogget for a kommentere')
+      setError('Du må være innlogget for å kommentere')
       return
     }
 
@@ -57,7 +57,7 @@ export function AddCommentForm({
   if (!isLoggedIn) {
     return (
       <div className="bg-muted/50 rounded-lg p-4 text-center text-sm text-muted-foreground">
-        Du ma vaere innlogget for a kommentere
+        Du må være innlogget for å kommentere
       </div>
     )
   }

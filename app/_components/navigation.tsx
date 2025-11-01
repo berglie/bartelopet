@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { Button } from '@/app/_shared/components/ui/button';
-import { MustacheSVG } from '@/app/_shared/components/mustache-icon';
 import { YearSelector } from './year-selector';
 import { usePathname } from 'next/navigation';
 import { useYear } from '@/contexts/year-context';
@@ -32,9 +31,8 @@ export function Navigation({ isAuthenticated = false }: NavigationProps) {
     <nav className="border-b border-border/50 backdrop-blur-lg bg-background/80 sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <Link href={getUrlWithYear("/")} className="flex items-center gap-2 font-bold text-xl text-foreground hover:text-accent transition-colors group">
-            <MustacheSVG className="h-8 w-16 text-accent group-hover:scale-110 transition-transform" />
-            <span>Barteløpet</span>
+          <Link href={getUrlWithYear("/")} className="font-bold text-xl text-foreground hover:text-accent transition-colors hidden md:block">
+            Barteløpet
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
@@ -63,9 +61,19 @@ export function Navigation({ isAuthenticated = false }: NavigationProps) {
             )}
           </div>
 
-          {/* Mobile menu */}
-          <div className="md:hidden flex items-center gap-2">
+          {/* Mobile menu - left side */}
+          <div className="md:hidden flex items-center gap-3">
+            <Link href={getUrlWithYear("/galleri")} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Galleri
+            </Link>
+            <Link href={getUrlWithYear("/deltakere")} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Deltakere
+            </Link>
             {showYearSelector && <YearSelector variant="compact" />}
+          </div>
+
+          {/* Mobile menu - right side button */}
+          <div className="md:hidden">
             <Button asChild size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
               <Link href={isAuthenticated ? "/dashboard" : "/pamelding"}>
                 {isAuthenticated ? "Dashboard" : "Send inn"}

@@ -1,79 +1,12 @@
-/**
- * Server-side queries for participants feature
- */
+'use server'
 
 import { createClient } from '@/app/_shared/lib/supabase/server'
+import type { ParticipantDetail } from '@/app/deltakere/_utils/queries'
 
-export interface ParticipantListItem {
-  full_name: string
-  bib_number: number
-  has_completed: boolean
-  event_year: number
-}
-
-export interface ParticipantsStats {
-  total: number
-  completed: number
-}
-
-export interface ParticipantDetail {
-  id: string
-  full_name: string
-  bib_number: number
-  has_completed: boolean
-  event_year: number
-  created_at: string
-  completion?: {
-    id: string
-    completion_date: string
-    duration_minutes: number | null
-    submission_comment?: string | null
-    comment_count: number
-    vote_count: number
-    images: Array<{
-      id: string
-      image_url: string
-      is_starred: boolean
-      caption: string | null
-    }>
-  }
-}
-
-export async function getParticipants(year: number): Promise<ParticipantListItem[]> {
-  const supabase = await createClient()
-
-  const { data: participants, error } = await supabase
-    .from('participants')
-    .select('full_name, bib_number, has_completed, event_year')
-    .eq('event_year', year)
-    .order('bib_number', { ascending: true })
-
-  if (error) {
-    console.error('Error fetching participants:', error)
-    return []
-  }
-
-  return participants || []
-}
-
-export async function getParticipantsStats(year: number): Promise<ParticipantsStats> {
-  const supabase = await createClient()
-
-  const [
-    { count: totalCount },
-    { count: completedCount }
-  ] = await Promise.all([
-    supabase.from('participants').select('*', { count: 'exact', head: true }).eq('event_year', year),
-    supabase.from('participants').select('*', { count: 'exact', head: true }).eq('event_year', year).eq('has_completed', true)
-  ])
-
-  return {
-    total: totalCount || 0,
-    completed: completedCount || 0
-  }
-}
-
-export async function getParticipantDetail(bibNumber: number, year: number): Promise<ParticipantDetail | null> {
+export async function getParticipantDetailAction(
+  bibNumber: number,
+  year: number
+): Promise<ParticipantDetail | null> {
   const supabase = await createClient()
 
   // First get participant data
@@ -99,6 +32,8 @@ export async function getParticipantDetail(bibNumber: number, year: number): Pro
       .single()
 
     if (completionWithCounts && !viewError) {
+      console.log('Found completion in view:', completionWithCounts)
+
       // Fetch the images from the photos table
       const { data: images, error: imagesError } = await supabase
         .from('photos')
@@ -108,7 +43,27 @@ export async function getParticipantDetail(bibNumber: number, year: number): Pro
         .order('display_order', { ascending: true })
 
       if (imagesError) {
-        console.error('Error fetching completion images:', imagesError)
+        console.error('Error fetching photos for completion_id:', completionWithCounts.id, 'Error:', imagesError)
+      } else {
+        console.log('Successfully fetched photos:', {
+          completion_id: completionWithCounts.id,
+          participant_id: participant.id,
+          images_count: images?.length || 0,
+          images: images
+        })
+      }
+
+      // If no images found in photos table, create fallback from photo_url
+      let finalImages = images || []
+      if (finalImages.length === 0 && completionWithCounts.photo_url) {
+        console.log('No images in photos table, using photo_url as fallback:', completionWithCounts.photo_url)
+        finalImages = [{
+          id: 'fallback-' + completionWithCounts.id,
+          image_url: completionWithCounts.photo_url,
+          is_starred: true,
+          caption: null,
+          display_order: 0
+        }]
       }
 
       return {
@@ -120,7 +75,7 @@ export async function getParticipantDetail(bibNumber: number, year: number): Pro
           submission_comment: completionWithCounts.comment || null,
           comment_count: completionWithCounts.comment_count || 0,
           vote_count: completionWithCounts.vote_count || 0,
-          images: images || []
+          images: finalImages
         }
       }
     } else {
@@ -144,6 +99,8 @@ export async function getParticipantDetail(bibNumber: number, year: number): Pro
           .eq('completion_id', completion.id)
           .order('is_starred', { ascending: false })
           .order('display_order', { ascending: true })
+
+        console.log('Fetched images for completion (fallback):', completion.id, 'participant:', participant.id, 'images:', images)
 
         // Get comment and vote counts
         const [commentCount, voteCount] = await Promise.all([

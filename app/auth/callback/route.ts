@@ -112,19 +112,23 @@ export async function GET(request: Request) {
   }
 
   // Handle legacy token format (email confirmation)
-  // Supabase processes the token on their server and creates session before redirecting
+  // IMPORTANT: With the legacy token format, Supabase hasn't processed it yet
+  // We need to exchange the token for a session
   if (legacyToken && type === 'signup') {
-    console.log('📧 Handling email confirmation (already processed by Supabase)');
+    console.log('📧 Handling email confirmation with legacy token');
     const supabase = await createClient();
 
-    // Check if user is now authenticated (Supabase creates session automatically)
-    const { data: { user }, error: getUserError } = await supabase.auth.getUser();
+    // Exchange the token for a session using verifyOtp
+    const { error: verifyError } = await supabase.auth.verifyOtp({
+      type: 'signup',
+      token: legacyToken,
+    });
 
-    if (getUserError) {
-      console.error('❌ User not authenticated after confirmation:', getUserError);
+    if (verifyError) {
+      console.error('❌ Token verification failed:', verifyError);
 
       // If user was deleted after confirmation email was sent
-      if (getUserError.message?.includes('does not exist') || getUserError.code === 'user_not_found') {
+      if (verifyError.message?.includes('does not exist') || verifyError.code === 'user_not_found') {
         console.log('ℹ️ User was deleted, redirecting to fresh registration');
         return NextResponse.redirect(
           new URL('/pamelding?error=user_deleted&message=Your account was removed. Please register again.', origin)
@@ -136,10 +140,15 @@ export async function GET(request: Request) {
       );
     }
 
-    if (!user) {
-      console.error('❌ No user after confirmation');
+    console.log('✅ Token verified successfully');
+
+    // Now check if user is authenticated
+    const { data: { user }, error: getUserError } = await supabase.auth.getUser();
+
+    if (getUserError || !user) {
+      console.error('❌ User not authenticated after verification:', getUserError);
       return NextResponse.redirect(
-        new URL('/pamelding?error=no_user&message=Please complete registration.', origin)
+        new URL('/login?error=confirmation_failed&message=Could not confirm email. Please try again.', origin)
       );
     }
 
