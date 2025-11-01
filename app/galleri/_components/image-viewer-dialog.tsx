@@ -10,10 +10,15 @@ import { cn } from '@/app/_shared/lib/utils/cn'
 import { CommentList } from './comments/comment-list'
 import { getComments } from '@/app/actions/comments'
 
+// Extended type for backward compatibility with photo_url
+type CompletionWithPhotoUrl = CompletionWithParticipant & {
+  photo_url?: string;
+};
+
 interface ImageViewerDialogProps {
   isOpen: boolean
   onClose: () => void
-  completion: CompletionWithParticipant
+  completion: CompletionWithPhotoUrl
   currentIndex: number
   onNavigate: (direction: 'prev' | 'next') => void
   onVote: (completionId: string) => Promise<void>
@@ -227,7 +232,7 @@ export function ImageViewerDialog({
             </div>
           )}
           <Image
-            src={completion.photo_url}
+            src={completion.photo_url || ''}
             alt={`Photo by ${completion.participant.full_name}`}
             width={1920}
             height={1080}

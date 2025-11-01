@@ -7,6 +7,7 @@ export async function GET(request: Request) {
   const type = searchParams.get('type');
   const next = searchParams.get('next') ?? '/dashboard';
   const code = searchParams.get('code');
+  const email = searchParams.get('email');
 
   // Also handle legacy token format (for signup confirmation)
   const legacyToken = searchParams.get('token');
@@ -116,12 +117,22 @@ export async function GET(request: Request) {
   // We need to exchange the token for a session
   if (legacyToken && type === 'signup') {
     console.log('📧 Handling email confirmation with legacy token');
+    
+    // Email is required for token verification
+    if (!email) {
+      console.error('❌ Email parameter missing for legacy token verification');
+      return NextResponse.redirect(
+        new URL('/login?error=confirmation_failed&message=Kunne ikke bekrefte e-postadressen. Vennligst prøv igjen.', origin)
+      );
+    }
+
     const supabase = await createClient();
 
     // Exchange the token for a session using verifyOtp
     const { error: verifyError } = await supabase.auth.verifyOtp({
       type: 'signup',
       token: legacyToken,
+      email,
     });
 
     if (verifyError) {

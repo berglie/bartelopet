@@ -47,6 +47,31 @@ export function ParticipantDetailModal({
 
   // Fetch participant details when modal opens
   useEffect(() => {
+    const fetchParticipantDetail = async () => {
+      if (!participant) return
+      
+      setLoading(true)
+      try {
+        const data = await getParticipantDetailAction(
+          participant.bib_number,
+          participant.event_year
+        )
+
+        if (data) {
+          console.log('Received participant detail:', data)
+          if (data.completion) {
+            console.log('Completion data:', data.completion)
+            console.log('Images array:', data.completion.images)
+          }
+          setDetail(data)
+        }
+      } catch (error) {
+        console.error('Error fetching participant detail:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
     if (open && participant) {
       fetchParticipantDetail()
     } else {
@@ -55,29 +80,6 @@ export function ParticipantDetailModal({
       setSelectedImageIndex(0)
     }
   }, [open, participant])
-
-  const fetchParticipantDetail = async () => {
-    setLoading(true)
-    try {
-      const data = await getParticipantDetailAction(
-        participant.bib_number,
-        participant.event_year
-      )
-
-      if (data) {
-        console.log('Received participant detail:', data)
-        if (data.completion) {
-          console.log('Completion data:', data.completion)
-          console.log('Images array:', data.completion.images)
-        }
-        setDetail(data)
-      }
-    } catch (error) {
-      console.error('Error fetching participant detail:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const formatDuration = (minutes: number | null) => {
     if (!minutes) return 'Ikke registrert'
@@ -251,7 +253,7 @@ export function ParticipantDetailModal({
                         <MessageCircle className="h-4 w-4" />
                         Kommentar fra deltaker
                       </h3>
-                      <p className="text-sm italic">"{detail.completion.submission_comment}"</p>
+                      <p className="text-sm italic">&ldquo;{detail.completion.submission_comment}&rdquo;</p>
                     </div>
                   )}
                 </div>

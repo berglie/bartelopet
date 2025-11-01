@@ -10,34 +10,16 @@ import { useRouter } from 'next/navigation';
 import { ImageViewerDialog } from './image-viewer-dialog';
 import type { CompletionWithParticipant } from '@/app/_shared/lib/types/database';
 
-type Completion = {
-  id: string;
-  completed_date: string;
-  duration_text: string | null;
+// Extended type for gallery grid that includes photo_url for backward compatibility
+type GalleryCompletion = CompletionWithParticipant & {
   photo_url: string;
-  comment: string | null;
-  vote_count: number;
-  comment_count: number;
-  event_year: number;
-  participant: {
-    id: string;
-    user_id: string | null;
-    email: string;
-    full_name: string;
-    postal_address: string;
-    phone_number: string | null;
-    bib_number: number;
-    has_completed: boolean;
-    created_at: string;
-    updated_at: string;
-  };
 };
 
 export function GalleryGrid({
   completions,
   userVoteId,
 }: {
-  completions: Completion[];
+  completions: GalleryCompletion[];
   userVoteId: string | null;
 }) {
   const router = useRouter();
@@ -216,7 +198,7 @@ export function GalleryGrid({
     }
   }
 
-  const currentCompletion = completions[currentImageIndex] as CompletionWithParticipant;
+  const currentCompletion = completions[currentImageIndex];
 
   return (
     <>

@@ -57,11 +57,6 @@ export function ImageViewerDialogMulti({
   const currentImage = completionImages[currentImageIndex]
   const hasMultipleImages = completionImages.length > 1
 
-  // If no image is available, don't render the dialog
-  if (!currentImage) {
-    return null
-  }
-
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50
 
@@ -164,7 +159,10 @@ export function ImageViewerDialogMulti({
     }
   }
 
-  if (!isOpen) return null
+  // If no image is available or dialog is not open, don't render
+  if (!isOpen || !currentImage) {
+    return null
+  }
 
   return (
     <div
