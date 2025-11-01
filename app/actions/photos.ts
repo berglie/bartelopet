@@ -280,7 +280,7 @@ export async function updateStarredImage(
     }
 
     const { data: image } = await supabase
-      .from('completion_images')
+      .from('photos')
       .select('participant_id, completion_id')
       .eq('id', imageId)
       .single()
@@ -291,7 +291,7 @@ export async function updateStarredImage(
 
     // Unstar all images for this completion
     const { error: unstarError } = await supabase
-      .from('completion_images')
+      .from('photos')
       .update({ is_starred: false })
       .eq('completion_id', completionId)
 
@@ -301,7 +301,7 @@ export async function updateStarredImage(
 
     // Star the selected image
     const { error: starError } = await supabase
-      .from('completion_images')
+      .from('photos')
       .update({ is_starred: true })
       .eq('id', imageId)
 
@@ -368,7 +368,7 @@ export async function deleteCompletionImage(
     }
 
     const { data: image } = await supabase
-      .from('completion_images')
+      .from('photos')
       .select('participant_id, completion_id, image_url')
       .eq('id', imageId)
       .single()
@@ -394,7 +394,7 @@ export async function deleteCompletionImage(
 
     // Delete from database (trigger will handle auto-starring next image if needed)
     const { error: deleteError } = await supabase
-      .from('completion_images')
+      .from('photos')
       .delete()
       .eq('id', imageId)
 
@@ -522,7 +522,7 @@ export async function updateImageCaption(
 
     // Update caption
     const { error } = await supabase
-      .from('completion_images')
+      .from('photos')
       .update({ caption })
       .eq('id', imageId)
       .eq('participant_id', participant.id)
@@ -548,14 +548,14 @@ export async function updateImageCaption(
 /**
  * Get all images for a completion
  */
-export async function getCompletionImages(
+export async function getPhotos(
   completionId: string
 ): Promise<ActionResponse<CompletionImage[]>> {
   const supabase = await createClient()
 
   try {
     const { data, error } = await supabase
-      .from('completion_images')
+      .from('photos')
       .select('*')
       .eq('completion_id', completionId)
       .order('display_order', { ascending: true })

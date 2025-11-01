@@ -8,7 +8,7 @@ import { Edit, Images as ImagesIcon, Star } from 'lucide-react'
 import { EditFieldDialog } from '@/app/dashboard/_components/edit-field-dialog'
 import { ManageImagesDialog } from './manage-images-dialog'
 import { useRouter } from 'next/navigation'
-import { getCompletionImages } from '@/app/actions/completion-images'
+import { getPhotos } from '@/app/actions/photos'
 import type { CompletionImage } from '@/app/_shared/lib/types/database'
 import { cn } from '@/app/_shared/lib/utils/cn'
 
@@ -32,7 +32,7 @@ export function CompletionDisplayMulti({ completion }: { completion: Completion 
 
   const fetchImages = useCallback(async () => {
     setLoadingImages(true)
-    const result = await getCompletionImages(completion.id)
+    const result = await getPhotos(completion.id)
     if (result.success && result.data) {
       setImages(result.data)
     }

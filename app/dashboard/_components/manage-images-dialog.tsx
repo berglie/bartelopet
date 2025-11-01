@@ -28,8 +28,8 @@ import {
   deleteCompletionImage,
   updateStarredImage,
   updateImageCaption,
-  getCompletionImages,
-} from '@/app/actions/completion-images'
+  getPhotos,
+} from '@/app/actions/photos'
 import type { CompletionImage } from '@/app/_shared/lib/types/database'
 import { validateImageFiles, IMAGE_CONSTRAINTS } from '@/app/_shared/lib/constants/images'
 import { cn } from '@/app/_shared/lib/utils/cn'
@@ -59,7 +59,7 @@ export function ManageImagesDialog({
     setLoading(true)
     setError(null)
 
-    const result = await getCompletionImages(completionId)
+    const result = await getPhotos(completionId)
     if (result.success && result.data) {
       setImages(result.data)
     } else {
