@@ -99,8 +99,8 @@ export default async function HomePage({
               </div>
               <div className="w-px bg-border" />
               <div className="text-center">
-                <div className="text-5xl font-bold text-accent mb-1">10</div>
-                <div className="text-sm text-muted-foreground uppercase tracking-wider">Kilometer</div>
+                <div className="text-5xl font-bold text-accent mb-1">{stats.completions * 12}</div>
+                <div className="text-sm text-muted-foreground uppercase tracking-wider">Km løpt</div>
               </div>
             </div>
           </div>
