@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check for API key (should be server-only, not NEXT_PUBLIC_)
-    const resendApiKey = process.env.RESEND_API_KEY || process.env.RESEND_API_KEY;
+    const resendApiKey = process.env.RESEND_API_KEY;
     if (!resendApiKey) {
       console.error('Resend API key is missing');
       return NextResponse.json(
@@ -75,9 +75,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get admin email from environment variable (defaults to fallback if not set)
-    const adminEmail = process.env.CONTACT_FORM_ADMIN_EMAIL || 'berglie.stian@gmail.com';
-    
+    // Get admin email from environment variable (required)
+    const adminEmail = process.env.CONTACT_FORM_ADMIN_EMAIL;
+    if (!adminEmail) {
+      console.error('CONTACT_FORM_ADMIN_EMAIL environment variable is missing');
+      return NextResponse.json(
+        { success: false, message: 'E-posttjenesten er ikke konfigurert. Kontakt administrator.' },
+        { status: 500 }
+      );
+    }
+
     // Validate admin email format
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(adminEmail)) {
       console.error('Invalid admin email configuration:', adminEmail);

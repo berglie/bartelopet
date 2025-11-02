@@ -1,225 +1,246 @@
-# 🏃 Barteløpet - Virtual Charity Run Platform
+# 🏃 Barteløpet
 
-A modern web platform for organizing virtual charity runs supporting mental health awareness through Movember. Built with Next.js 14, TypeScript, and Supabase.
+**En virtuell veldedighetsløp i Stavanger sentrum til støtte for mental helse gjennom Movember.**
 
-## 🎯 Overview
+🌐 **Nettside**: [www.barteløpet.no](https://www.barteløpet.no)
+💰 **Spleis**: [spleis.no/barteløpet2025](https://spleis.no/barteløpet2025)
 
-Barteløpet is a Norwegian charity run event where participants complete a route in Stavanger city center during November, upload proof of completion, and vote on other participants' submissions. All participants receive a trophy, with additional prizes for the best photos.
+Bygget med Next.js 16, TypeScript og Supabase.
 
-## 🏗️ Architecture
+---
 
-The project follows a **Vertical Slices Architecture** pattern where features are organized as self-contained modules.
+## 🎯 Om Barteløpet
+
+Barteløpet er et årlig veldedighetsarrangement i Stavanger hvor deltakere løper en definert rute i sentrum i løpet av november. Arrangementet støtter mental helse bevissthet gjennom Movember.
+
+**Slik fungerer det:**
+- 🏃 Løp den definerte ruten i Stavanger sentrum når det passer deg i november
+- 📸 Last opp bilder som bevis på gjennomføring
+- 🗳️ Stem på andre deltakeres beste bilder
+- 🏆 Alle deltakere får en trofé, med ekstra premier for de beste bildene
+- 💜 Alle inntekter går til mental helse via Movember
+
+Denne applikasjonen er nettsiden for Barteløpet-arrangementet.
+
+## 🏗️ Arkitektur
+
+Prosjektet følger et **Vertical Slices Architecture**-mønster hvor funksjoner er organisert som selvstendige moduler med kolokerte komponenter.
 
 ```
 barteløpet/
-├── app/                    # Next.js 14 App Router
-│   ├── api/               # API routes
-│   ├── (auth)/           # Auth route group
-│   └── [pages]/          # Application pages
-├── features/              # Vertical slice modules
-│   ├── shared/           # Shared infrastructure
-│   ├── public-pages/     # Static pages
-│   ├── participants/     # Participant management
-│   └── [other-features]/ # Feature modules
-├── components/           # UI components
-├── lib/                 # Core libraries
-│   ├── supabase/       # Database client
-│   ├── utils/          # Utilities
-├── types/               # TypeScript definitions
-├── supabase/           # Database migrations
-└── public/             # Static assets
+├── app/                         # Next.js 16 App Router
+│   ├── api/                    # API-ruter
+│   ├── actions/                # Server Actions
+│   ├── _shared/                # Delte komponenter og verktøy
+│   │   ├── components/        # UI-komponenter (Radix UI)
+│   │   ├── lib/               # Kjernebiblioteker
+│   │   └── hooks/             # React hooks
+│   ├── pamelding/             # Påmelding og innleveringsskjema
+│   ├── deltakere/             # Deltakervisning
+│   ├── galleri/               # Bildegalleri
+│   ├── dashboard/             # Brukerdashboard
+│   └── [andre-sider]/         # Statiske sider
+├── supabase/                   # Database-migreringer
+│   └── migrations/            # SQL-migreringsfiler
+├── public/                     # Statiske filer
+│   ├── bartelopet-2025.gpx   # Rutedefinisjon
+│   └── images/                # Bilder
+└── docs/                       # Dokumentasjon
 ```
 
-## 🚀 Tech Stack
+## 🚀 Teknologi
 
-### Core Technologies
-- **Framework:** [Next.js 14](https://nextjs.org/) (App Router)
-- **Language:** [TypeScript](https://www.typescriptlang.org/) (Strict mode)
+### Kjerneteknologier
+- **Rammeverk:** [Next.js 16](https://nextjs.org/) (App Router)
+- **Språk:** [TypeScript](https://www.typescriptlang.org/) (Strict mode)
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/)
-- **UI Components:** Custom components + [Radix UI](https://www.radix-ui.com/)
+- **UI-komponenter:** Egendefinerte komponenter + [Radix UI](https://www.radix-ui.com/)
 
-### Backend & Database
+### Backend og Database
 - **BaaS:** [Supabase](https://supabase.com/)
-  - PostgreSQL database
-  - Authentication (Magic links)
-  - File storage
+  - PostgreSQL-database
+  - Autentisering (Magic links)
+  - Fillagring
   - Row Level Security (RLS)
 - **Rate Limiting:** [Upstash Redis](https://upstash.com/)
+- **E-post:** [Resend](https://resend.com/)
 
-### Third-Party Integrations
-- **Vipps:** Norwegian payment/ID OAuth provider
-- **Mapbox/MapLibre:** Route visualization
-- **Upstash:** Rate limiting for API endpoints
+### Tredjepartsintegrasjoner
+- **Mapbox/MapLibre:** Rutevisualisering
+- **Upstash Redis:** Rate limiting for API-endepunkter
+- **GPX Parser:** Parsing av rutefiler
 
-## 📋 Prerequisites
+## 📋 Forutsetninger
 
 - Node.js 18+
-- pnpm (recommended) or npm
-- Supabase account
-- Upstash Redis account (for rate limiting)
-- Vipps developer account (optional, for Vipps login)
+- pnpm (anbefalt) eller npm
+- Supabase-konto
+- Upstash Redis-konto (for rate limiting)
+- Mapbox-konto (for kart)
+- Resend-konto (for e-post)
 
-## 🛠️ Installation
+## 🛠️ Installasjon
 
-### 1. Clone the repository
+### 1. Klon repositoryet
 ```bash
-git clone https://github.com/yourusername/barteløpet.git
-cd barteløpet
+git clone https://github.com/berglie/bartelopet.git
+cd bartelopet
 ```
 
-### 2. Install dependencies
+### 2. Installer avhengigheter
 ```bash
 pnpm install
-# or
+# eller
 npm install
 ```
 
-### 3. Environment Setup
+### 3. Miljøvariabeloppsett
 
-Copy the example environment file:
+Kopier eksempelfilen for miljøvariabler:
 ```bash
 cp .env.example .env.local
 ```
 
-Configure the following environment variables in `.env.local`:
+Konfigurer følgende miljøvariabler i `.env.local`:
 
 ```bash
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+# Supabase (Påkrevd)
+NEXT_PUBLIC_SUPABASE_URL=din_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=din_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=din_service_role_key
 
-# Upstash Redis (for rate limiting)
-UPSTASH_REDIS_REST_URL=your_upstash_url
-UPSTASH_REDIS_REST_TOKEN=your_upstash_token
+# Upstash Redis (Påkrevd for produksjon)
+UPSTASH_REDIS_REST_URL=din_upstash_url
+UPSTASH_REDIS_REST_TOKEN=din_upstash_token
 
-# Application
-NEXT_PUBLIC_BASE_URL=http://localhost:3000
+# Mapbox (Påkrevd for kart)
+NEXT_PUBLIC_MAPBOX_TOKEN=ditt_mapbox_token
+
+# Resend (Påkrevd for kontaktskjema)
+RESEND_API_KEY=din_resend_api_key
+CONTACT_FORM_ADMIN_EMAIL=admin@bartelopet.no
+
+# Applikasjon
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NODE_ENV=development
 ```
 
-### 4. Database Setup
+Se [`docs/setup/ENV_EXAMPLE.md`](docs/setup/ENV_EXAMPLE.md) for detaljert dokumentasjon om miljøvariabler.
 
-Run the Supabase migrations:
+### 4. Databaseoppsett
+
+Kjør Supabase-migreringene:
 
 ```bash
-# The migrations are in supabase/migrations/
-# Apply them in your Supabase dashboard or using Supabase CLI
+# Migreringene finnes i supabase/migrations/
+# Bruk dem i Supabase-dashboardet eller via Supabase CLI
 ```
 
-See [`docs/setup/SUPABASE_SETUP.md`](docs/setup/SUPABASE_SETUP.md) for detailed database setup instructions.
+Se [`docs/setup/SUPABASE_SETUP.md`](docs/setup/SUPABASE_SETUP.md) for detaljerte instruksjoner om databaseoppsett.
 
-## 🚀 Development
+## 🚀 Utvikling
 
-### Start the development server
+### Start utviklingsserveren
 ```bash
 pnpm dev
-# or
+# eller
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Åpne [http://localhost:3000](http://localhost:3000) i nettleseren din.
 
-### Build for production
+### Bygg for produksjon
 ```bash
 pnpm build
-# or
+# eller
 npm run build
 ```
 
-### Run production build locally
+### Kjør produksjonsbygg lokalt
 ```bash
 pnpm start
-# or
+# eller
 npm start
 ```
 
-## 📁 Project Structure
-
-### Key Directories
-
-- **`/app`** - Next.js App Router pages and API routes
-- **`/features`** - Vertical slice feature modules
-- **`/components`** - Reusable UI components
-- **`/lib`** - Core utilities and configurations
-- **`/supabase/migrations`** - Database schema and migrations
-- **`/public`** - Static assets (images, fonts, etc.)
-- **`/types`** - TypeScript type definitions
-
-### Feature Module Structure
-
-Each feature in `/features` follows this structure:
-
-```
-features/[feature-name]/
-├── components/     # Feature-specific UI
-├── server/        # Server-side logic
-├── hooks/         # React hooks
-├── lib/           # Feature utilities
-├── types/         # TypeScript types
-└── index.ts       # Public API
+### Linting og typekontroll
+```bash
+pnpm lint        # Kjør ESLint
+pnpm type-check  # Kjør TypeScript-typekontroll
 ```
 
-## 🔑 Key Features
+## 🔑 Hovedfunksjoner
 
-- **User Registration** - Magic link authentication
-- **Multi-Image Upload** - Participants can upload multiple completion photos
-- **Voting System** - Vote for best submissions
-- **Gallery** - Browse all submissions
-- **Dashboard** - Personal statistics and management
-- **Multi-Year Support** - Handles events across different years
-- **Norwegian Localization** - Full Norwegian UI
+- **Brukerregistrering** - Magic link-autentisering via Supabase
+- **Flere bildeopplastinger** - Deltakere kan laste opp flere gjennomføringsbilder
+- **Stemme system** - Stem på de beste innleveringene
+- **Galleri** - Bla gjennom alle innleveringer
+- **Dashboard** - Personlig statistikk og administrasjon
+- **Flrårstøtte** - Håndterer arrangementer på tvers av forskjellige år
+- **Norsk lokalisering** - Fullstendig norsk UI
 
-## 🗄️ Database Schema
+## 🗄️ Databaseskjema
 
-Key tables:
-- `participants` - User registrations per year
-- `completions` - Run submissions
-- `completion_images` - Multiple images per completion
-- `votes` - Voting records
-- `photo_comments` - Comments on submissions
+Viktige tabeller:
+- `participants` - Brukerregistreringer per år
+- `completions` - Løpsinnleveringer
+- `completion_images` - Flere bilder per innlevering
+- `votes` - Stemmeposter
+- `photo_comments` - Kommentarer på innleveringer
 
-## 🔒 Security
+## 🔒 Sikkerhet
 
-- Row Level Security (RLS) on all tables
-- Rate limiting on API endpoints
-- Input validation with Zod
-- CSRF protection (Next.js built-in)
-- Secure file upload validation
+- Row Level Security (RLS) på alle tabeller
+- Rate limiting på API-endepunkter
+- Inputvalidering med Zod
+- CSRF-beskyttelse (Next.js innebygd)
+- Sikker filopplastingsvalidering
+- Sikkerhetshoder (CSP, HSTS, X-Frame-Options, etc.)
 
-## 📚 Documentation
+Se [`SECURITY.md`](SECURITY.md) for detaljer om sikkerhetsretningslinjer.
 
-- [`/docs/setup/`](docs/setup/) - Setup and configuration guides
-- [`/docs/architecture/`](docs/architecture/) - Architecture documentation
-- [`/docs/features/`](docs/features/) - Feature-specific documentation
-- [`/docs/deployment/`](docs/deployment/) - Deployment guides
+## 📚 Dokumentasjon
 
-## 🚢 Deployment
+- [`/docs/setup/`](docs/setup/) - Oppsett- og konfigurasjonsveiledninger
+- [`/docs/features/`](docs/features/) - Funksjonsspesifikk dokumentasjon
+- [`/docs/database/`](docs/database/) - Databasedokumentasjon
+- [`ARCHITECTURE.md`](docs/ARCHITECTURE.md) - Arkitekturoversikt
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) - Bidragsretningslinjer
 
-The application is optimized for deployment on [Vercel](https://vercel.com/):
+## 🚢 Distribusjon
 
-1. Push your code to GitHub
-2. Import the project to Vercel
-3. Configure environment variables
-4. Deploy
+Applikasjonen er optimalisert for distribusjon på [Vercel](https://vercel.com/):
 
-See [`docs/deployment/DEPLOYMENT_CHECKLIST.md`](docs/deployment/DEPLOYMENT_CHECKLIST.md) for detailed deployment instructions.
+1. Push koden din til GitHub
+2. Importer prosjektet til Vercel
+3. Konfigurer miljøvariabler
+4. Distribuer
 
-## 🤝 Contributing
+## 🤝 Bidra
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+Vi setter pris på bidrag! Se [`CONTRIBUTING.md`](CONTRIBUTING.md) for retningslinjer.
 
-## 📄 License
+1. Fork repositoryet
+2. Opprett en feature branch (`git checkout -b feature/fantastisk-funksjon`)
+3. Commit endringene dine (`git commit -m 'Legg til fantastisk funksjon'`)
+4. Push til branchen (`git push origin feature/fantastisk-funksjon`)
+5. Åpne en Pull Request
 
-This project is proprietary software for Barteløpet/ÅpenAid.
+## 📝 Kjente problemer
 
-## 🆘 Support
+### Avhengighetssårbarheter
+Det er kjente sårbarheter i `gpxparser`-pakken (v3.0.8) som kommer fra utdaterte avhengigheter (`jsdom`, `request`). Disse brukes kun server-side for parsing av GPX-filer og utgjør ingen direkte sikkerhetsrisiko for brukere. Vi overvåker situasjonen og vil oppdatere når en ny versjon er tilgjengelig.
 
-For issues and questions, please open an issue in the GitHub repository.
+## 📄 Lisens
+
+Dette prosjektet er open source under MIT License. Se [LICENSE](LICENSE) for detaljer.
+
+Utviklet for Barteløpet av ÅpenAid til støtte for mental helse gjennom Movember 💜
+
+## 🆘 Støtte
+
+For problemer og spørsmål, vennligst åpne en issue i GitHub-repositoryet eller kontakt oss via kontaktskjemaet på nettsiden.
 
 ---
 
-Built with ❤️ for supporting mental health awareness through Movember
+Bygget med ❤️ for å støtte mental helse bevissthet gjennom Movember
