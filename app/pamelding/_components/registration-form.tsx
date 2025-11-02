@@ -113,7 +113,6 @@ export function RegistrationForm() {
         maxBibError.message?.includes('JWT') ||
         maxBibError.code === 'PGRST301'  // PostgREST 403 error code
       )) {
-        console.log('⚠️ Permission/auth error detected');
         console.error('Max bib error:', maxBibError);
         setError('Det oppstod en tilgangsfeil. Vennligst prøv å logge ut og inn igjen.');
         return;
@@ -161,7 +160,6 @@ export function RegistrationForm() {
       } else {
         // User is NOT authenticated (normal registration flow)
         // Create new auth user with proper signup
-        console.log('🆕 Creating new user with signUp');
 
         // Generate a secure random password (user won't use it, only magic links)
         const tempPassword = crypto.randomUUID() + crypto.randomUUID();
@@ -191,8 +189,6 @@ export function RegistrationForm() {
           setError('Kunne ikke opprette bruker. Prøv igjen.');
           return;
         }
-
-        console.log('✅ User created:', signUpData.user.id);
 
         // Insert participant record linked to the new user
         const { data: newParticipant, error: insertError } = await supabase
@@ -227,9 +223,6 @@ export function RegistrationForm() {
 
         participant = newParticipant;
         setBibNumber(participant.bib_number);
-
-        console.log('✅ Participant created:', participant.id);
-        console.log('📧 Confirmation email sent to:', data.email);
       }
 
     } catch (err) {

@@ -184,9 +184,7 @@ export async function POST(request: NextRequest) {
       const confirmError = !confirmationEmailResponse.ok ? await confirmationEmailResponse.json() : null;
 
       console.error('Resend API error:', { adminError, confirmError });
-
-      // Fallback: Log to console if email fails
-      console.log('Contact form submission:', validatedData);
+      console.error('Contact form submission (email failed):', validatedData);
 
       return NextResponse.json(
         {

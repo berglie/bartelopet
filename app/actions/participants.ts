@@ -32,8 +32,6 @@ export async function getParticipantDetailAction(
       .single()
 
     if (completionWithCounts && !viewError && completionWithCounts.id) {
-      console.log('Found completion in view:', completionWithCounts)
-
       // Fetch the images from the photos table
       const { data: images, error: imagesError } = await supabase
         .from('photos')
@@ -44,13 +42,6 @@ export async function getParticipantDetailAction(
 
       if (imagesError) {
         console.error('Error fetching photos for completion_id:', completionWithCounts.id, 'Error:', imagesError)
-      } else {
-        console.log('Successfully fetched photos:', {
-          completion_id: completionWithCounts.id,
-          participant_id: participant.id,
-          images_count: images?.length || 0,
-          images: images
-        })
       }
 
       // All images are in the photos table only - no fallback
@@ -89,8 +80,6 @@ export async function getParticipantDetailAction(
           .eq('completion_id', completion.id)
           .order('is_starred', { ascending: false })
           .order('display_order', { ascending: true })
-
-        console.log('Fetched images for completion (fallback):', completion.id, 'participant:', participant.id, 'images:', images)
 
         // Get comment and vote counts
         const [commentCount, voteCount] = await Promise.all([

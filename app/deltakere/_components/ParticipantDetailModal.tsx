@@ -58,11 +58,6 @@ export function ParticipantDetailModal({
         )
 
         if (data) {
-          console.log('Received participant detail:', data)
-          if (data.completion) {
-            console.log('Completion data:', data.completion)
-            console.log('Images array:', data.completion.images)
-          }
           setDetail(data)
         }
       } catch (error) {

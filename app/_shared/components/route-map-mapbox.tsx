@@ -79,13 +79,10 @@ export default function RouteMapMapbox({ year = 2025 }: { year?: number }) {
           }
 
           setViewState({ ...center, zoom });
-          console.log(`✅ GPX route loaded successfully: ${gpxPath}`);
-        } else {
-          console.log(`ℹ️ Using fallback route (add /public${gpxPath} to use your GPX)`);
         }
       })
-      .catch((error) => {
-        console.log('ℹ️ Using fallback route:', error.message);
+      .catch(() => {
+        // Using fallback route if GPX loading fails
       })
       .finally(() => {
         setIsLoading(false);
