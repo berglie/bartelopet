@@ -55,7 +55,7 @@ export function Navigation({ isAuthenticated = false }: NavigationProps) {
                   Logg inn
                 </Link>
                 <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
-                  <Link href="/pamelding">Send inn løp</Link>
+                  <Link href="/pamelding">Påmelding</Link>
                 </Button>
               </>
             )}
@@ -76,7 +76,7 @@ export function Navigation({ isAuthenticated = false }: NavigationProps) {
           <div className="md:hidden">
             <Button asChild size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
               <Link href={isAuthenticated ? "/dashboard" : "/pamelding"}>
-                {isAuthenticated ? "Dashboard" : "Send inn"}
+                {isAuthenticated ? "Dashboard" : "Påmelding"}
               </Link>
             </Button>
           </div>
