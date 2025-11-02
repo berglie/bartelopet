@@ -200,6 +200,10 @@ export function HvordanClient() {
                 <span className="text-accent">•</span>
                 <span>Husk refleks og hodelykt hvis du løper på kvelden - noen få plasser er det ingen lys</span>
               </li>
+              <li className="flex gap-2">
+                <span className="text-accent">•</span>
+                <span>Vær oppmerksom på at ruten krysser veier uten fotgjengerfelt på minst ett sted. Stopp opp, se deg for, og kryss forsiktig når det er trygt</span>
+              </li>
             </ul>
           </CardContent>
         </Card>

@@ -3,7 +3,7 @@ import { Button } from '@/app/_shared/components/ui/button';
 import { Card, CardContent } from '@/app/_shared/components/ui/card';
 import { createClient } from '@/app/_shared/lib/supabase/server';
 import { RouteMap } from '@/app/_shared/components/route-map';
-import { MapPin, Users, Trophy, Upload, Award, ExternalLink, Heart, Download, BookOpen } from 'lucide-react';
+import { MapPin, Users, Trophy, Upload, Award, ExternalLink, Heart, Download, BookOpen, AlertTriangle, Lightbulb, Shield } from 'lucide-react';
 import { MustacheSVG } from '@/app/_shared/components/mustache-icon';
 import { getCurrentEventYear, getYearDateRange } from '@/app/_shared/lib/utils/year';
 
@@ -200,6 +200,66 @@ export default async function HomePage({
                 </CardContent>
               </Card>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Safety Warning */}
+      <section className="py-12 md:py-20 border-b border-border/50 bg-amber-500/5">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <Card className="bg-card border-amber-500/30 backdrop-blur shadow-lg">
+              <CardContent className="p-8 md:p-10 space-y-6">
+                {/* Header */}
+                <div className="flex flex-col items-center gap-4">
+                  <div className="w-12 h-12 bg-amber-500/20 rounded-full flex items-center justify-center shrink-0">
+                    <AlertTriangle className="h-6 w-6 text-amber-600 dark:text-amber-500" />
+                  </div>
+                  <div className="space-y-2 text-center">
+                    <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+                      Viktig sikkerhetsinformasjon
+                    </h2>
+                    <p className="text-base text-muted-foreground">
+                      November betyr mørke forhold. Din sikkerhet er vår prioritet.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Safety Items */}
+                <div className="grid md:grid-cols-2 gap-6 pt-4">
+                  <div className="flex items-start gap-4 p-4 bg-background/50 rounded-lg border border-border/50">
+                    <div className="w-10 h-10 bg-amber-500/20 rounded-full flex items-center justify-center shrink-0">
+                      <Shield className="h-5 w-5 text-amber-600 dark:text-amber-500" />
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="font-semibold text-foreground">Bruk refleks</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Bruk refleksvest eller refleksbånd slik at bilistene ser deg i mørket.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4 p-4 bg-background/50 rounded-lg border border-border/50">
+                    <div className="w-10 h-10 bg-amber-500/20 rounded-full flex items-center justify-center shrink-0">
+                      <Lightbulb className="h-5 w-5 text-amber-600 dark:text-amber-500" />
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="font-semibold text-foreground">Ta med hodelykt</h3>
+                      <p className="text-sm text-muted-foreground">
+                        En hodelykt hjelper deg med å se veien og gjør deg mer synlig.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer Note */}
+                <div className="pt-2 border-t border-border/50">
+                  <p className="text-sm text-muted-foreground text-center">
+                    Løp alltid med forsiktighet i trafikken. Vær oppmerksom på dine omgivelser.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
