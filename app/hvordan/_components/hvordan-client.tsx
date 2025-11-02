@@ -104,7 +104,7 @@ export function HvordanClient() {
                 <h3 className="font-semibold text-lg">3. Start en aktivitet med ruten</h3>
                 <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
                   <li>Åpne Strava-appen og trykk på &quot;+&quot; for å starte en ny aktivitet</li>
-                  <li>Velg &quot;Løp&quot; eller &quot;Gå&quot;</li>
+                  <li>Velg &quot;Løp&quot; eller &quot;Gå&quot; (begge er helt greit!)</li>
                   <li>I innstillingsmenyen, velg &quot;Bruk rute&quot;</li>
                   <li>Velg &quot;Barten&quot;-ruten fra listen over lagrede ruter</li>
                   <li>Start opptaket og følg ruten på kartet</li>
@@ -170,6 +170,31 @@ export function HvordanClient() {
                   <li>Produsentens mobilapp</li>
                   <li>Direkte overføring via USB eller Bluetooth</li>
                 </ul>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Alternative Route */}
+        <Card className="bg-card/50 border-primary/20 backdrop-blur">
+          <CardContent className="p-6 md:p-8 space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center shrink-0">
+                <MapPin className="h-6 w-6 text-primary-foreground" />
+              </div>
+              <h2 className="text-2xl font-bold">Ikke i Stavanger?</h2>
+            </div>
+
+            <div className="space-y-4">
+              <p className="text-muted-foreground">
+                Hvis du ikke har mulighet til å gjennomføre løypen i Stavanger, kan du fortsatt delta ved å lage din egen barteløype i din egen by!
+              </p>
+
+              <div className="bg-accent/10 border border-accent/30 rounded-lg p-4">
+                <p className="text-sm">
+                  <span className="font-semibold">Husk:</span> Det viktigste er at du støtter saken og har det gøy underveis!
+                  Din deltakelse teller like mye uansett hvor du løper/går eller hvor langt du beveger deg.
+                </p>
               </div>
             </div>
           </CardContent>

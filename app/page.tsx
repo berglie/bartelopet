@@ -73,7 +73,7 @@ export default async function HomePage({
             </div>
 
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Delta ved å donere et valgfritt beløp for startnummeret. Løp gjennom sentrum i november. Vinn premier. Støtt Mental Helse.
+              Delta ved å donere et valgfritt beløp for startnummeret. Løp eller gå gjennom sentrum i november. Vinn premier. Støtt Mental Helse.
             </p>
 
             {/* CTA */}
@@ -124,6 +124,9 @@ export default async function HomePage({
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Løypen på 11 km går gjennom sentrum og forbi flere ikoniske steder.
+              </p>
+              <p className="text-base text-muted-foreground max-w-2xl mx-auto italic">
+                Ikke i Stavanger? Ingen bekymring! Du kan lage din egen løype i din egen by og delta likevel. Du trenger ikke løpe - gåing er også helt greit!
               </p>
             </div>
 
@@ -298,9 +301,9 @@ export default async function HomePage({
                     </div>
                     <span className="text-6xl font-bold text-accent/20">02</span>
                   </div>
-                  <h3 className="text-2xl font-bold">Løp</h3>
+                  <h3 className="text-2xl font-bold">Løp eller gå</h3>
                   <p className="text-muted-foreground leading-relaxed">
-                    Gjennomfør ruten når det passer deg i løpet av november
+                    Gjennomfør ruten når det passer deg i løpet av november. Løp, gå eller lag din egen løype i din by!
                   </p>
                 </CardContent>
               </Card>
