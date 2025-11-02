@@ -17,6 +17,11 @@ export const metadata: Metadata = {
   description: "Delta i Barteløpet for Movember - løp for mental helse, del dine bilder og stem på andre deltakere",
   keywords: ["barteløpet", "løp", "movember", "mental helse", "veldedighet", "Stavanger", "Norge"],
   authors: [{ name: "Barteløpet" }],
+  icons: {
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
   openGraph: {
     title: "Barteløpet - Virtuelt løp for mental helse",
     description: "Delta i Movember-kampanjen! Løp for mental helse forskning.",

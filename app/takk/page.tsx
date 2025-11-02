@@ -3,12 +3,13 @@ import { Card, CardContent } from '@/app/_shared/components/ui/card';
 import Link from 'next/link';
 import { Award, Mail, Trophy } from 'lucide-react';
 
-export default function ThankYouPage({
+export default async function ThankYouPage({
   searchParams,
 }: {
-  searchParams: { bib?: string };
+  searchParams: Promise<{ bib?: string }>;
 }) {
-  const bibNumber = searchParams.bib;
+  const params = await searchParams;
+  const bibNumber = params.bib;
 
   return (
     <div className="container mx-auto px-4 py-16 max-w-2xl">

@@ -37,9 +37,10 @@ async function getStats(year: number) {
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: { year?: string };
+  searchParams: Promise<{ year?: string }>;
 }) {
-  const yearParam = searchParams.year;
+  const params = await searchParams;
+  const yearParam = params.year;
   const year = yearParam ? parseInt(yearParam, 10) : getCurrentEventYear();
   const stats = await getStats(year);
 

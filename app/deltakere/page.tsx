@@ -8,9 +8,10 @@ export const revalidate = 300 // Revalidate every 5 minutes
 export default async function DeltakerePage({
   searchParams,
 }: {
-  searchParams: { year?: string }
+  searchParams: Promise<{ year?: string }>
 }) {
-  const yearParam = searchParams.year
+  const params = await searchParams;
+  const yearParam = params.year
   const year = yearParam ? parseInt(yearParam, 10) : getCurrentEventYear()
 
   const [participants, stats] = await Promise.all([
