@@ -1,6 +1,21 @@
+import { Metadata } from 'next'
 import { createClient } from '@/app/_shared/lib/supabase/server';
 import { GalleryClient } from './_components/GalleryClient';
 import { getCurrentEventYear, getYearDateRange } from '@/app/_shared/lib/utils/year';
+
+export const metadata: Metadata = {
+  title: 'Fotogalleri',
+  description: 'Se alle som har fullført Barteløpet og stem på ditt favorittbilde. Inspirer andre til å løpe for mental helse.',
+  openGraph: {
+    title: 'Fotogalleri - Barteløpet',
+    description: 'Se alle som har fullført Barteløpet og stem på ditt favorittbilde. Inspirer andre til å løpe for mental helse.',
+    url: 'https://barteløpet.no/galleri',
+  },
+  twitter: {
+    title: 'Fotogalleri - Barteløpet',
+    description: 'Se alle som har fullført Barteløpet og stem på ditt favorittbilde. Inspirer andre til å løpe for mental helse.',
+  },
+}
 
 export const revalidate = 60; // Revalidate every 60 seconds
 

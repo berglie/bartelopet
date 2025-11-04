@@ -118,7 +118,7 @@ NEXT_PUBLIC_MAPBOX_TOKEN=ditt_mapbox_token
 
 # Resend (Påkrevd for kontaktskjema)
 RESEND_API_KEY=din_resend_api_key
-CONTACT_FORM_ADMIN_EMAIL=admin@bartelopet.no
+CONTACT_FORM_ADMIN_EMAIL=din-epost
 
 # Applikasjon
 NEXT_PUBLIC_APP_URL=http://localhost:3000

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Navigation } from "@/app/_components/navigation";
+import { StructuredData } from "@/app/_components/structured-data";
 import { YearProvider } from "@/contexts/year-context";
 import { createClient } from "@/app/_shared/lib/supabase/server";
 import Link from "next/link";
@@ -13,20 +14,47 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Barteløpet - Virtuelt løp for mental helse",
+  metadataBase: new URL('https://barteløpet.no'),
+  title: {
+    default: "Barteløpet - Virtuelt løp for mental helse",
+    template: "%s | Barteløpet"
+  },
   description: "Delta i Barteløpet for Movember - løp for mental helse, del dine bilder og stem på andre deltakere",
   keywords: ["barteløpet", "løp", "movember", "mental helse", "veldedighet", "Stavanger", "Norge"],
   authors: [{ name: "Barteløpet" }],
+  creator: "ÅpenAid",
+  publisher: "ÅpenAid",
   icons: {
     icon: "/favicon.png",
     shortcut: "/favicon.png",
     apple: "/favicon.png",
   },
   openGraph: {
-    title: "Barteløpet - Virtuelt løp for mental helse",
-    description: "Delta i Movember-kampanjen! Løp for mental helse forskning.",
     type: "website",
     locale: "nb_NO",
+    url: "https://barteløpet.no",
+    siteName: "Barteløpet",
+    title: "Barteløpet - Virtuelt løp for mental helse",
+    description: "Delta i Movember-kampanjen! Løp for mental helse forskning.",
+  },
+  twitter: {
+    card: "summary",
+    title: "Barteløpet - Virtuelt løp for mental helse",
+    description: "Delta i Movember-kampanjen! Løp for mental helse forskning.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'd3fPtuQkt7tnr4mG7ZNbbBFcqQ1cMDQzIGj2FLd_pys',
   },
 };
 
@@ -40,6 +68,9 @@ export default async function RootLayout({
 
   return (
     <html lang="nb-NO">
+      <head>
+        <StructuredData />
+      </head>
       <body className={inter.className}>
         <YearProvider>
           <Navigation isAuthenticated={!!user} />
