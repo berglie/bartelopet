@@ -123,7 +123,7 @@ export default async function HomePage({
                 <span className="text-accent">Stavanger</span>
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Løypen på 11 km går gjennom sentrum og forbi flere ikoniske steder.
+                En 11 km løype gjennom sentrum hvor du opplever ikoniske steder, street art og fargerike gater. Løp når det passer deg i løpet av november.
               </p>
               <p className="text-base text-muted-foreground max-w-2xl mx-auto italic">
                 Ikke i Stavanger? Ingen bekymring! Du kan lage din egen løype i din egen by og delta likevel. Du trenger ikke løpe - gåing er også helt greit!
@@ -166,43 +166,57 @@ export default async function HomePage({
               </Button>
             </div>
 
-            {/* Route Info */}
-            <div className="grid md:grid-cols-3 gap-6">
-              <Card className="bg-card/50 border-border/50 backdrop-blur">
-                <CardContent className="p-6 text-center space-y-3">
-                  <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto">
-                    <MapPin className="h-6 w-6 text-primary-foreground" />
-                  </div>
-                  <h3 className="font-semibold">Sentrumsløype</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Gjennom kjente, ikoniske plasser
-                  </p>
-                </CardContent>
-              </Card>
+            {/* Iconic Places */}
+            <div className="space-y-6">
+              <div className="text-center space-y-2">
+                <h3 className="text-2xl font-bold">Ikoniske steder langs løypen</h3>
+                <p className="text-muted-foreground">Løp gjennom Stavangers vakre sentrum</p>
+              </div>
 
-              <Card className="bg-card/50 border-border/50 backdrop-blur">
-                <CardContent className="p-6 text-center space-y-3">
-                  <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center mx-auto">
-                    <Upload className="h-6 w-6 text-accent" />
-                  </div>
-                  <h3 className="font-semibold">Fleksibel tid</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Løp når det passer i november
-                  </p>
-                </CardContent>
-              </Card>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <Card className="bg-gradient-to-br from-accent/5 to-transparent border-accent/20 backdrop-blur">
+                  <CardContent className="p-4 text-center space-y-2">
+                    <div className="text-3xl">🏛️</div>
+                    <h4 className="font-semibold text-sm">Valbergstårnet</h4>
+                  </CardContent>
+                </Card>
 
-              <Card className="bg-card/50 border-border/50 backdrop-blur">
-                <CardContent className="p-6 text-center space-y-3">
-                  <div className="w-12 h-12 bg-secondary/20 rounded-full flex items-center justify-center mx-auto">
-                    <Users className="h-6 w-6 text-secondary-foreground" />
-                  </div>
-                  <h3 className="font-semibold">Fellesskap</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Del din opplevelse
-                  </p>
-                </CardContent>
-              </Card>
+                <Card className="bg-gradient-to-br from-accent/5 to-transparent border-accent/20 backdrop-blur">
+                  <CardContent className="p-4 text-center space-y-2">
+                    <div className="text-3xl">🎨</div>
+                    <h4 className="font-semibold text-sm">Fargegadå</h4>
+                    <p className="text-xs text-muted-foreground">Street art</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-accent/5 to-transparent border-accent/20 backdrop-blur">
+                  <CardContent className="p-4 text-center space-y-2">
+                    <div className="text-3xl">🏘️</div>
+                    <h4 className="font-semibold text-sm">Gamle Stavanger</h4>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-accent/5 to-transparent border-accent/20 backdrop-blur">
+                  <CardContent className="p-4 text-center space-y-2">
+                    <div className="text-3xl">🏡</div>
+                    <h4 className="font-semibold text-sm">Eiganes</h4>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-accent/5 to-transparent border-accent/20 backdrop-blur">
+                  <CardContent className="p-4 text-center space-y-2">
+                    <div className="text-3xl">🏙️</div>
+                    <h4 className="font-semibold text-sm">Stavanger Øst</h4>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-accent/5 to-transparent border-accent/20 backdrop-blur">
+                  <CardContent className="p-4 text-center space-y-2">
+                    <div className="text-3xl">🚶</div>
+                    <h4 className="font-semibold text-sm">Pedersgadå</h4>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
         </div>

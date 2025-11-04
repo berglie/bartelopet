@@ -174,9 +174,9 @@ export default function RouteMapMapbox({ year = 2025 }: { year?: number }) {
       </div>
 
       {/* Route info overlay */}
-      <div className="absolute bottom-6 left-6 bg-card/95 backdrop-blur-sm px-6 py-3 rounded-xl shadow-lg border border-primary/30">
-        <p className="text-sm font-semibold text-accent">📍 Stavanger Sentrum</p>
-        <p className="text-xs text-muted-foreground mt-1">Flott løype • Ikoniske steder • Asfaltert</p>
+      <div className="absolute bottom-6 left-6 bg-card/95 backdrop-blur-sm px-6 py-3 rounded-xl shadow-lg border border-primary/30 max-w-[calc(100%-3rem)]">
+        <p className="text-sm font-semibold text-accent">📍 11 km gjennom Stavanger</p>
+        <p className="text-xs text-muted-foreground mt-1">Fargegadå • Gamle Stavanger • Stavanger Øst • Eiganes</p>
       </div>
     </div>
   );
