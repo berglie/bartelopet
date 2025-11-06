@@ -123,7 +123,7 @@ export default async function HomePage({
                 <span className="text-accent">Stavanger</span>
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                En 11 km løype gjennom sentrum hvor du opplever ikoniske steder, street art og fargerike gater. Løp når det passer deg i løpet av november.
+                En 11 km løype gjennom sentrum hvor du opplever ikoniske steder, gatekunst og fargerike gater. Løp når det passer deg i løpet av november.
               </p>
               <p className="text-base text-muted-foreground max-w-2xl mx-auto italic">
                 Ikke i Stavanger? Ingen bekymring! Du kan lage din egen løype i din egen by og delta likevel. Du trenger ikke løpe - gåing er også helt greit!
@@ -185,7 +185,7 @@ export default async function HomePage({
                   <CardContent className="p-4 text-center space-y-2">
                     <div className="text-3xl">🎨</div>
                     <h4 className="font-semibold text-sm">Fargegadå</h4>
-                    <p className="text-xs text-muted-foreground">Street art</p>
+                    <p className="text-xs text-muted-foreground">Gatekunst</p>
                   </CardContent>
                 </Card>
 

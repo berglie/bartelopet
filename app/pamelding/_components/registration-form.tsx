@@ -234,6 +234,8 @@ export function RegistrationForm() {
   }
 
   if (bibNumber) {
+    const isOAuthUser = prefillData !== null;
+
     return (
       <Card>
         <CardHeader>
@@ -246,27 +248,38 @@ export function RegistrationForm() {
             <p className="text-6xl font-bold text-accent">{bibNumber}</p>
           </div>
 
-          <div className="bg-primary/10 border border-primary rounded-lg p-4 space-y-2">
-            <p className="font-semibold text-accent">📧 Bekreft e-postadressen din</p>
-            <p className="text-sm text-foreground">
-              Vi har sendt en bekreftelseslenke til din e-post. Klikk på lenken for å aktivere kontoen din og logge inn.
-            </p>
-          </div>
+          {isOAuthUser ? (
+            <div className="bg-primary/10 border border-primary rounded-lg p-4 space-y-2">
+              <p className="font-semibold text-accent">✅ Logget inn med Google</p>
+              <p className="text-sm text-foreground">
+                Du er nå påmeldt og din e-postadresse er bekreftet. Du blir automatisk sendt til dashboardet.
+              </p>
+            </div>
+          ) : (
+            <div className="bg-primary/10 border border-primary rounded-lg p-4 space-y-2">
+              <p className="font-semibold text-accent">📧 Bekreft e-postadressen din</p>
+              <p className="text-sm text-foreground">
+                Vi har sendt en bekreftelseslenke til din e-post. Klikk på lenken for å aktivere kontoen din og logge inn.
+              </p>
+            </div>
+          )}
 
           <div className="bg-muted p-4 rounded-lg space-y-2">
             <p className="font-semibold">Neste steg:</p>
             <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
-              <li>Sjekk e-posten din og klikk på bekreftelseslenken</li>
-              <li>Du vil bli automatisk innlogget</li>
+              {!isOAuthUser && <li>Sjekk e-posten din og klikk på bekreftelseslenken</li>}
+              {!isOAuthUser && <li>Du vil bli automatisk innlogget</li>}
               <li>Løp løypen i november</li>
               <li>Last opp bilde og historien din</li>
               <li>Stem på andre deltakere</li>
             </ol>
           </div>
 
-          <div className="text-center text-sm text-muted-foreground">
-            <p>Ikke mottatt e-post? Sjekk søppelpost-mappen din.</p>
-          </div>
+          {!isOAuthUser && (
+            <div className="text-center text-sm text-muted-foreground">
+              <p>Ikke mottatt e-post? Sjekk søppelpost-mappen din.</p>
+            </div>
+          )}
         </CardContent>
       </Card>
     );
