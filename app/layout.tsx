@@ -25,10 +25,16 @@ export const metadata: Metadata = {
   creator: "ÅpenAid",
   publisher: "ÅpenAid",
   icons: {
-    icon: "/favicon.png",
-    shortcut: "/favicon.png",
-    apple: "/favicon.png",
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
   },
+  manifest: '/site.webmanifest',
   openGraph: {
     type: "website",
     locale: "nb_NO",
@@ -36,11 +42,20 @@ export const metadata: Metadata = {
     siteName: "Barteløpet",
     title: "Barteløpet - Virtuelt løp for mental helse",
     description: "Delta i Movember-kampanjen! Løp for mental helse forskning.",
+    images: [
+      {
+        url: '/android-chrome-512x512.png',
+        width: 512,
+        height: 512,
+        alt: 'Barteløpet logo - Løp for mental helse',
+      },
+    ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Barteløpet - Virtuelt løp for mental helse",
     description: "Delta i Movember-kampanjen! Løp for mental helse forskning.",
+    images: ['/android-chrome-512x512.png'],
   },
   robots: {
     index: true,
