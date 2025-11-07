@@ -9,6 +9,8 @@ import { useKeyboardNav } from './use-keyboard-nav'
 import { cn } from '@/app/_shared/lib/utils/cn'
 import { CommentList } from './comments/comment-list'
 import { getComments } from '@/app/actions/comments'
+import { ShareButton } from './share-button'
+import { createPhotoShareData } from '@/app/_shared/lib/utils/share'
 
 // Extended type for backward compatibility with photo_url
 type CompletionWithPhotoUrl = CompletionWithParticipant & {
@@ -287,6 +289,18 @@ export function ImageViewerDialog({
 
               {/* Action buttons */}
               <div className="flex items-center gap-3">
+                {/* Share button */}
+                <ShareButton
+                  shareData={createPhotoShareData(
+                    completion.id,
+                    completion.participant.full_name,
+                    completion.photo_url
+                  )}
+                  variant="secondary"
+                  size="lg"
+                  showLabel={true}
+                />
+
                 {/* Comments button */}
                 <Button
                   onClick={() => setShowComments(!showComments)}

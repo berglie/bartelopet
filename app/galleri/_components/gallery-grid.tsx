@@ -17,13 +17,13 @@ type GalleryCompletion = CompletionWithParticipant & {
 
 export function GalleryGrid({
   completions,
-  userVoteId,
+  userVoteIds,
 }: {
   completions: GalleryCompletion[];
-  userVoteId: string | null;
+  userVoteIds: string[];
 }) {
   const router = useRouter();
-  const [votedId, setVotedId] = useState(userVoteId);
+  const [votedIds, setVotedIds] = useState(userVoteIds);
   const [loading, setLoading] = useState<string | null>(null);
   const [viewerOpen, setViewerOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -90,15 +90,20 @@ export function GalleryGrid({
     }
 
     try {
-      if (votedId) {
-        // Remove existing vote
-        await supabase
-          .from('photo_votes')
-          .delete()
-          .eq('voter_id', currentParticipant.id);
-      }
+      // Check if already voted for this completion
+      const { data: existingVote } = await supabase
+        .from('photo_votes')
+        .select('id')
+        .eq('voter_id', currentParticipant.id)
+        .eq('completion_id', completionId)
+        .eq('event_year', completion?.event_year || 2025)
+        .maybeSingle();
 
-      if (votedId !== completionId) {
+      if (existingVote) {
+        // Remove vote
+        await supabase.from('photo_votes').delete().eq('id', existingVote.id);
+        setVotedIds((prev) => prev.filter((id) => id !== completionId));
+      } else {
         // Add new vote
         const { error } = await supabase
           .from('photo_votes')
@@ -112,10 +117,8 @@ export function GalleryGrid({
           console.error('Vote error:', error);
           alert('Kunne ikke registrere stemme');
         } else {
-          setVotedId(completionId);
+          setVotedIds((prev) => [...prev, completionId]);
         }
-      } else {
-        setVotedId(null);
       }
 
       router.refresh();
@@ -123,7 +126,7 @@ export function GalleryGrid({
       console.error('Vote error:', error);
       alert('Noe gikk galt');
     }
-  }, [votedId, completions, router]);
+  }, [completions, router]);
 
   async function handleQuickVote(completionId: string, participantId: string) {
     setLoading(completionId);
@@ -161,15 +164,20 @@ export function GalleryGrid({
     const completion = completions.find(c => c.id === completionId);
 
     try {
-      if (votedId) {
-        // Remove existing vote
-        await supabase
-          .from('photo_votes')
-          .delete()
-          .eq('voter_id', currentParticipant.id);
-      }
+      // Check if already voted for this completion
+      const { data: existingVote } = await supabase
+        .from('photo_votes')
+        .select('id')
+        .eq('voter_id', currentParticipant.id)
+        .eq('completion_id', completionId)
+        .eq('event_year', completion?.event_year || 2025)
+        .maybeSingle();
 
-      if (votedId !== completionId) {
+      if (existingVote) {
+        // Remove vote
+        await supabase.from('photo_votes').delete().eq('id', existingVote.id);
+        setVotedIds((prev) => prev.filter((id) => id !== completionId));
+      } else {
         // Add new vote
         const { error } = await supabase
           .from('photo_votes')
@@ -183,10 +191,8 @@ export function GalleryGrid({
           console.error('Vote error:', error);
           alert('Kunne ikke registrere stemme');
         } else {
-          setVotedId(completionId);
+          setVotedIds((prev) => [...prev, completionId]);
         }
-      } else {
-        setVotedId(null);
       }
 
       router.refresh();
@@ -250,14 +256,14 @@ export function GalleryGrid({
 
             <CardFooter className="p-4 pt-0 flex gap-2">
               <Button
-                variant={votedId === completion.id ? 'default' : 'outline'}
+                variant={votedIds.includes(completion.id) ? 'default' : 'outline'}
                 className="flex-1 flex items-center justify-center"
                 onClick={() => handleQuickVote(completion.id, completion.participant.id)}
                 disabled={loading === completion.id}
               >
                 <Heart
                   className="mr-2 h-4 w-4"
-                  fill={votedId === completion.id ? 'currentColor' : 'none'}
+                  fill={votedIds.includes(completion.id) ? 'currentColor' : 'none'}
                 />
                 {completion.vote_count}
               </Button>
@@ -289,7 +295,7 @@ export function GalleryGrid({
           currentIndex={currentImageIndex}
           onNavigate={handleNavigate}
           onVote={handleVote}
-          userVoteId={votedId}
+          userVoteIds={votedIds}
           totalImages={completions.length}
           currentUserId={currentUserId}
           openWithComments={openWithComments}

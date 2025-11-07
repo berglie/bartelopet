@@ -10,6 +10,8 @@ import { cn } from '@/app/_shared/lib/utils/cn'
 import { CommentList } from './comments/comment-list'
 import { getComments } from '@/app/actions/comments'
 import { ImageThumbnailStrip } from './image-thumbnail-strip'
+import { ShareButton } from './share-button'
+import { createPhotoShareData } from '@/app/_shared/lib/utils/share'
 
 interface ImageViewerDialogMultiProps {
   isOpen: boolean
@@ -333,6 +335,18 @@ export function ImageViewerDialogMulti({
 
               {/* Action buttons */}
               <div className="flex items-center gap-3">
+                {/* Share button */}
+                <ShareButton
+                  shareData={createPhotoShareData(
+                    completion.id,
+                    completion.participant.full_name,
+                    currentImage?.image_url
+                  )}
+                  variant="secondary"
+                  size="lg"
+                  showLabel={true}
+                />
+
                 {/* Comments button */}
                 <Button
                   onClick={() => setShowComments(!showComments)}

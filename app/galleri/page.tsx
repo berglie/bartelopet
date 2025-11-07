@@ -1,23 +1,75 @@
 import { Metadata } from 'next'
+import { Suspense } from 'react'
 import { createClient } from '@/app/_shared/lib/supabase/server';
 import { GalleryClient } from './_components/GalleryClient';
 import { getCurrentEventYear, getYearDateRange } from '@/app/_shared/lib/utils/year';
 
-export const metadata: Metadata = {
-  title: 'Fotogalleri',
-  description: 'Se alle som har fullført Barteløpet og stem på ditt favorittbilde. Inspirer andre til å løpe for mental helse.',
-  openGraph: {
-    title: 'Fotogalleri - Barteløpet',
-    description: 'Se alle som har fullført Barteløpet og stem på ditt favorittbilde. Inspirer andre til å løpe for mental helse.',
-    url: 'https://barteløpet.no/galleri',
-  },
-  twitter: {
-    title: 'Fotogalleri - Barteløpet',
-    description: 'Se alle som har fullført Barteløpet og stem på ditt favorittbilde. Inspirer andre til å løpe for mental helse.',
-  },
-}
-
 export const revalidate = 60; // Revalidate every 60 seconds
+
+export async function generateMetadata({ searchParams }: { searchParams: Promise<{ id?: string }> }): Promise<Metadata> {
+  const params = await searchParams;
+  const completionId = params.id;
+
+  // If a specific completion is being shared, fetch its data for metadata
+  if (completionId) {
+    const supabase = await createClient();
+    const { data: completion } = await supabase
+      .from('completions_with_counts')
+      .select(`
+        *,
+        participant:participants(
+          full_name
+        ),
+        images:photos(
+          image_url,
+          is_starred
+        )
+      `)
+      .eq('id', completionId)
+      .single();
+
+    if (completion) {
+      const participantName = completion.participant?.full_name || 'En deltaker';
+      const starredImage = completion.images?.find((img: any) => img.is_starred);
+      const imageUrl = starredImage?.image_url || completion.images?.[0]?.image_url;
+
+      return {
+        title: `${participantName}s løp - Barteløpet`,
+        description: `Sjekk ut ${participantName}s bilde fra Barteløpet! 🏃‍♂️`,
+        openGraph: {
+          title: `${participantName}s løp - Barteløpet`,
+          description: `Sjekk ut ${participantName}s bilde fra Barteløpet! 🏃‍♂️`,
+          url: `https://barteløpet.no/galleri?id=${completionId}`,
+          images: imageUrl ? [{ url: imageUrl, width: 1200, height: 630 }] : [],
+          type: 'website',
+        },
+        twitter: {
+          card: 'summary_large_image',
+          title: `${participantName}s løp - Barteløpet`,
+          description: `Sjekk ut ${participantName}s bilde fra Barteløpet! 🏃‍♂️`,
+          images: imageUrl ? [imageUrl] : [],
+        },
+      };
+    }
+  }
+
+  // Default metadata for gallery page
+  return {
+    title: 'Fotogalleri',
+    description: 'Se alle som har fullført Barteløpet og stem på dine favorittbilder. Inspirer andre til å løpe for mental helse.',
+    openGraph: {
+      title: 'Fotogalleri - Barteløpet',
+      description: 'Se alle som har fullført Barteløpet og stem på dine favorittbilder. Inspirer andre til å løpe for mental helse.',
+      url: 'https://barteløpet.no/galleri',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'Fotogalleri - Barteløpet',
+      description: 'Se alle som har fullført Barteløpet og stem på dine favorittbilder. Inspirer andre til å løpe for mental helse.',
+    },
+  };
+}
 
 async function getCompletions() {
   const supabase = await createClient();
@@ -97,7 +149,14 @@ export default async function GalleryPage() {
         </p>
       </div>
 
-      <GalleryClient initialCompletions={completions} initialUserVoteIds={userVoteIds} />
+      <Suspense fallback={
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Laster bilder...</p>
+        </div>
+      }>
+        <GalleryClient initialCompletions={completions} initialUserVoteIds={userVoteIds} />
+      </Suspense>
     </div>
   );
 }

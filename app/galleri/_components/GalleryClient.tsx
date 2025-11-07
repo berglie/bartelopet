@@ -5,6 +5,7 @@ import { useSelectedYear } from '@/contexts/year-context';
 import { getYearDateRange } from '@/app/_shared/lib/utils/year';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/app/_shared/lib/supabase/client';
+import { useSearchParams } from 'next/navigation';
 
 interface GalleryClientProps {
   initialCompletions: any[];
@@ -13,6 +14,8 @@ interface GalleryClientProps {
 
 export function GalleryClient({ initialCompletions, initialUserVoteIds }: GalleryClientProps) {
   const selectedYear = useSelectedYear();
+  const searchParams = useSearchParams();
+  const completionIdParam = searchParams.get('id');
   const [completions, setCompletions] = useState(initialCompletions);
   const [userVoteIds, setUserVoteIds] = useState(initialUserVoteIds);
   const [loading, setLoading] = useState(false);
@@ -74,5 +77,5 @@ export function GalleryClient({ initialCompletions, initialUserVoteIds }: Galler
     );
   }
 
-  return <GalleryGridMulti completions={completions} userVoteIds={userVoteIds} />;
+  return <GalleryGridMulti completions={completions} userVoteIds={userVoteIds} initialCompletionId={completionIdParam} />;
 }

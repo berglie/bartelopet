@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { Card, CardContent, CardFooter, CardHeader } from '@/app/_shared/components/ui/card'
 import { Button } from '@/app/_shared/components/ui/button'
@@ -9,6 +9,8 @@ import { createClient } from '@/app/_shared/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { ImageViewerDialogMulti } from './image-viewer-dialog-multi'
 import { AdditionalImagesIndicator } from './additional-images-indicator'
+import { ShareButton } from './share-button'
+import { createPhotoShareData } from '@/app/_shared/lib/utils/share'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,9 +51,11 @@ type CompletionWithImages = Completion
 export function GalleryGridMulti({
   completions,
   userVoteIds,
+  initialCompletionId,
 }: {
   completions: Completion[]
   userVoteIds: string[]
+  initialCompletionId?: string | null
 }) {
   const router = useRouter()
   const [votedIds, setVotedIds] = useState(userVoteIds)
@@ -62,6 +66,9 @@ export function GalleryGridMulti({
   const [openWithComments, setOpenWithComments] = useState(false)
   const [completionsWithImages, setCompletionsWithImages] = useState<CompletionWithImages[]>([])
   const [loadingImages, setLoadingImages] = useState(true)
+
+  // Track if we've already handled the initial completion ID
+  const hasHandledInitialCompletion = useRef(false)
 
   // Alert dialog states
   type AlertType = 'not-registered' | 'own-vote' | 'error' | null
@@ -85,27 +92,72 @@ export function GalleryGridMulti({
     setLoadingImages(false)
   }, [completions])
 
+  // Open viewer if initialCompletionId is provided (only once)
+  useEffect(() => {
+    if (
+      initialCompletionId &&
+      completionsWithImages.length > 0 &&
+      !hasHandledInitialCompletion.current
+    ) {
+      const index = completionsWithImages.findIndex((c) => c.id === initialCompletionId)
+      if (index !== -1) {
+        setCurrentImageIndex(index)
+        setViewerOpen(true)
+        hasHandledInitialCompletion.current = true
+      }
+    }
+  }, [initialCompletionId, completionsWithImages])
+
   const handleImageClick = useCallback((index: number, withComments = false) => {
     setCurrentImageIndex(index)
     setOpenWithComments(withComments)
     setViewerOpen(true)
-  }, [])
+
+    // Update URL with completion ID
+    if (completionsWithImages[index]) {
+      const completionId = completionsWithImages[index].id
+      if (typeof window !== 'undefined') {
+        const url = new URL(window.location.href)
+        url.searchParams.set('id', completionId)
+        window.history.replaceState({}, '', url.toString())
+      }
+    }
+  }, [completionsWithImages])
 
   const handleCloseViewer = useCallback(() => {
     setViewerOpen(false)
+    // Remove the id query parameter from URL
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href)
+      url.searchParams.delete('id')
+      window.history.replaceState({}, '', url.toString())
+    }
   }, [])
 
   const handleNavigate = useCallback(
     (direction: 'prev' | 'next') => {
       setCurrentImageIndex((prev) => {
+        let newIndex = prev
         if (direction === 'prev') {
-          return prev > 0 ? prev - 1 : prev
+          newIndex = prev > 0 ? prev - 1 : prev
         } else {
-          return prev < completions.length - 1 ? prev + 1 : prev
+          newIndex = prev < completionsWithImages.length - 1 ? prev + 1 : prev
         }
+
+        // Update URL with new completion ID
+        if (newIndex !== prev && completionsWithImages[newIndex]) {
+          const newCompletionId = completionsWithImages[newIndex].id
+          if (typeof window !== 'undefined') {
+            const url = new URL(window.location.href)
+            url.searchParams.set('id', newCompletionId)
+            window.history.replaceState({}, '', url.toString())
+          }
+        }
+
+        return newIndex
       })
     },
-    [completions.length]
+    [completionsWithImages]
   )
 
   const handleQuickVote = useCallback(async (completionId: string, participantId: string) => {
@@ -351,6 +403,17 @@ export function GalleryGridMulti({
                     <span className="text-xs">{completion.comment_count}</span>
                   )}
                 </Button>
+
+                <ShareButton
+                  shareData={createPhotoShareData(
+                    completion.id,
+                    completion.participant.full_name,
+                    starredImage?.image_url
+                  )}
+                  variant="outline"
+                  size="icon"
+                  showLabel={false}
+                />
               </CardFooter>
             </Card>
           )
