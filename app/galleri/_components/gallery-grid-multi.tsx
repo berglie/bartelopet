@@ -48,13 +48,13 @@ type CompletionWithImages = Completion
 
 export function GalleryGridMulti({
   completions,
-  userVoteId,
+  userVoteIds,
 }: {
   completions: Completion[]
-  userVoteId: string | null
+  userVoteIds: string[]
 }) {
   const router = useRouter()
-  const [votedId, setVotedId] = useState(userVoteId)
+  const [votedIds, setVotedIds] = useState(userVoteIds)
   const [loading, setLoading] = useState<string | null>(null)
   const [viewerOpen, setViewerOpen] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
@@ -145,49 +145,25 @@ export function GalleryGridMulti({
       const completion = completionsWithImages.find((c) => c.id === completionId)
       const eventYear = completion?.event_year || 2025
 
-      // Check if already voted for this event year
+      // Check if already voted for this completion
       const { data: existingVote } = await supabase
         .from('photo_votes')
-        .select('id, completion_id')
+        .select('id')
         .eq('voter_id', currentParticipant.id)
+        .eq('completion_id', completionId)
         .eq('event_year', eventYear)
-        .single()
+        .maybeSingle()
 
       if (existingVote) {
-        // Check if voting for the same completion
-        if (existingVote.completion_id === completionId) {
-          // Remove vote
-          await supabase.from('photo_votes').delete().eq('id', existingVote.id)
-          setVotedId(null)
-          // Update vote count locally
-          setCompletionsWithImages((prev) =>
-            prev.map((c) =>
-              c.id === completionId ? { ...c, vote_count: Math.max(0, c.vote_count - 1) } : c
-            )
+        // Remove vote
+        await supabase.from('photo_votes').delete().eq('id', existingVote.id)
+        setVotedIds((prev) => prev.filter((id) => id !== completionId))
+        // Update vote count locally
+        setCompletionsWithImages((prev) =>
+          prev.map((c) =>
+            c.id === completionId ? { ...c, vote_count: Math.max(0, c.vote_count - 1) } : c
           )
-        } else {
-          // Change vote: Delete old vote and insert new one
-          // This ensures the triggers fire correctly to update vote counts
-          await supabase.from('photo_votes').delete().eq('id', existingVote.id)
-          await supabase.from('photo_votes').insert({
-            voter_id: currentParticipant.id,
-            completion_id: completionId,
-            event_year: eventYear,
-          })
-          setVotedId(completionId)
-          // Update vote counts locally for both old and new completions
-          setCompletionsWithImages((prev) =>
-            prev.map((c) => {
-              if (c.id === existingVote.completion_id) {
-                return { ...c, vote_count: Math.max(0, c.vote_count - 1) }
-              }
-              if (c.id === completionId) {
-                return { ...c, vote_count: c.vote_count + 1 }
-              }
-              return c
-            })
-          )
-        }
+        )
       } else {
         // Create new vote
         await supabase.from('photo_votes').insert({
@@ -195,7 +171,7 @@ export function GalleryGridMulti({
           completion_id: completionId,
           event_year: eventYear,
         })
-        setVotedId(completionId)
+        setVotedIds((prev) => [...prev, completionId])
         // Update vote count locally
         setCompletionsWithImages((prev) =>
           prev.map((c) =>
@@ -349,14 +325,14 @@ export function GalleryGridMulti({
 
               <CardFooter className="p-4 pt-0 flex gap-2">
                 <Button
-                  variant={votedId === completion.id ? 'default' : 'outline'}
+                  variant={votedIds.includes(completion.id) ? 'default' : 'outline'}
                   className="flex-1 flex items-center justify-center"
                   onClick={() => handleQuickVote(completion.id, completion.participant.id)}
                   disabled={loading === completion.id}
                 >
                   <Heart
                     className="mr-2 h-4 w-4"
-                    fill={votedId === completion.id ? 'currentColor' : 'none'}
+                    fill={votedIds.includes(completion.id) ? 'currentColor' : 'none'}
                   />
                   {completion.vote_count}
                 </Button>
@@ -389,7 +365,7 @@ export function GalleryGridMulti({
           currentIndex={currentImageIndex}
           onNavigate={handleNavigate}
           onVote={handleVote}
-          userVoteId={votedId}
+          userVoteIds={votedIds}
           totalImages={completionsWithImages.length}
           currentUserId={currentUserId}
           openWithComments={openWithComments}

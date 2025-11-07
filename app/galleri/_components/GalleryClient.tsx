@@ -8,13 +8,13 @@ import { createClient } from '@/app/_shared/lib/supabase/client';
 
 interface GalleryClientProps {
   initialCompletions: any[];
-  initialUserVoteId: string | null;
+  initialUserVoteIds: string[];
 }
 
-export function GalleryClient({ initialCompletions, initialUserVoteId }: GalleryClientProps) {
+export function GalleryClient({ initialCompletions, initialUserVoteIds }: GalleryClientProps) {
   const selectedYear = useSelectedYear();
   const [completions, setCompletions] = useState(initialCompletions);
-  const [userVoteId, setUserVoteId] = useState(initialUserVoteId);
+  const [userVoteIds, setUserVoteIds] = useState(initialUserVoteIds);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -74,5 +74,5 @@ export function GalleryClient({ initialCompletions, initialUserVoteId }: Gallery
     );
   }
 
-  return <GalleryGridMulti completions={completions} userVoteId={userVoteId} />;
+  return <GalleryGridMulti completions={completions} userVoteIds={userVoteIds} />;
 }

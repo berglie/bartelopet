@@ -18,7 +18,7 @@ interface ImageViewerDialogMultiProps {
   currentIndex: number
   onNavigate: (direction: 'prev' | 'next') => void
   onVote: (completionId: string) => Promise<void>
-  userVoteId: string | null
+  userVoteIds: string[]
   totalImages: number
   currentUserId: string | null
   openWithComments?: boolean
@@ -31,7 +31,7 @@ export function ImageViewerDialogMulti({
   currentIndex,
   onNavigate,
   onVote,
-  userVoteId,
+  userVoteIds,
   totalImages,
   currentUserId,
   openWithComments = false,
@@ -48,7 +48,7 @@ export function ImageViewerDialogMulti({
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const imageRef = useRef<HTMLDivElement>(null)
 
-  const hasVoted = userVoteId === completion.id
+  const hasVoted = userVoteIds.includes(completion.id)
   const isFirstCompletion = currentIndex === 0
   const isLastCompletion = currentIndex === totalImages - 1
 

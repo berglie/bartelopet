@@ -54,11 +54,11 @@ async function getCompletions() {
   return completions || [];
 }
 
-async function getUserVote() {
+async function getUserVotes() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) return null;
+  if (!user) return [];
 
   const currentYear = getCurrentEventYear();
 
@@ -70,23 +70,22 @@ async function getUserVote() {
     .eq('event_year', currentYear)
     .single();
 
-  if (!participant) return null;
+  if (!participant) return [];
 
-  // Get user's vote for current year
-  const { data: vote } = await supabase
+  // Get all user's votes for current year
+  const { data: votes } = await supabase
     .from('photo_votes')
     .select('completion_id')
     .eq('voter_id', participant.id)
-    .eq('event_year', currentYear)
-    .single();
+    .eq('event_year', currentYear);
 
-  return vote?.completion_id || null;
+  return votes?.map(vote => vote.completion_id) || [];
 }
 
 export default async function GalleryPage() {
-  const [completions, userVoteId] = await Promise.all([
+  const [completions, userVoteIds] = await Promise.all([
     getCompletions(),
-    getUserVote(),
+    getUserVotes(),
   ]);
 
   return (
@@ -94,11 +93,11 @@ export default async function GalleryPage() {
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold mb-4">Fotogalleri</h1>
         <p className="text-lg text-muted-foreground">
-          Se alle som har fullført løpet og stem på ditt favorittbilde
+          Se alle som har fullført løpet og stem på dine favorittbilder
         </p>
       </div>
 
-      <GalleryClient initialCompletions={completions} initialUserVoteId={userVoteId} />
+      <GalleryClient initialCompletions={completions} initialUserVoteIds={userVoteIds} />
     </div>
   );
 }

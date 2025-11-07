@@ -22,7 +22,7 @@ interface ImageViewerDialogProps {
   currentIndex: number
   onNavigate: (direction: 'prev' | 'next') => void
   onVote: (completionId: string) => Promise<void>
-  userVoteId: string | null
+  userVoteIds: string[]
   totalImages: number
   currentUserId: string | null
   openWithComments?: boolean
@@ -35,7 +35,7 @@ export function ImageViewerDialog({
   currentIndex,
   onNavigate,
   onVote,
-  userVoteId,
+  userVoteIds,
   totalImages,
   currentUserId,
   openWithComments = false,
@@ -49,7 +49,7 @@ export function ImageViewerDialog({
   const [commentsLoading, setCommentsLoading] = useState(false)
   const imageRef = useRef<HTMLDivElement>(null)
 
-  const hasVoted = userVoteId === completion.id
+  const hasVoted = userVoteIds.includes(completion.id)
   const isFirstImage = currentIndex === 0
   const isLastImage = currentIndex === totalImages - 1
 
@@ -304,13 +304,10 @@ export function ImageViewerDialog({
                 {/* Vote button */}
                 <Button
                   onClick={handleVote}
-                  disabled={isVoting || hasVoted}
-                  variant={hasVoted ? 'secondary' : 'default'}
+                  disabled={isVoting}
+                  variant={hasVoted ? 'default' : 'secondary'}
                   size="lg"
-                  className={cn(
-                    'flex items-center gap-2 transition-all',
-                    hasVoted && 'cursor-default'
-                  )}
+                  className="flex items-center gap-2 transition-all"
                 >
                   <Heart
                     className={cn(
@@ -319,7 +316,7 @@ export function ImageViewerDialog({
                     )}
                   />
                   <span className="hidden sm:inline">
-                    {isVoting ? 'Stemmer...' : hasVoted ? 'Du har stemt' : 'Stem'}
+                    {isVoting ? 'Stemmer...' : hasVoted ? 'Fjern stemme' : 'Stem'}
                   </span>
                   <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs">
                     {completion.vote_count}
