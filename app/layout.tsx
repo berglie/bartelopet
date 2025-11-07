@@ -44,10 +44,10 @@ export const metadata: Metadata = {
     description: "Delta i Movember-kampanjen! Løp for mental helse forskning.",
     images: [
       {
-        url: '/android-chrome-512x512.png',
-        width: 512,
-        height: 512,
-        alt: 'Barteløpet logo - Løp for mental helse',
+        url: '/images/bartelopet.png',
+        width: 1200,
+        height: 630,
+        alt: 'Barteløpet - Virtuelt løp for mental helse',
       },
     ],
   },
@@ -55,7 +55,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Barteløpet - Virtuelt løp for mental helse",
     description: "Delta i Movember-kampanjen! Løp for mental helse forskning.",
-    images: ['/android-chrome-512x512.png'],
+    images: ['/images/bartelopet.png'],
   },
   robots: {
     index: true,
