@@ -1,0 +1,35 @@
+// Sponsor types for Barteløpet sponsors page
+
+export type SponsorCategory =
+  | 'merchandise'  // Companies providing merchandise or prizes
+  | 'trophy'       // Trophy sponsors (Metallteknikk)
+  | 'donation';    // Companies providing donations
+
+export interface Sponsor {
+  id: string;
+  name: string;
+  description?: string;
+  logo_url?: string;
+  website_url?: string;
+  category: SponsorCategory;
+  display_order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SponsorPublic {
+  id: string;
+  name: string;
+  description?: string;
+  logo_url?: string;
+  website_url?: string;
+  category: SponsorCategory;
+}
+
+// Grouped sponsors for display
+export interface GroupedSponsors {
+  merchandise: SponsorPublic[];
+  trophy: SponsorPublic[];
+  donation: SponsorPublic[];
+}
