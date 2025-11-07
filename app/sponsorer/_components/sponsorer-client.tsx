@@ -66,6 +66,12 @@ const SPONSORS_DATA: GroupedSponsors = {
     },
     {
       id: '6',
+      name: 'SpareBank 1 Sør-Norge',
+      category: 'merchandise',
+      website_url: 'https://www.sparebank1.no/nb/sor-norge/',
+    },
+    {
+      id: '8',
       name: 'Vår Energi Arena',
       category: 'merchandise',
       website_url: 'https://varenergiarenasormarka.no/',
