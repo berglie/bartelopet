@@ -1,8 +1,9 @@
 'use client';
 
 import { SponsorSection } from './sponsor-section';
+import { SponsorCard } from './sponsor-card';
 import { Button } from '@/app/_shared/components/ui/button';
-import { Gift, Trophy, Heart, Mail, Newspaper } from 'lucide-react';
+import { Gift, Heart, Mail, Newspaper } from 'lucide-react';
 import type { GroupedSponsors } from '@/app/_shared/types/sponsor';
 import Link from 'next/link';
 
@@ -35,57 +36,84 @@ const MEDIA_MENTIONS: MediaMention[] = [
 const SPONSORS_DATA: GroupedSponsors = {
   merchandise: [
     {
+      id: '11',
+      name: 'Ark Prostebakken Stavanger',
+      category: 'merchandise',
+      website_url: 'https://www.ark.no/butikker/stavanger/ark-prostebakken-stavanger',
+      prize: 'Brettspill',
+    },
+    {
       id: '1',
       name: 'Comfyballs',
       category: 'merchandise',
       website_url: 'https://www.comfyballs.no/',
+      prize: 'Gavekort',
     },
     {
       id: '2',
       name: 'Gnu Bar',
       category: 'merchandise',
       website_url: 'https://gnubar.no/',
+      prize: 'To be announced',
     },
     {
       id: '3',
       name: 'Helgø Meny Herbarium',
       category: 'merchandise',
       website_url: 'https://meny.no/finn-butikk/helgo-meny-herbarium/',
+      prize: 'Gavekort',
     },
     {
       id: '4',
       name: 'Kongeparken',
       category: 'merchandise',
       website_url: 'https://www.kongeparken.no/',
+      prize: 'Info kommer snart',
     },
     {
       id: '5',
-      name: 'Lucky Bowl',
+      name: 'Lucky Bowl Mariero',
       category: 'merchandise',
-      website_url: 'https://luckybowl.no/stavanger/',
+      website_url: 'https://luckybowl.no/stavanger/mariero/',
+      prize: 'Gavekort',
+    },
+    {
+      id: '9',
+      name: 'Lucky Bowl & Lounge Stavanger',
+      category: 'merchandise',
+      website_url: 'https://luckybowl.no/stavanger/stavanger-sentrum/',
+      prize: 'Gavekort',
+    },
+    {
+      id: '7',
+      name: 'Metallteknikk AS',
+      category: 'merchandise',
+      website_url: 'https://metallteknikk.no/',
+      prize: '🏆 Pokal',
+    },
+    {
+      id: '10',
+      name: 'Molinå Bakery',
+      category: 'merchandise',
+      website_url: 'https://www.molino-bakery.com/',
+      prize: 'Gavekort på ett valgfritt brød',
     },
     {
       id: '6',
       name: 'SpareBank 1 Sør-Norge',
       category: 'merchandise',
       website_url: 'https://www.sparebank1.no/nb/sor-norge/',
+      prize: 'Reklameartikler',
     },
     {
       id: '8',
       name: 'Vår Energi Arena',
       category: 'merchandise',
       website_url: 'https://varenergiarenasormarka.no/',
+      prize: 'Gavekort',
     },
   ],
-  trophy: [
-    {
-      id: '7',
-      name: 'Metallteknikk AS',
-      category: 'trophy',
-      description: 'Pokalsponsor for Barteløpet 2025',
-      website_url: 'https://metallteknikk.no/',
-    },
-  ],
+  trophy: [],
   donation: [],
 };
 
@@ -123,29 +151,71 @@ export function SponsorsClient() {
       <section className="py-12 md:py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
-            {/* 4-Column Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
-              {/* Section 1: Merchandise & Prizes */}
-              <SponsorSection
-                title="Premie- og merch"
-                description="Bedrifter som bidrar med premier og merchandise"
-                icon={<Gift className="h-6 w-6" />}
-                sponsors={SPONSORS_DATA.merchandise}
-              />
+            {/* Mobile: Stacked layout, Desktop: 4-column grid */}
+            <div className="space-y-12 lg:space-y-0 lg:grid lg:grid-cols-4 lg:gap-8 lg:gap-y-12">
+              {/* Premier Header - Spans 2 columns on desktop */}
+              <div className="lg:col-span-2 space-y-3 text-center">
+                <div className="flex items-center gap-3 justify-center">
+                  <div className="flex-shrink-0 text-accent">
+                    <Gift className="h-6 w-6" />
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+                    Premier
+                  </h2>
+                </div>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Bedrifter som bidrar med premier og reklameartikler
+                </p>
+              </div>
 
-              {/* Section 2: Trophy Sponsor */}
-              <SponsorSection
-                title="Pokalsponsor"
-                description="Spesiell takk til vår pokalsponsor"
-                icon={<Trophy className="h-6 w-6" />}
-                sponsors={SPONSORS_DATA.trophy}
-                note="Bilde av pokalen kommer snart!"
-              />
+              {/* Donasjoner Header - Desktop only */}
+              <div className="hidden lg:block space-y-3 text-center lg:text-left">
+                <div className="flex items-center gap-3 justify-center lg:justify-start">
+                  <div className="flex-shrink-0 text-accent">
+                    <Heart className="h-6 w-6" />
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+                    Donasjoner
+                  </h2>
+                </div>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Bedrifter som støtter med donasjoner
+                </p>
+              </div>
 
-              {/* Section 3: Donation Sponsors */}
-              <div className="space-y-6">
-                {/* Section Header */}
-                <div className="space-y-3 lg:min-h-36 text-center lg:text-left">
+              {/* Omtale Header - Desktop only */}
+              <div className="hidden lg:block space-y-3 text-center lg:text-left">
+                <div className="flex items-center gap-3 justify-center lg:justify-start">
+                  <div className="flex-shrink-0 text-accent">
+                    <Newspaper className="h-6 w-6" />
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+                    Omtale
+                  </h2>
+                </div>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Barteløpet i media og sosiale medier
+                </p>
+              </div>
+
+              {/* Premier Content Column 1 */}
+              <div className="lg:col-span-1 space-y-4">
+                {SPONSORS_DATA.merchandise.slice(0, Math.ceil(SPONSORS_DATA.merchandise.length / 2)).map((sponsor) => (
+                  <SponsorCard key={sponsor.id} sponsor={sponsor} />
+                ))}
+              </div>
+
+              {/* Premier Content Column 2 */}
+              <div className="lg:col-span-1 space-y-4">
+                {SPONSORS_DATA.merchandise.slice(Math.ceil(SPONSORS_DATA.merchandise.length / 2)).map((sponsor) => (
+                  <SponsorCard key={sponsor.id} sponsor={sponsor} />
+                ))}
+              </div>
+
+              {/* Donasjoner Section */}
+              <div className="space-y-6 lg:space-y-0">
+                {/* Donasjoner Header - Mobile only */}
+                <div className="lg:hidden space-y-3 text-center lg:text-left mb-6">
                   <div className="flex items-center gap-3 justify-center lg:justify-start">
                     <div className="flex-shrink-0 text-accent">
                       <Heart className="h-6 w-6" />
@@ -198,10 +268,10 @@ export function SponsorsClient() {
                 </a>
               </div>
 
-              {/* Section 4: Media Mentions */}
-              <div className="space-y-6">
-                {/* Section Header */}
-                <div className="space-y-3 lg:min-h-36 text-center lg:text-left">
+              {/* Omtale Section */}
+              <div className="space-y-6 lg:space-y-0">
+                {/* Omtale Header - Mobile only */}
+                <div className="lg:hidden space-y-3 text-center lg:text-left mb-6">
                   <div className="flex items-center gap-3 justify-center lg:justify-start">
                     <div className="flex-shrink-0 text-accent">
                       <Newspaper className="h-6 w-6" />

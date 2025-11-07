@@ -21,6 +21,14 @@ export function SponsorCard({ sponsor }: SponsorCardProps) {
         </p>
       )}
 
+      {/* Prize */}
+      {sponsor.prize && (
+        <p className="text-sm md:text-base text-muted-foreground">
+          <span className="font-medium text-foreground">Premie:</span>{' '}
+          {sponsor.prize}
+        </p>
+      )}
+
       {/* Website Link */}
       {sponsor.website_url && (
         <div className="flex items-center gap-2 text-accent hover:text-accent/80 transition-colors">

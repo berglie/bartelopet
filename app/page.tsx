@@ -397,7 +397,7 @@ export default async function HomePage({
                   <div className="text-6xl">🎁</div>
                   <h3 className="text-2xl font-bold">Swag</h3>
                   <p className="text-muted-foreground">
-                    Merch sponset av lokale bedrifter
+                    Reklameartikler sponset av lokale bedrifter
                   </p>
                 </CardContent>
               </Card>
