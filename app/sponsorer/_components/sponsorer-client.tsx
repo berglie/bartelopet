@@ -6,6 +6,7 @@ import { Button } from '@/app/_shared/components/ui/button';
 import { Gift, Heart, Mail, Newspaper } from 'lucide-react';
 import type { GroupedSponsors } from '@/app/_shared/types/sponsor';
 import Link from 'next/link';
+import NextImage from 'next/image';
 
 const SPLEIS_URL = 'https://spleis.no/barteløpet2025';
 
@@ -15,6 +16,7 @@ interface MediaMention {
   title: string;
   source: string;
   url: string;
+  logo_url?: string;
 }
 
 const MEDIA_MENTIONS: MediaMention[] = [
@@ -23,12 +25,14 @@ const MEDIA_MENTIONS: MediaMention[] = [
     title: 'Hvis du ikke vil gro ut barten, kan du nå løpe den',
     source: 'Rogalands Avis',
     url: 'https://www.rastavanger.no/hvis-du-ikke-vil-gro-ut-barten-kan-du-na-lope-den/s/5-165-172592',
+    logo_url: '/images/sponsors/ra-stavanger.svg',
   },
   {
     id: '2',
     title: 'Lie Ventilasjon støtter Barteløpet',
     source: 'LinkedIn',
     url: 'https://www.linkedin.com/posts/lie-ventilasjon_jeg-har-startet-bartel%C3%B8pet-et-veldedig-activity-7392086471974940672-s-7h?utm_source=share&utm_medium=member_desktop&rcm=ACoAABLk3McBGObaNo_XK90D3zZNFfEQn7s6120',
+    logo_url: '/images/sponsors/lie-ventilasjon.svg',
   },
 ];
 
@@ -40,6 +44,7 @@ const SPONSORS_DATA: GroupedSponsors = {
       name: 'Ark Prostebakken Stavanger',
       category: 'merchandise',
       website_url: 'https://www.ark.no/butikker/stavanger/ark-prostebakken-stavanger',
+      logo_url: '/images/sponsors/ark.png',
       prize: 'Brettspill',
     },
     {
@@ -47,6 +52,7 @@ const SPONSORS_DATA: GroupedSponsors = {
       name: 'Comfyballs',
       category: 'merchandise',
       website_url: 'https://www.comfyballs.no/',
+      logo_url: '/images/sponsors/comfyballs.svg',
       prize: 'Gavekort',
     },
     {
@@ -54,6 +60,7 @@ const SPONSORS_DATA: GroupedSponsors = {
       name: 'Gnu Bar',
       category: 'merchandise',
       website_url: 'https://gnubar.no/',
+      logo_url: '/images/sponsors/gnu-bar.svg',
       prize: 'To be announced',
     },
     {
@@ -61,6 +68,7 @@ const SPONSORS_DATA: GroupedSponsors = {
       name: 'Helgø Meny Herbarium',
       category: 'merchandise',
       website_url: 'https://meny.no/finn-butikk/helgo-meny-herbarium/',
+      logo_url: '/images/sponsors/helgo-meny.png',
       prize: 'Gavekort',
     },
     {
@@ -68,6 +76,7 @@ const SPONSORS_DATA: GroupedSponsors = {
       name: 'Kongeparken',
       category: 'merchandise',
       website_url: 'https://www.kongeparken.no/',
+      logo_url: '/images/sponsors/kongeparken.webp',
       prize: 'Info kommer snart',
     },
     {
@@ -75,6 +84,7 @@ const SPONSORS_DATA: GroupedSponsors = {
       name: 'Lucky Bowl Mariero',
       category: 'merchandise',
       website_url: 'https://luckybowl.no/stavanger/mariero/',
+      logo_url: '/images/sponsors/lucky-bowl.webp',
       prize: 'Gavekort',
     },
     {
@@ -82,6 +92,7 @@ const SPONSORS_DATA: GroupedSponsors = {
       name: 'Lucky Bowl & Lounge Stavanger',
       category: 'merchandise',
       website_url: 'https://luckybowl.no/stavanger/stavanger-sentrum/',
+      logo_url: '/images/sponsors/lucky-bowl.webp',
       prize: 'Gavekort',
     },
     {
@@ -89,6 +100,7 @@ const SPONSORS_DATA: GroupedSponsors = {
       name: 'Metallteknikk AS',
       category: 'merchandise',
       website_url: 'https://metallteknikk.no/',
+      logo_url: '/images/sponsors/metallteknikk.png',
       prize: '🏆 Pokal',
     },
     {
@@ -96,13 +108,15 @@ const SPONSORS_DATA: GroupedSponsors = {
       name: 'Molinå Bakery',
       category: 'merchandise',
       website_url: 'https://www.molino-bakery.com/',
-      prize: 'Gavekort på ett valgfritt brød',
+      logo_url: '/images/sponsors/molinaa.webp',
+      prize: 'Gavekort',
     },
     {
       id: '6',
       name: 'SpareBank 1 Sør-Norge',
       category: 'merchandise',
       website_url: 'https://www.sparebank1.no/nb/sor-norge/',
+      logo_url: '/images/sponsors/sparebank1-sor-norge.svg',
       prize: 'Reklameartikler',
     },
     {
@@ -110,6 +124,7 @@ const SPONSORS_DATA: GroupedSponsors = {
       name: 'Vår Energi Arena',
       category: 'merchandise',
       website_url: 'https://varenergiarenasormarka.no/',
+      logo_url: '/images/sponsors/vaar-energi.svg',
       prize: 'Gavekort',
     },
   ],
@@ -237,14 +252,14 @@ export function SponsorsClient() {
                   className="block"
                 >
                   <div className="rounded-lg border text-card-foreground shadow-sm bg-card/50 border-border/50 backdrop-blur hover:border-accent/50 transition-all h-full">
-                    <div className="p-4 md:p-6 space-y-3">
+                    <div className="p-4 md:p-6 space-y-3 text-center">
                       <h3 className="text-lg md:text-xl font-semibold text-foreground">
                         Vil du bidra?
                       </h3>
                       <p className="text-sm md:text-base text-muted-foreground">
                         Støtt Barteløpet og Mental Helse Ungdom gjennom vår spleis
                       </p>
-                      <div className="flex items-center gap-2 text-accent hover:text-accent/80 transition-colors">
+                      <div className="flex items-center justify-center gap-2 text-accent hover:text-accent/80 transition-colors">
                         <span className="text-sm">Besøk spleis</span>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -296,14 +311,24 @@ export function SponsorsClient() {
                       className="block"
                     >
                       <div className="rounded-lg border text-card-foreground shadow-sm bg-card/50 border-border/50 backdrop-blur hover:border-accent/50 transition-all h-full">
-                        <div className="p-4 md:p-6 space-y-3">
+                        <div className="p-4 md:p-6 space-y-3 text-center">
+                          {mention.logo_url && (
+                            <div className="relative w-full h-12 mb-2">
+                              <NextImage
+                                src={mention.logo_url}
+                                alt={`${mention.source} logo`}
+                                fill
+                                className="object-contain"
+                              />
+                            </div>
+                          )}
                           <h3 className="text-lg md:text-xl font-semibold text-foreground">
                             {mention.title}
                           </h3>
                           <p className="text-sm md:text-base text-muted-foreground">
                             {mention.source}
                           </p>
-                          <div className="flex items-center gap-2 text-accent hover:text-accent/80 transition-colors">
+                          <div className="flex items-center justify-center gap-2 text-accent hover:text-accent/80 transition-colors">
                             <span className="text-sm">Les mer</span>
                             <svg
                               xmlns="http://www.w3.org/2000/svg"

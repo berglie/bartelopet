@@ -1,6 +1,7 @@
 import { Card, CardContent } from '@/app/_shared/components/ui/card';
 import { ExternalLink } from 'lucide-react';
 import type { SponsorPublic } from '@/app/_shared/types/sponsor';
+import Image from 'next/image';
 
 interface SponsorCardProps {
   sponsor: SponsorPublic;
@@ -8,7 +9,19 @@ interface SponsorCardProps {
 
 export function SponsorCard({ sponsor }: SponsorCardProps) {
   const cardContent = (
-    <CardContent className="p-4 md:p-6 space-y-3">
+    <CardContent className="p-4 md:p-6 space-y-3 text-center">
+      {/* Logo */}
+      {sponsor.logo_url && (
+        <div className="relative w-full h-12 mb-2">
+          <Image
+            src={sponsor.logo_url}
+            alt={`${sponsor.name} logo`}
+            fill
+            className="object-contain"
+          />
+        </div>
+      )}
+
       {/* Company Name */}
       <h3 className="text-lg md:text-xl font-semibold text-foreground">
         {sponsor.name}
@@ -31,7 +44,7 @@ export function SponsorCard({ sponsor }: SponsorCardProps) {
 
       {/* Website Link */}
       {sponsor.website_url && (
-        <div className="flex items-center gap-2 text-accent hover:text-accent/80 transition-colors">
+        <div className="flex items-center justify-center gap-2 text-accent hover:text-accent/80 transition-colors">
           <span className="text-sm">Besøk nettside</span>
           <ExternalLink className="h-3 w-3" aria-label="External link" />
         </div>
