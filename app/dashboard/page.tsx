@@ -151,7 +151,7 @@ export default async function DashboardPage() {
             </CardHeader>
           </Card>
 
-          <CompletionForm participantId={participant.id} />
+          <CompletionForm />
         </div>
       )}
     </div>

@@ -9,10 +9,11 @@ import { Label } from '@/app/_shared/components/ui/label';
 import { Textarea } from '@/app/_shared/components/ui/textarea';
 import { Card, CardContent } from '@/app/_shared/components/ui/card';
 import { createClient } from '@/app/_shared/lib/supabase/client';
-import { getCurrentEventYear } from '@/app/_shared/lib/utils/event-year';
+import { createCompletion } from '@/app/actions/completions';
 import { uploadCompletionImages } from '@/app/actions/photos';
+import { getCurrentEventYear } from '@/app/_shared/lib/utils/event-year';
 
-export function CompletionForm({ participantId }: { participantId: string }) {
+export function CompletionForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -69,25 +70,21 @@ export function CompletionForm({ participantId }: { participantId: string }) {
     }
 
     try {
-      // Create the completion record - NO photo_url, photos are stored in photos table only
-      const { data: completion, error: insertError } = await supabase
-        .from('completions')
-        .insert({
-          participant_id: participantId,
-          completed_date: formData.get('completed_date') as string,
-          duration_text: formData.get('duration_text') as string || null,
-          comment: formData.get('comment') as string || null,
-          event_year: getCurrentEventYear(),
-        })
-        .select('id')
-        .single();
+      // SECURITY: Use server action instead of client-side database insert
+      // This ensures proper validation and prevents participant_id manipulation
+      const completionResult = await createCompletion({
+        completed_date: formData.get('completed_date') as string,
+        duration_text: formData.get('duration_text') as string || null,
+        comment: formData.get('comment') as string || null,
+      });
 
-      if (insertError || !completion) {
-        console.error('Insert error:', insertError);
-        setError('Kunne ikke registrere fullføring');
+      if (!completionResult.success || !completionResult.data) {
+        setError(completionResult.error || 'Kunne ikke registrere fullføring');
         setLoading(false);
         return;
       }
+
+      const completion = completionResult.data;
 
       // Convert image file to base64 data URL for uploadCompletionImages
       const reader = new FileReader();
@@ -106,8 +103,8 @@ export function CompletionForm({ participantId }: { participantId: string }) {
         );
 
         if (!uploadResult.success) {
-          console.error('Upload error:', uploadResult.error);
           // Clean up the completion record if image upload fails
+          const supabase = createClient();
           await supabase.from('completions').delete().eq('id', completion.id);
           setError(uploadResult.error || 'Kunne ikke laste opp bilde');
           setLoading(false);

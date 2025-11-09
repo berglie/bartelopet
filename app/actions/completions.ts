@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/app/_shared/lib/supabase/server'
 import { completionUpdateSchema } from '@/app/_shared/lib/validations/completion'
 import { sanitizeSupabaseError } from '@/app/_shared/lib/utils/error-handler'
+import { getCurrentEventYear } from '@/app/_shared/lib/utils/event-year'
 
 type ActionResponse<T = void> = {
   success: boolean
@@ -158,10 +159,10 @@ export async function updateCompletion(
 /**
  * Create a new completion
  * Server action to replace client-side database operations
+ * SECURITY: participant_id is derived from authenticated user, NOT from client input
  */
 export async function createCompletion(
   data: {
-    participant_id: string
     completed_date: string
     duration_text?: string | null
     comment?: string | null
@@ -195,12 +196,11 @@ export async function createCompletion(
       }
     }
 
-    // Verify user owns the participant record
+    // Get participant record from authenticated user (SECURITY: not from client input)
     const { data: participant, error: participantError } = await supabase
       .from('participants')
       .select('id, has_completed')
       .eq('user_id', user.id)
-      .eq('id', data.participant_id)
       .single()
 
     if (participantError || !participant) {
@@ -226,8 +226,8 @@ export async function createCompletion(
       }
     }
 
-    // Get current event year
-    const currentYear = new Date().getFullYear()
+    // Get current event year (using centralized utility)
+    const currentYear = getCurrentEventYear()
 
     // Insert completion
     const { data: newCompletion, error: insertError } = await supabase

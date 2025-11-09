@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { checkRateLimit, getClientIp } from '@/app/_shared/lib/utils/rate-limit';
+import { securityLogger } from '@/app/_shared/lib/utils/security-logger';
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Navn må være minst 2 tegn').max(100, 'Navn kan ikke være lengre enn 100 tegn'),
@@ -25,6 +26,53 @@ function formatMessageForHtml(message: string): string {
 
 export async function POST(request: NextRequest) {
   try {
+    // CSRF Protection: Validate origin header against hardcoded whitelist
+    // SECURITY: Do NOT use Host header - it can be manipulated by attackers
+    const origin = request.headers.get('origin');
+
+    // Hardcoded allowed origins - NEVER use request.headers.get('host')!
+    const allowedOrigins = [
+      process.env.NEXT_PUBLIC_SITE_URL,
+      'https://barteløpet.no',
+      'https://www.barteløpet.no',
+      process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : null,
+      process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : null,
+    ].filter(Boolean) as string[];
+
+    // Reject requests without Origin header (potential CSRF)
+    if (!origin) {
+      securityLogger.securityThreat('csrf', undefined, {
+        reason: 'Missing Origin header',
+        host: request.headers.get('host'),
+        userAgent: request.headers.get('user-agent'),
+      });
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Ugyldig forespørsel',
+        },
+        { status: 403 }
+      );
+    }
+
+    // Validate Origin against whitelist
+    if (!allowedOrigins.includes(origin)) {
+      securityLogger.securityThreat('csrf', undefined, {
+        reason: 'Origin not in whitelist',
+        origin,
+        host: request.headers.get('host'),
+        referer: request.headers.get('referer'),
+        userAgent: request.headers.get('user-agent'),
+      });
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Ugyldig forespørsel',
+        },
+        { status: 403 }
+      );
+    }
+
     // Rate limiting check - prevent spam/abuse
     const clientIp = getClientIp(request);
     const rateLimitResult = await checkRateLimit('api', clientIp);

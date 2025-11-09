@@ -7,6 +7,7 @@ import { IMAGE_CONSTRAINTS } from '@/app/_shared/lib/constants/images'
 import { validateAndSanitizeImage, generateSecureFilename } from '@/app/_shared/lib/utils/file-validation'
 import { sanitizeSupabaseError } from '@/app/_shared/lib/utils/error-handler'
 import { checkRateLimit } from '@/app/_shared/lib/utils/rate-limit'
+import { imageCaptionSchema, reorderImagesSchema } from '@/app/_shared/lib/validations/completion'
 
 export type ActionResponse<T = void> = {
   success: boolean
@@ -405,9 +406,41 @@ export async function deleteCompletionImage(
       return { success: false, error: 'Kan ikke slette det siste bildet' }
     }
 
-    // Extract file path from URL
+    // Extract and validate file path from URL
     const url = new URL(image.image_url)
-    const filePath = url.pathname.split('/public/')[1]
+    const pathParts = url.pathname.split('/public/')
+
+    if (pathParts.length !== 2) {
+      return {
+        success: false,
+        error: 'Ugyldig bilde-URL'
+      }
+    }
+
+    const filePath = pathParts[1]
+
+    // SECURITY: Validate path to prevent traversal attacks
+    if (
+      filePath.includes('..') ||
+      filePath.includes('//') ||
+      !filePath.startsWith('multi/')
+    ) {
+      console.error('[Security] Path traversal attempt detected:', filePath)
+      return {
+        success: false,
+        error: 'Ugyldig filsti'
+      }
+    }
+
+    // Validate path matches expected pattern: multi/year/participantId/filename.jpg
+    const pathRegex = /^multi\/\d{4}\/[0-9a-f-]{36}\/[a-z0-9-]+\.jpg$/i
+    if (!pathRegex.test(filePath)) {
+      console.error('[Security] Invalid file path format:', filePath)
+      return {
+        success: false,
+        error: 'Ugyldig filformat'
+      }
+    }
 
     // Delete from database (trigger will handle auto-starring next image if needed)
     const { error: deleteError } = await supabase
@@ -459,6 +492,19 @@ export async function reorderImages(
   const supabase = await createClient()
 
   try {
+    // Validate input with Zod
+    const validationResult = reorderImagesSchema.safeParse({
+      completionId,
+      imageIds
+    })
+
+    if (!validationResult.success) {
+      return {
+        success: false,
+        error: validationResult.error.issues[0]?.message || 'Ugyldig data'
+      }
+    }
+
     // Get the current user
     const {
       data: { user },
@@ -476,6 +522,32 @@ export async function reorderImages(
 
     if (!participant) {
       return { success: false, error: 'Finner ikke deltaker' }
+    }
+
+    // Verify all imageIds belong to this completion AND this user
+    const { data: images } = await supabase
+      .from('photos')
+      .select('id, completion_id, participant_id')
+      .in('id', imageIds)
+
+    if (!images || images.length !== imageIds.length) {
+      return {
+        success: false,
+        error: 'Noen bilder ble ikke funnet'
+      }
+    }
+
+    // Verify all images belong to same completion and user
+    const allValid = images.every(img =>
+      img.completion_id === completionId &&
+      img.participant_id === participant.id
+    )
+
+    if (!allValid) {
+      return {
+        success: false,
+        error: 'Ikke autorisert til å endre disse bildene'
+      }
     }
 
     // Update display_order for each image
@@ -522,6 +594,26 @@ export async function updateImageCaption(
   const supabase = await createClient()
 
   try {
+    // Validate imageId is UUID
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    if (!uuidRegex.test(imageId)) {
+      return {
+        success: false,
+        error: 'Ugyldig bilde-ID'
+      }
+    }
+
+    // Validate caption with Zod (includes sanitization)
+    const validationResult = imageCaptionSchema.safeParse({ caption })
+    if (!validationResult.success) {
+      return {
+        success: false,
+        error: validationResult.error.issues[0]?.message || 'Ugyldig bildetekst'
+      }
+    }
+
+    const validatedCaption = validationResult.data.caption
+
     // Get the current user
     const {
       data: { user },
@@ -541,18 +633,10 @@ export async function updateImageCaption(
       return { success: false, error: 'Finner ikke deltaker' }
     }
 
-    // Validate caption length
-    if (caption.length > IMAGE_CONSTRAINTS.MAX_CAPTION_LENGTH) {
-      return {
-        success: false,
-        error: `Bildetekst kan ikke være lengre enn ${IMAGE_CONSTRAINTS.MAX_CAPTION_LENGTH} tegn`,
-      }
-    }
-
-    // Update caption
+    // Update caption with validated data
     const { error } = await supabase
       .from('photos')
-      .update({ caption })
+      .update({ caption: validatedCaption })
       .eq('id', imageId)
       .eq('participant_id', participant.id)
 
