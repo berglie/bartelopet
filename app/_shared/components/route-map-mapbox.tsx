@@ -1,11 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Map, { Source, Layer, NavigationControl } from 'react-map-gl/mapbox';
+import Map, { Source, Layer, NavigationControl, Marker } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { loadGPXRoute, getRouteCenter, getRouteZoom, type RouteData } from '@/app/_shared/lib/gpx-loader';
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
+
+// Free parking location
+const PARKING_LOCATION = {
+  longitude: 5.713827,
+  latitude: 58.966044,
+};
 
 // Default Stavanger center
 const DEFAULT_CENTER = {
@@ -150,6 +156,35 @@ export default function RouteMapMapbox({ year = 2025 }: { year?: number }) {
           />
         </Source>
 
+        {/* Route arrows to show direction */}
+        <Source id="route-arrows" type="geojson" data={routeData}>
+          <Layer
+            id="route-arrows-layer"
+            type="symbol"
+            layout={{
+              'symbol-placement': 'line',
+              'symbol-spacing': 150,
+              'text-field': '▶',
+              'text-size': 32,
+              'text-keep-upright': false,
+              'text-rotation-alignment': 'map',
+              'text-pitch-alignment': 'map',
+            }}
+            paint={{
+              'text-color': 'hsl(24, 20%, 25%)',
+            }}
+          />
+        </Source>
+
+        {/* Parking marker */}
+        <Marker
+          longitude={PARKING_LOCATION.longitude}
+          latitude={PARKING_LOCATION.latitude}
+          anchor="center"
+        >
+          <div className="w-5 h-5 bg-primary rounded-full border-2 border-white shadow-lg" />
+        </Marker>
+
         {/* Navigation Controls (Zoom +/-) */}
         <NavigationControl position="top-right" showCompass={true} />
       </Map>
@@ -177,6 +212,14 @@ export default function RouteMapMapbox({ year = 2025 }: { year?: number }) {
       <div className="absolute bottom-6 left-6 bg-card/95 backdrop-blur-sm px-6 py-3 rounded-xl shadow-lg border border-primary/30 max-w-[calc(100%-3rem)]">
         <p className="text-sm font-semibold text-accent">📍 11 km gjennom Stavanger</p>
         <p className="text-xs text-muted-foreground mt-1">Fargegadå • Gamle Stavanger • Stavanger Øst • Eiganes</p>
+      </div>
+
+      {/* Legend - bottom right */}
+      <div className="absolute bottom-6 right-6 bg-card/95 backdrop-blur-sm px-4 py-3 rounded-xl shadow-lg border border-primary/30">
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 bg-primary rounded-full border-2 border-white shadow-md" />
+          <p className="text-xs font-medium text-foreground">Gratis parkering</p>
+        </div>
       </div>
     </div>
   );
