@@ -302,7 +302,13 @@ export async function updateStarredImage(
       .eq('completion_id', completionId)
 
     if (unstarError) {
-      return { success: false, error: `Feil ved oppdatering: ${unstarError.message}` }
+      return {
+        success: false,
+        error: sanitizeSupabaseError(unstarError, {
+          location: 'updateStarredImage:unstar',
+          userId: user.id
+        })
+      }
     }
 
     // Star the selected image
@@ -312,7 +318,13 @@ export async function updateStarredImage(
       .eq('id', imageId)
 
     if (starError) {
-      return { success: false, error: `Feil ved oppdatering: ${starError.message}` }
+      return {
+        success: false,
+        error: sanitizeSupabaseError(starError, {
+          location: 'updateStarredImage:star',
+          userId: user.id
+        })
+      }
     }
 
     // Reset votes if requested
@@ -404,7 +416,13 @@ export async function deleteCompletionImage(
       .eq('id', imageId)
 
     if (deleteError) {
-      return { success: false, error: `Feil ved sletting: ${deleteError.message}` }
+      return {
+        success: false,
+        error: sanitizeSupabaseError(deleteError, {
+          location: 'deleteCompletionImage:delete',
+          userId: user.id
+        })
+      }
     }
 
     // Delete from storage
@@ -470,7 +488,13 @@ export async function reorderImages(
         .eq('participant_id', participant.id)
 
       if (error) {
-        return { success: false, error: `Feil ved omorganisering: ${error.message}` }
+        return {
+          success: false,
+          error: sanitizeSupabaseError(error, {
+            location: 'reorderImages',
+            userId: user.id
+          })
+        }
       }
     }
 
@@ -533,7 +557,13 @@ export async function updateImageCaption(
       .eq('participant_id', participant.id)
 
     if (error) {
-      return { success: false, error: `Feil ved oppdatering: ${error.message}` }
+      return {
+        success: false,
+        error: sanitizeSupabaseError(error, {
+          location: 'updateImageCaption',
+          userId: user.id
+        })
+      }
     }
 
     // Revalidate cache
@@ -566,7 +596,13 @@ export async function getPhotos(
       .order('display_order', { ascending: true })
 
     if (error) {
-      return { success: false, error: `Feil ved henting: ${error.message}` }
+      return {
+        success: false,
+        error: sanitizeSupabaseError(error, {
+          location: 'getPhotos',
+          userId: undefined
+        })
+      }
     }
 
     return { success: true, data: data || [] }

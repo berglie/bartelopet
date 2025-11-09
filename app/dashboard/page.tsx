@@ -16,10 +16,10 @@ export default async function DashboardPage() {
     redirect('/login');
   }
 
-  // Get participant data
+  // Get participant data - only select fields needed (no PII)
   const { data: participant } = await supabase
     .from('participants')
-    .select('*')
+    .select('id, full_name, bib_number, has_completed, event_year')
     .eq('user_id', user.id)
     .single();
 

@@ -31,7 +31,7 @@ export async function GET(request: Request) {
     if (user) {
       const { data: participant } = await supabase
         .from('participants')
-        .select('*')
+        .select('id')
         .eq('user_id', user.id)
         .maybeSingle();
 
@@ -60,7 +60,7 @@ export async function GET(request: Request) {
         if (user.email) {
           const { data: participant } = await supabase
             .from('participants')
-            .select('*')
+            .select('id, user_id')
             .eq('email', user.email)
             .maybeSingle();
 
@@ -76,7 +76,7 @@ export async function GET(request: Request) {
         // Check if participant record exists at all
         const { data: linkedParticipant } = await supabase
           .from('participants')
-          .select('*')
+          .select('id')
           .eq('user_id', user.id)
           .maybeSingle();
 
@@ -145,7 +145,7 @@ export async function GET(request: Request) {
     if (user.email) {
       const { data: participant } = await supabase
         .from('participants')
-        .select('*')
+        .select('id, user_id')
         .eq('email', user.email)
         .maybeSingle();
 
@@ -160,7 +160,7 @@ export async function GET(request: Request) {
     // Check if participant record exists
     const { data: linkedParticipant } = await supabase
       .from('participants')
-      .select('*')
+      .select('id')
       .eq('user_id', user.id)
       .maybeSingle();
 
