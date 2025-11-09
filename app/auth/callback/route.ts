@@ -24,7 +24,6 @@ function validateRedirectPath(path: string | null): string {
     '/galleri',
     '/pamelding',
     '/deltakere',
-    '/admin',
     '/profil',
   ];
 
@@ -34,7 +33,9 @@ function validateRedirectPath(path: string | null): string {
   );
 
   if (!isAllowed) {
-    console.warn('[Security] Blocked redirect to unauthorized path:', path);
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('[Security] Blocked redirect to unauthorized path:', path);
+    }
     return '/dashboard';
   }
 
@@ -48,11 +49,8 @@ export async function GET(request: Request) {
   const next = validateRedirectPath(searchParams.get('next'));
   const code = searchParams.get('code');
 
-  // SECURITY: Email should NOT be in URL parameters (PII exposure)
-  // Email will be retrieved from the authenticated session instead
+  // Legacy token format (pre-2023) requires email in URL - monitor for removal
   const email = searchParams.get('email');
-
-  // Also handle legacy token format (for signup confirmation)
   const legacyToken = searchParams.get('token');
 
   // Handle OAuth callback (Google, Facebook, etc.)
@@ -138,26 +136,31 @@ export async function GET(request: Request) {
     );
   }
 
-  // Handle legacy token format (email confirmation)
-  // IMPORTANT: With the legacy token format, Supabase hasn't processed it yet
-  // We need to exchange the token for a session
+  // LEGACY: Pre-2023 Supabase token format (email in URL = PII risk)
+  // Remove after 30+ days with no "[Auth] Legacy token format detected" logs
   if (legacyToken && type === 'signup') {
-    // SECURITY NOTE: Email in URL is a temporary requirement for legacy token verification
-    // This should be migrated to token_hash format which doesn't require email in URL
     if (!email) {
-      console.error('Email parameter missing for legacy token verification');
+      console.error('[Auth] Email parameter missing for legacy token verification');
       return NextResponse.redirect(
         new URL('/login?error=confirmation_failed&message=Kunne ikke bekrefte e-postadressen. Vennligst prøv igjen.', origin)
       );
     }
 
+    // Validate email format to prevent injection
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      console.error('[Auth] Invalid email format in legacy token verification');
+      return NextResponse.redirect(
+        new URL('/login?error=confirmation_failed&message=Ugyldig e-postadresse.', origin)
+      );
+    }
+
     const supabase = await createClient();
 
-    // Exchange the token for a session using verifyOtp
     const { error: verifyError } = await supabase.auth.verifyOtp({
       type: 'signup',
       token: legacyToken,
-      email,
+      email: email.trim(), // Sanitize whitespace
     });
 
     if (verifyError) {

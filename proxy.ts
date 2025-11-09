@@ -7,6 +7,11 @@ import { NextResponse, type NextRequest } from 'next/server'
  * Runs on all requests except static files
  */
 export async function proxy(request: NextRequest) {
+  // Block non-existent admin routes early to prevent compilation overhead
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+    return new NextResponse('Not Found', { status: 404 })
+  }
+
   // Refresh session if needed
   const response = await updateSession(request)
 
@@ -14,7 +19,6 @@ export async function proxy(request: NextRequest) {
   const protectedPaths = [
     '/dashboard',
     '/profil',
-    '/admin',
   ]
 
   // Check if current path is protected
@@ -32,20 +36,6 @@ export async function proxy(request: NextRequest) {
       const redirectUrl = new URL('/login', request.url)
       redirectUrl.searchParams.set('next', request.nextUrl.pathname)
       return NextResponse.redirect(redirectUrl)
-    }
-
-    // For admin routes, check admin role (when implemented)
-    if (request.nextUrl.pathname.startsWith('/admin')) {
-      // TODO: Add admin role check when RBAC is implemented
-      // const { data: participant } = await supabase
-      //   .from('participants')
-      //   .select('role')
-      //   .eq('user_id', user.id)
-      //   .single()
-      //
-      // if (participant?.role !== 'admin') {
-      //   return NextResponse.redirect(new URL('/dashboard', request.url))
-      // }
     }
   }
 

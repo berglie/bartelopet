@@ -7,10 +7,30 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
   public: {
     Tables: {
@@ -50,14 +70,21 @@ export type Database = {
             foreignKeyName: "completions_participant_id_fkey"
             columns: ["participant_id"]
             isOneToOne: false
-            referencedRelation: "current_year_participants"
+            referencedRelation: "participants"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "completions_participant_id_fkey"
             columns: ["participant_id"]
             isOneToOne: false
-            referencedRelation: "participants"
+            referencedRelation: "participants_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "completions_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -161,14 +188,21 @@ export type Database = {
             foreignKeyName: "photo_comments_participant_id_fkey"
             columns: ["participant_id"]
             isOneToOne: false
-            referencedRelation: "current_year_participants"
+            referencedRelation: "participants"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "photo_comments_participant_id_fkey"
             columns: ["participant_id"]
             isOneToOne: false
-            referencedRelation: "participants"
+            referencedRelation: "participants_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "photo_comments_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -221,14 +255,21 @@ export type Database = {
             foreignKeyName: "votes_voter_id_fkey"
             columns: ["voter_id"]
             isOneToOne: false
-            referencedRelation: "current_year_participants"
+            referencedRelation: "participants"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "votes_voter_id_fkey"
             columns: ["voter_id"]
             isOneToOne: false
-            referencedRelation: "participants"
+            referencedRelation: "participants_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "votes_voter_id_fkey"
+            columns: ["voter_id"]
+            isOneToOne: false
+            referencedRelation: "participants_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -293,14 +334,21 @@ export type Database = {
             foreignKeyName: "completion_images_participant_id_fkey"
             columns: ["participant_id"]
             isOneToOne: false
-            referencedRelation: "current_year_participants"
+            referencedRelation: "participants"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "completion_images_participant_id_fkey"
             columns: ["participant_id"]
             isOneToOne: false
-            referencedRelation: "participants"
+            referencedRelation: "participants_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "completion_images_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -350,14 +398,21 @@ export type Database = {
             foreignKeyName: "completions_participant_id_fkey"
             columns: ["participant_id"]
             isOneToOne: false
-            referencedRelation: "current_year_participants"
+            referencedRelation: "participants"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "completions_participant_id_fkey"
             columns: ["participant_id"]
             isOneToOne: false
-            referencedRelation: "participants"
+            referencedRelation: "participants_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "completions_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -370,7 +425,6 @@ export type Database = {
           completed_date: string | null
           created_at: string | null
           duration_text: string | null
-          email: string | null
           event_year: number | null
           full_name: string | null
           id: string | null
@@ -384,60 +438,79 @@ export type Database = {
             foreignKeyName: "completions_participant_id_fkey"
             columns: ["participant_id"]
             isOneToOne: false
-            referencedRelation: "current_year_participants"
+            referencedRelation: "participants"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "completions_participant_id_fkey"
             columns: ["participant_id"]
             isOneToOne: false
-            referencedRelation: "participants"
+            referencedRelation: "participants_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "completions_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants_safe"
             referencedColumns: ["id"]
           },
         ]
       }
-      current_year_participants: {
+      participants_public: {
         Row: {
-          auth_provider: string | null
           bib_number: number | null
           created_at: string | null
-          email: string | null
           event_year: number | null
           full_name: string | null
           has_completed: boolean | null
           id: string | null
-          phone_number: string | null
-          postal_address: string | null
-          updated_at: string | null
-          user_id: string | null
         }
         Insert: {
-          auth_provider?: string | null
           bib_number?: number | null
           created_at?: string | null
-          email?: string | null
           event_year?: number | null
           full_name?: string | null
           has_completed?: boolean | null
           id?: string | null
-          phone_number?: string | null
-          postal_address?: string | null
-          updated_at?: string | null
-          user_id?: string | null
         }
         Update: {
-          auth_provider?: string | null
           bib_number?: number | null
           created_at?: string | null
-          email?: string | null
           event_year?: number | null
           full_name?: string | null
           has_completed?: boolean | null
           id?: string | null
-          phone_number?: string | null
-          postal_address?: string | null
+        }
+        Relationships: []
+      }
+      participants_safe: {
+        Row: {
+          bib_number: number | null
+          created_at: string | null
+          event_year: number | null
+          full_name: string | null
+          has_completed: boolean | null
+          id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          bib_number?: number | null
+          created_at?: string | null
+          event_year?: number | null
+          full_name?: string | null
+          has_completed?: boolean | null
+          id?: string | null
           updated_at?: string | null
-          user_id?: string | null
+        }
+        Update: {
+          bib_number?: number | null
+          created_at?: string | null
+          event_year?: number | null
+          full_name?: string | null
+          has_completed?: boolean | null
+          id?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -592,7 +665,11 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },
 } as const
+
