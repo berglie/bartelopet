@@ -1,4 +1,5 @@
 // Database types matching Supabase schema
+import type { ParticipantPublic } from '@/app/_shared/types/participant'
 
 export interface Participant {
   id: string
@@ -82,8 +83,9 @@ export interface PhotoComment {
   updated_at: string
 }
 
+// PhotoComment with public-safe participant data (no PII)
 export interface PhotoCommentWithParticipant extends PhotoComment {
-  participant: Participant
+  participant: ParticipantPublic
 }
 
 export type PhotoCommentInsert = Omit<PhotoComment, 'id' | 'created_at' | 'updated_at'>

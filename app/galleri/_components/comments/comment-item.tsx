@@ -19,16 +19,17 @@ import type { PhotoCommentWithParticipant } from '@/app/_shared/lib/types/databa
 
 interface CommentItemProps {
   comment: PhotoCommentWithParticipant
-  currentUserId: string | null
+  currentParticipantId: string | null
   onDelete?: () => void
 }
 
-export function CommentItem({ comment, currentUserId, onDelete }: CommentItemProps) {
+export function CommentItem({ comment, currentParticipantId, onDelete }: CommentItemProps) {
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState('')
   const [dialogOpen, setDialogOpen] = useState(false)
 
-  const isOwner = currentUserId === comment.participant.user_id
+  // Check ownership by comparing participant IDs
+  const isOwner = currentParticipantId === comment.participant_id
 
   // Format the relative time
   const relativeTime = formatDistanceToNow(new Date(comment.created_at), {

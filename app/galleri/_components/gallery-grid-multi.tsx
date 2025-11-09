@@ -63,6 +63,7 @@ export function GalleryGridMulti({
   const [viewerOpen, setViewerOpen] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+  const [currentParticipantId, setCurrentParticipantId] = useState<string | null>(null)
   const [openWithComments, setOpenWithComments] = useState(false)
   const [completionsWithImages, setCompletionsWithImages] = useState<CompletionWithImages[]>([])
   const [loadingImages, setLoadingImages] = useState(true)
@@ -74,7 +75,7 @@ export function GalleryGridMulti({
   type AlertType = 'not-registered' | 'own-vote' | 'error' | null
   const [alertType, setAlertType] = useState<AlertType>(null)
 
-  // Fetch current user ID
+  // Fetch current user ID and participant ID
   useEffect(() => {
     const fetchUser = async () => {
       const supabase = createClient()
@@ -82,6 +83,18 @@ export function GalleryGridMulti({
         data: { user },
       } = await supabase.auth.getUser()
       setCurrentUserId(user?.id || null)
+
+      // Fetch participant ID if user is logged in
+      if (user) {
+        const { data: participant } = await supabase
+          .from('participants')
+          .select('id')
+          .eq('user_id', user.id)
+          .single()
+        setCurrentParticipantId(participant?.id || null)
+      } else {
+        setCurrentParticipantId(null)
+      }
     }
     fetchUser()
   }, [])
@@ -430,7 +443,8 @@ export function GalleryGridMulti({
           onVote={handleVote}
           userVoteIds={votedIds}
           totalImages={completionsWithImages.length}
-          currentUserId={currentUserId}
+          currentParticipantId={currentParticipantId}
+          isLoggedIn={currentUserId !== null}
           openWithComments={openWithComments}
         />
       )}

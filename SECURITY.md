@@ -191,4 +191,129 @@ For sikkerhetsspørsmål:
 
 ---
 
-*Denne sikkerhetspolicyen kan oppdateres over tid. Sist oppdatert: Januar 2025*
+## 🔐 Retningslinjer for håndtering av PII (Personlig Identifiserbar Informasjon)
+
+### Hva er PII?
+
+I konteksten av denne applikasjonen er følgende felter klassifisert som PII og **MÅ IKKE** eksponeres i offentlige APIer eller klient-side kode:
+
+- `email` - E-postadresse
+- `postal_address` - Hjemme-/postadresse
+- `phone_number` - Telefonnummer
+- `user_id` - Supabase auth bruker-ID (kobler til autentiseringssystemet)
+
+### Offentlig vs Privat Deltakerinformasjon
+
+#### ❌ Privat (`Participant` type)
+Inneholder PII - Bruk kun for:
+- Server-side operasjoner
+- Brukerens egen profildata
+- Admin-funksjoner
+
+```typescript
+interface Participant {
+  id: string
+  user_id: string | null        // ⚠️ PII
+  email: string                  // ⚠️ PII
+  full_name: string
+  postal_address: string         // ⚠️ PII
+  phone_number: string | null    // ⚠️ PII
+  bib_number: number
+  has_completed: boolean
+  event_year: number
+  created_at: string
+  updated_at: string
+}
+```
+
+#### ✅ Offentlig (`ParticipantPublic` type)
+Trygg for offentlige APIer og klient-side:
+
+```typescript
+interface ParticipantPublic {
+  id: string
+  full_name: string
+  bib_number: number
+  has_completed: boolean
+  event_year: number
+}
+```
+
+### Utviklerretningslinjer
+
+#### 1. Supabase-spørringer - Bruk alltid eksplisitt feltvalg
+
+❌ **ALDRI GJØR DETTE:**
+```typescript
+const { data } = await supabase
+  .from('participants')
+  .select('*')  // Henter ALLE felt inkludert PII
+```
+
+✅ **ALLTID GJØR DETTE:**
+```typescript
+const { data } = await supabase
+  .from('participants')
+  .select('id, full_name, bib_number, has_completed, event_year')
+```
+
+Eller bruk den offentlige viewen:
+```typescript
+const { data } = await supabase
+  .from('participants_public')
+  .select('*')
+```
+
+#### 2. Server Actions - Returner kun trygge data
+
+Ved retur av deltakerinformasjon fra Server Actions:
+
+```typescript
+import { sanitizeParticipant } from '@/app/_shared/lib/utils/data-sanitization'
+
+// Etter henting av full deltakerinformasjon
+const sanitizedParticipant = sanitizeParticipant(participant)
+return { success: true, data: sanitizedParticipant }
+```
+
+#### 3. Supabase Joins - Velg spesifikke felt
+
+Når du joiner med participants-tabellen:
+
+```typescript
+.select(`
+  id,
+  comment_text,
+  participant:participants (
+    id,
+    full_name,
+    bib_number,
+    has_completed,
+    event_year
+  )
+`)
+```
+
+### Data-saneringsverktøy
+
+Plassering: `app/_shared/lib/utils/data-sanitization.ts`
+
+Tilgjengelige funksjoner:
+- `sanitizeParticipant(participant: Participant): ParticipantPublic`
+- `sanitizeParticipants(participants: Participant[]): ParticipantPublic[]`
+- `containsPII(obj: unknown): boolean` - Utviklingshjelpeverktøy
+
+### Database-views
+
+#### `participants_public`
+Trygg view for offentlige spørringer:
+```sql
+SELECT id, full_name, bib_number, has_completed, event_year, created_at
+FROM participants
+```
+
+Bruk denne viewen i stedet for participants-tabellen for offentlige funksjoner.
+
+---
+
+*Denne sikkerhetspolicyen kan oppdateres over tid. Sist oppdatert: November 2025*

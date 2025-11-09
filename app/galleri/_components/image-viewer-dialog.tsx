@@ -26,7 +26,8 @@ interface ImageViewerDialogProps {
   onVote: (completionId: string) => Promise<void>
   userVoteIds: string[]
   totalImages: number
-  currentUserId: string | null
+  currentParticipantId: string | null
+  isLoggedIn: boolean
   openWithComments?: boolean
 }
 
@@ -39,7 +40,8 @@ export function ImageViewerDialog({
   onVote,
   userVoteIds,
   totalImages,
-  currentUserId,
+  currentParticipantId,
+  isLoggedIn,
   openWithComments = false,
 }: ImageViewerDialogProps) {
   const [imageLoaded, setImageLoaded] = useState(false)
@@ -353,7 +355,8 @@ export function ImageViewerDialog({
                   <CommentList
                     completionId={completion.id}
                     initialComments={comments}
-                    currentUserId={currentUserId}
+                    currentParticipantId={currentParticipantId}
+                    isLoggedIn={isLoggedIn}
                   />
                 )}
               </div>

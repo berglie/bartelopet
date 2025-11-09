@@ -10,13 +10,15 @@ import { MessageCircle } from 'lucide-react'
 interface CommentListProps {
   completionId: string
   initialComments: PhotoCommentWithParticipant[]
-  currentUserId: string | null
+  currentParticipantId: string | null
+  isLoggedIn: boolean
 }
 
 export function CommentList({
   completionId,
   initialComments,
-  currentUserId,
+  currentParticipantId,
+  isLoggedIn,
 }: CommentListProps) {
   const [comments, setComments] = useState<PhotoCommentWithParticipant[]>(initialComments)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -66,7 +68,7 @@ export function CommentList({
             <CommentItem
               key={comment.id}
               comment={comment}
-              currentUserId={currentUserId}
+              currentParticipantId={currentParticipantId}
               onDelete={() => handleDeleteComment(comment.id)}
             />
           ))
@@ -77,7 +79,7 @@ export function CommentList({
       <AddCommentForm
         onSubmit={handleAddComment}
         isSubmitting={isSubmitting}
-        isLoggedIn={currentUserId !== null}
+        isLoggedIn={isLoggedIn}
       />
     </div>
   )

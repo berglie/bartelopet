@@ -14,6 +14,35 @@ type ActionResponse<T = void> = {
 }
 
 /**
+ * Get the current user's participant ID
+ * @returns The participant ID of the currently authenticated user, or null if not authenticated
+ */
+export async function getCurrentParticipantId(): Promise<string | null> {
+  try {
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+      return null
+    }
+
+    const { data: participant, error: participantError } = await supabase
+      .from('participants')
+      .select('id')
+      .eq('user_id', user.id)
+      .single()
+
+    if (participantError || !participant) {
+      return null
+    }
+
+    return participant.id
+  } catch (error) {
+    return null
+  }
+}
+
+/**
  * Get all comments for a specific completion
  * @param completionId - The ID of the completion to get comments for
  * @returns Array of comments with participant information
@@ -25,6 +54,7 @@ export async function getComments(
     const supabase = await createClient()
 
     // Fetch comments with participant information
+    // Only selecting public-safe fields to prevent PII exposure
     const { data: comments, error } = await supabase
       .from('photo_comments')
       .select(`
@@ -36,15 +66,10 @@ export async function getComments(
         updated_at,
         participant:participants (
           id,
-          user_id,
-          email,
           full_name,
-          postal_address,
-          phone_number,
           bib_number,
           has_completed,
-          created_at,
-          updated_at
+          event_year
         )
       `)
       .eq('completion_id', completionId)
@@ -153,6 +178,7 @@ export async function addComment(
     }
 
     // Insert comment
+    // Only selecting public-safe fields to prevent PII exposure
     const { data: newComment, error: insertError } = await supabase
       .from('photo_comments')
       .insert({
@@ -169,15 +195,10 @@ export async function addComment(
         updated_at,
         participant:participants (
           id,
-          user_id,
-          email,
           full_name,
-          postal_address,
-          phone_number,
           bib_number,
           has_completed,
-          created_at,
-          updated_at
+          event_year
         )
       `)
       .single()
