@@ -17,7 +17,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
       .from('completions_with_counts')
       .select(`
         *,
-        participant:participants(
+        participant:participants_safe(
           full_name
         ),
         images:photos(
@@ -80,7 +80,7 @@ async function getCompletions() {
     .from('completions_with_counts')
     .select(`
       *,
-      participant:participants(
+      participant:participants_safe(
         id,
         full_name,
         bib_number
@@ -114,7 +114,7 @@ async function getUserVotes() {
 
   const currentYear = getCurrentEventYear();
 
-  // Get participant ID from user for current year
+  // Get participant ID from user for current year (authenticated context - OK to use participants)
   const { data: participant } = await supabase
     .from('participants')
     .select('id')

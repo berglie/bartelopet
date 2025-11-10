@@ -33,7 +33,7 @@ export function GalleryClient({ initialCompletions, initialUserVoteIds }: Galler
         .from('completions_with_counts')
         .select(`
           *,
-          participant:participants(
+          participant:participants_safe(
             id,
             full_name,
             bib_number
