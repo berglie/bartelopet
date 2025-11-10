@@ -37,10 +37,10 @@ importers:
         version: 1.1.13(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@supabase/ssr':
         specifier: ^0.7.0
-        version: 0.7.0(@supabase/supabase-js@2.78.0)
+        version: 0.7.0(@supabase/supabase-js@2.81.0)
       '@supabase/supabase-js':
-        specifier: ^2.78.0
-        version: 2.78.0
+        specifier: ^2.81.0
+        version: 2.81.0
       '@upstash/ratelimit':
         specifier: ^2.0.6
         version: 2.0.6(@upstash/redis@1.35.6)
@@ -59,6 +59,9 @@ importers:
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
+      dotenv:
+        specifier: ^17.2.3
+        version: 17.2.3
       gpxparser:
         specifier: ^3.0.8
         version: 3.0.8
@@ -913,32 +916,34 @@ packages:
   '@standard-schema/utils@0.3.0':
     resolution: {integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==}
 
-  '@supabase/auth-js@2.78.0':
-    resolution: {integrity: sha512-cXDtu1U0LeZj/xfnFoV7yCze37TcbNo8FCxy1FpqhMbB9u9QxxDSW6pA5gm/07Ei7m260Lof4CZx67Cu6DPeig==}
+  '@supabase/auth-js@2.81.0':
+    resolution: {integrity: sha512-mWyRPO+XUo19MHNBFg5qdH8cMIyxRNj9HXhwkwToxDHYRZWru96hWZFCVb7trOrTpPVe4TgLer2yy3KMvYBMPw==}
+    engines: {node: '>=20.0.0'}
 
-  '@supabase/functions-js@2.78.0':
-    resolution: {integrity: sha512-t1jOvArBsOINyqaRee1xJ3gryXLvkBzqnKfi6q3YRzzhJbGS6eXz0pXR5fqmJeB01fLC+1njpf3YhMszdPEF7g==}
+  '@supabase/functions-js@2.81.0':
+    resolution: {integrity: sha512-yxxIGbXm1TtRpP5VwXKEZIdQMd2XUrWS1xt3zPF3jMItX5dXfdpbz5YRPY3IfebR8gXB113d/APWvYLiNuzI1Q==}
+    engines: {node: '>=20.0.0'}
 
-  '@supabase/node-fetch@2.6.15':
-    resolution: {integrity: sha512-1ibVeYUacxWYi9i0cf5efil6adJ9WRyZBLivgjs+AUpewx1F3xPi7gLgaASI2SmIQxPoCEjAsLAzKPgMJVgOUQ==}
-    engines: {node: 4.x || >=6.0.0}
+  '@supabase/postgrest-js@2.81.0':
+    resolution: {integrity: sha512-HdybTRf5Sy+gBxzgwkag+WkvV8QqMXhnKQ383YG51lCbm8p82CuCcUTzGy2xFHiA2ZXnnlkSzrfw8uKFAiAiog==}
+    engines: {node: '>=20.0.0'}
 
-  '@supabase/postgrest-js@2.78.0':
-    resolution: {integrity: sha512-AwhpYlSvJ+PSnPmIK8sHj7NGDyDENYfQGKrMtpVIEzQA2ApUjgpUGxzXWN4Z0wEtLQsvv7g4y9HVad9Hzo1TNA==}
-
-  '@supabase/realtime-js@2.78.0':
-    resolution: {integrity: sha512-rCs1zmLe7of7hj4s7G9z8rTqzWuNVtmwDr3FiCRCJFawEoa+RQO1xpZGbdeuVvVmKDyVN6b542Okci+117y/LQ==}
+  '@supabase/realtime-js@2.81.0':
+    resolution: {integrity: sha512-WCL9kMbmHQNGAG4ep+jfU22+h9OiQVv7bbkOmLy4gwlqtE+SJszkAtRp3l3xthqYkbxHbIqGc/BlHv3Dh79cXg==}
+    engines: {node: '>=20.0.0'}
 
   '@supabase/ssr@0.7.0':
     resolution: {integrity: sha512-G65t5EhLSJ5c8hTCcXifSL9Q/ZRXvqgXeNo+d3P56f4U1IxwTqjB64UfmfixvmMcjuxnq2yGqEWVJqUcO+AzAg==}
     peerDependencies:
       '@supabase/supabase-js': ^2.43.4
 
-  '@supabase/storage-js@2.78.0':
-    resolution: {integrity: sha512-n17P0JbjHOlxqJpkaGFOn97i3EusEKPEbWOpuk1r4t00Wg06B8Z4GUiq0O0n1vUpjiMgJUkLIMuBVp+bEgunzQ==}
+  '@supabase/storage-js@2.81.0':
+    resolution: {integrity: sha512-gj9u+EyEVLgDA9jW8JOsAgEc8H79zg01STK5KLv9EU45kf5Qh7kAoCmG090Jkp/YEGvSiaR/Ta7Xs/gUTLqflw==}
+    engines: {node: '>=20.0.0'}
 
-  '@supabase/supabase-js@2.78.0':
-    resolution: {integrity: sha512-xYMRNBFmKp2m1gMuwcp/gr/HlfZKqjye1Ib8kJe29XJNsgwsfO/f8skxnWiscFKTlkOKLuBexNgl5L8dzGt6vA==}
+  '@supabase/supabase-js@2.81.0':
+    resolution: {integrity: sha512-FkiqUYCzsT92V/mfvoFueszkQrPqSTHgXhN9ADqeMpY5j0tUqeAZu8g2ptLYiDmx1pBbh4xoiqxWAf3UDIv4Bw==}
+    engines: {node: '>=20.0.0'}
 
   '@swc/helpers@0.5.15':
     resolution: {integrity: sha512-JQ5TuMi45Owi4/BIMAJBoSQoOJu12oOk/gADqlcUL9JEdHB8vyjUSsxqeNXnmXHjYKMi2WcYtezGEEhqUI/E2g==}
@@ -1563,6 +1568,10 @@ packages:
   domexception@1.0.1:
     resolution: {integrity: sha512-raigMkn7CJNNo6Ihro1fzG7wr3fHuYVytzquZKX5n0yizGsTcYgzdIUwj1X9pK0VvjeihV+XiclP+DjwbsSKug==}
     deprecated: Use your platform's native DOMException instead
+
+  dotenv@17.2.3:
+    resolution: {integrity: sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==}
+    engines: {node: '>=12'}
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -2991,9 +3000,6 @@ packages:
     resolution: {integrity: sha512-yQyJ0u4pZsv9D4clxO69OEjLWYw+jbgspjTue4lTQZLfV0c5l1VmK2y1JK8E9ahdpltPOaAThPcp5nKPUgSnsg==}
     engines: {node: '>=6'}
 
-  tr46@0.0.3:
-    resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
-
   tr46@1.0.1:
     resolution: {integrity: sha512-dTpowEjclQ7Kgx5SdBkqRzVhERQXov8/l9Ft9dVM9fmg0W0KQSVaXX9T4i6twCPNtYiZM53lpSSUAwJbFPOHxA==}
 
@@ -3128,9 +3134,6 @@ packages:
   w3c-xmlserializer@1.1.2:
     resolution: {integrity: sha512-p10l/ayESzrBMYWRID6xbuCKh2Fp77+sA0doRuGn4tTIMrrZVeqfpKjXHY+oDh3K4nLdPgNwMTVP6Vp4pvqbNg==}
 
-  webidl-conversions@3.0.1:
-    resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
-
   webidl-conversions@4.0.2:
     resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
 
@@ -3139,9 +3142,6 @@ packages:
 
   whatwg-mimetype@2.3.0:
     resolution: {integrity: sha512-M4yMwr6mAnQz76TbJm914+gPpB/nCwvZbJU28cUD6dR004SAxDLOOSUaB1JDRqLtaOV/vi0IC5lEAGFgrjGv/g==}
-
-  whatwg-url@5.0.0:
-    resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
 
   whatwg-url@7.1.0:
     resolution: {integrity: sha512-WUu7Rg1DroM7oQvGWfOiAK21n74Gg+T4elXEQYkOhtyLeWiJFoOGLXPKI/9gzIie9CtwVLm8wtw6YJdKyxSjeg==}
@@ -3985,28 +3985,20 @@ snapshots:
 
   '@standard-schema/utils@0.3.0': {}
 
-  '@supabase/auth-js@2.78.0':
+  '@supabase/auth-js@2.81.0':
     dependencies:
-      '@supabase/node-fetch': 2.6.15
       tslib: 2.8.1
 
-  '@supabase/functions-js@2.78.0':
+  '@supabase/functions-js@2.81.0':
     dependencies:
-      '@supabase/node-fetch': 2.6.15
       tslib: 2.8.1
 
-  '@supabase/node-fetch@2.6.15':
+  '@supabase/postgrest-js@2.81.0':
     dependencies:
-      whatwg-url: 5.0.0
-
-  '@supabase/postgrest-js@2.78.0':
-    dependencies:
-      '@supabase/node-fetch': 2.6.15
       tslib: 2.8.1
 
-  '@supabase/realtime-js@2.78.0':
+  '@supabase/realtime-js@2.81.0':
     dependencies:
-      '@supabase/node-fetch': 2.6.15
       '@types/phoenix': 1.6.6
       '@types/ws': 8.18.1
       tslib: 2.8.1
@@ -4015,24 +4007,22 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@supabase/ssr@0.7.0(@supabase/supabase-js@2.78.0)':
+  '@supabase/ssr@0.7.0(@supabase/supabase-js@2.81.0)':
     dependencies:
-      '@supabase/supabase-js': 2.78.0
+      '@supabase/supabase-js': 2.81.0
       cookie: 1.0.2
 
-  '@supabase/storage-js@2.78.0':
+  '@supabase/storage-js@2.81.0':
     dependencies:
-      '@supabase/node-fetch': 2.6.15
       tslib: 2.8.1
 
-  '@supabase/supabase-js@2.78.0':
+  '@supabase/supabase-js@2.81.0':
     dependencies:
-      '@supabase/auth-js': 2.78.0
-      '@supabase/functions-js': 2.78.0
-      '@supabase/node-fetch': 2.6.15
-      '@supabase/postgrest-js': 2.78.0
-      '@supabase/realtime-js': 2.78.0
-      '@supabase/storage-js': 2.78.0
+      '@supabase/auth-js': 2.81.0
+      '@supabase/functions-js': 2.81.0
+      '@supabase/postgrest-js': 2.81.0
+      '@supabase/realtime-js': 2.81.0
+      '@supabase/storage-js': 2.81.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -4649,6 +4639,8 @@ snapshots:
   domexception@1.0.1:
     dependencies:
       webidl-conversions: 4.0.2
+
+  dotenv@17.2.3: {}
 
   dunder-proto@1.0.1:
     dependencies:
@@ -6365,8 +6357,6 @@ snapshots:
       psl: 1.15.0
       punycode: 2.3.1
 
-  tr46@0.0.3: {}
-
   tr46@1.0.1:
     dependencies:
       punycode: 2.3.1
@@ -6541,8 +6531,6 @@ snapshots:
       webidl-conversions: 4.0.2
       xml-name-validator: 3.0.0
 
-  webidl-conversions@3.0.1: {}
-
   webidl-conversions@4.0.2: {}
 
   whatwg-encoding@1.0.5:
@@ -6550,11 +6538,6 @@ snapshots:
       iconv-lite: 0.4.24
 
   whatwg-mimetype@2.3.0: {}
-
-  whatwg-url@5.0.0:
-    dependencies:
-      tr46: 0.0.3
-      webidl-conversions: 3.0.1
 
   whatwg-url@7.1.0:
     dependencies:
