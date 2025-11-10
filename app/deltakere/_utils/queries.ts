@@ -43,7 +43,7 @@ export async function getParticipants(year: number): Promise<ParticipantListItem
   const supabase = await createClient()
 
   const { data: participants, error } = await supabase
-    .from('participants')
+    .from('participants_safe')
     .select('full_name, bib_number, has_completed, event_year')
     .eq('event_year', year)
     .order('bib_number', { ascending: true })
@@ -53,7 +53,7 @@ export async function getParticipants(year: number): Promise<ParticipantListItem
     return []
   }
 
-  return participants || []
+  return (participants || []) as ParticipantListItem[]
 }
 
 export async function getParticipantsStats(year: number): Promise<ParticipantsStats> {
@@ -63,8 +63,8 @@ export async function getParticipantsStats(year: number): Promise<ParticipantsSt
     { count: totalCount },
     { count: completedCount }
   ] = await Promise.all([
-    supabase.from('participants').select('*', { count: 'exact', head: true }).eq('event_year', year),
-    supabase.from('participants').select('*', { count: 'exact', head: true }).eq('event_year', year).eq('has_completed', true)
+    supabase.from('participants_safe').select('*', { count: 'exact', head: true }).eq('event_year', year),
+    supabase.from('participants_safe').select('*', { count: 'exact', head: true }).eq('event_year', year).eq('has_completed', true)
   ])
 
   return {
@@ -78,16 +78,19 @@ export async function getParticipantDetail(bibNumber: number, year: number): Pro
 
   // First get participant data
   const { data: participant, error: participantError } = await supabase
-    .from('participants')
+    .from('participants_safe')
     .select('id, full_name, bib_number, has_completed, event_year, created_at')
     .eq('bib_number', bibNumber)
     .eq('event_year', year)
     .single()
 
-  if (participantError || !participant) {
+  if (participantError || !participant || !participant.id) {
     console.error('Error fetching participant:', participantError)
     return null
   }
+
+  // Type assertion - we know these fields are not null for valid participants
+  const participantData = participant as ParticipantDetail
 
   // If participant has completed, fetch completion data
   if (participant.has_completed) {
@@ -95,7 +98,7 @@ export async function getParticipantDetail(bibNumber: number, year: number): Pro
     const { data: completionWithCounts, error: viewError } = await supabase
       .from('completions_with_counts')
       .select('*')
-      .eq('participant_id', participant.id)
+      .eq('participant_id', participant.id!)
       .single()
 
     if (completionWithCounts && !viewError && completionWithCounts.id) {
@@ -112,7 +115,7 @@ export async function getParticipantDetail(bibNumber: number, year: number): Pro
       }
 
       return {
-        ...participant,
+        ...participantData,
         completion: {
           id: completionWithCounts.id,
           completion_date: completionWithCounts.completed_date || completionWithCounts.created_at || '',
@@ -158,7 +161,7 @@ export async function getParticipantDetail(bibNumber: number, year: number): Pro
         ])
 
         return {
-          ...participant,
+          ...participantData,
           completion: {
             id: completion.id,
             completion_date: completion.created_at || '',
@@ -175,5 +178,5 @@ export async function getParticipantDetail(bibNumber: number, year: number): Pro
     }
   }
 
-  return participant
+  return participantData
 }
