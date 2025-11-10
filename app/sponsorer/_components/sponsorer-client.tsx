@@ -40,6 +40,14 @@ const MEDIA_MENTIONS: MediaMention[] = [
 const SPONSORS_DATA: GroupedSponsors = {
   merchandise: [
     {
+      id: '7',
+      name: 'Metallteknikk AS',
+      category: 'merchandise',
+      website_url: 'https://metallteknikk.no/',
+      logo_url: '/images/sponsors/metallteknikk.png',
+      prize: '🏆 Pokal',
+    },
+    {
       id: '11',
       name: 'Ark Prostebakken Stavanger',
       category: 'merchandise',
@@ -48,11 +56,39 @@ const SPONSORS_DATA: GroupedSponsors = {
       prize: 'Brettspill',
     },
     {
+      id: '20',
+      name: 'BRGN',
+      category: 'merchandise',
+      logo_url: '/images/sponsors/brgn.webp',
+      prize: 'Gave',
+    },
+    {
+      id: '12',
+      name: 'Byens Skomaker',
+      category: 'merchandise',
+      logo_url: '/images/sponsors/byens-skomaker.jpg',
+      prize: 'Gavekort',
+    },
+    {
+      id: '13',
+      name: 'Clarion Hotel',
+      category: 'merchandise',
+      logo_url: '/images/sponsors/clarion-hotel.png',
+      prize: 'Gavekort',
+    },
+    {
       id: '1',
       name: 'Comfyballs',
       category: 'merchandise',
       website_url: 'https://www.comfyballs.no/',
       logo_url: '/images/sponsors/comfyballs.svg',
+      prize: 'Gavekort',
+    },
+    {
+      id: '14',
+      name: 'Døgnvill',
+      category: 'merchandise',
+      logo_url: '/images/sponsors/dognvill.svg',
       prize: 'Gavekort',
     },
     {
@@ -69,6 +105,13 @@ const SPONSORS_DATA: GroupedSponsors = {
       category: 'merchandise',
       website_url: 'https://meny.no/finn-butikk/helgo-meny-herbarium/',
       logo_url: '/images/sponsors/helgo-meny.png',
+      prize: 'Gavekort',
+    },
+    {
+      id: '15',
+      name: 'K-Chicken',
+      category: 'merchandise',
+      logo_url: '/images/sponsors/k-chicken.jpg',
       prize: 'Gavekort',
     },
     {
@@ -96,20 +139,19 @@ const SPONSORS_DATA: GroupedSponsors = {
       prize: 'Gavekort',
     },
     {
-      id: '7',
-      name: 'Metallteknikk AS',
-      category: 'merchandise',
-      website_url: 'https://metallteknikk.no/',
-      logo_url: '/images/sponsors/metallteknikk.png',
-      prize: '🏆 Pokal',
-    },
-    {
       id: '10',
       name: 'Molinå Bakery',
       category: 'merchandise',
       website_url: 'https://www.molino-bakery.com/',
       logo_url: '/images/sponsors/molinaa.webp',
       prize: 'Gavekort',
+    },
+    {
+      id: '21',
+      name: 'Olivenlunden',
+      category: 'merchandise',
+      logo_url: '/images/sponsors/olivenlunden.svg',
+      prize: 'Gave',
     },
     {
       id: '6',
@@ -120,11 +162,39 @@ const SPONSORS_DATA: GroupedSponsors = {
       prize: 'Reklameartikler',
     },
     {
+      id: '16',
+      name: 'Stavanger Camping',
+      category: 'merchandise',
+      logo_url: '/images/sponsors/stavanger-camping.avif',
+      prize: 'Gavekort',
+    },
+    {
+      id: '17',
+      name: 'Stavanger Oljemuseum',
+      category: 'merchandise',
+      logo_url: '/images/sponsors/norsk-oljemuseum.png',
+      prize: 'Gavekort',
+    },
+    {
+      id: '18',
+      name: 'Studio Wellness',
+      category: 'merchandise',
+      logo_url: '/images/sponsors/studio-wellness.png',
+      prize: 'Gavekort',
+    },
+    {
       id: '8',
       name: 'Vår Energi Arena',
       category: 'merchandise',
       website_url: 'https://varenergiarenasormarka.no/',
       logo_url: '/images/sponsors/vaar-energi.svg',
+      prize: 'Gavekort',
+    },
+    {
+      id: '19',
+      name: 'Viking House',
+      category: 'merchandise',
+      logo_url: '/images/sponsors/viking-house.svg',
       prize: 'Gavekort',
     },
   ],
@@ -162,30 +232,127 @@ export function SponsorsClient() {
         </div>
       </section>
 
-      {/* Sponsors Grid Section */}
-      <section className="py-12 md:py-20">
+      {/* Premier Section */}
+      <section className="py-12 md:py-20 border-b border-border/50">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
-            {/* Mobile: Stacked layout, Desktop: 4-column grid */}
-            <div className="space-y-12 lg:space-y-0 lg:grid lg:grid-cols-4 lg:gap-8 lg:gap-y-12">
-              {/* Premier Header - Spans 2 columns on desktop */}
-              <div className="lg:col-span-2 space-y-3 text-center">
-                <div className="flex items-center gap-3 justify-center">
-                  <div className="flex-shrink-0 text-accent">
-                    <Gift className="h-6 w-6" />
-                  </div>
-                  <h2 className="text-2xl md:text-3xl font-bold text-foreground">
-                    Premier
-                  </h2>
+            {/* Section Header */}
+            <div className="space-y-3 text-center mb-12">
+              <div className="flex items-center gap-3 justify-center">
+                <div className="flex-shrink-0 text-accent">
+                  <Gift className="h-6 w-6" />
                 </div>
-                <p className="text-sm md:text-base text-muted-foreground">
-                  Bedrifter som bidrar med premier og reklameartikler
-                </p>
+                <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+                  Premier
+                </h2>
               </div>
+              <p className="text-sm md:text-base text-muted-foreground">
+                Bedrifter som bidrar med premier og reklameartikler
+              </p>
+            </div>
 
-              {/* Donasjoner Header - Desktop only */}
-              <div className="hidden lg:block space-y-3 text-center lg:text-left">
-                <div className="flex items-center gap-3 justify-center lg:justify-start">
+            {/* First Sponsor (Pokal) - Centered */}
+            {SPONSORS_DATA.merchandise.length > 0 && (
+              <div className="flex justify-center mb-8">
+                <div className="w-full max-w-sm">
+                  <SponsorCard sponsor={SPONSORS_DATA.merchandise[0]} />
+                </div>
+              </div>
+            )}
+
+            {/* Remaining Sponsors Grid - 4 columns on desktop */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {SPONSORS_DATA.merchandise.slice(1).map((sponsor) => (
+                <SponsorCard key={sponsor.id} sponsor={sponsor} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Omtale Section */}
+      <section className="py-12 md:py-20 border-b border-border/50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-7xl mx-auto">
+            {/* Section Header */}
+            <div className="space-y-3 text-center mb-12">
+              <div className="flex items-center gap-3 justify-center">
+                <div className="flex-shrink-0 text-accent">
+                  <Newspaper className="h-6 w-6" />
+                </div>
+                <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+                  Omtale
+                </h2>
+              </div>
+              <p className="text-sm md:text-base text-muted-foreground">
+                Barteløpet i media og sosiale medier
+              </p>
+            </div>
+
+            {/* Media Mention Cards - 2 columns */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              {MEDIA_MENTIONS.map((mention) => (
+                <a
+                  key={mention.id}
+                  href={mention.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
+                >
+                  <div className="rounded-lg border text-card-foreground shadow-sm bg-card/50 border-border/50 backdrop-blur hover:border-accent/50 transition-all h-full">
+                    <div className="p-4 md:p-6 space-y-3 text-center">
+                      {mention.logo_url && (
+                        <div className="relative w-full h-12 mb-2">
+                          <NextImage
+                            src={mention.logo_url}
+                            alt={`${mention.source} logo`}
+                            fill
+                            className="object-contain"
+                          />
+                        </div>
+                      )}
+                      <h3 className="text-lg md:text-xl font-semibold text-foreground">
+                        {mention.title}
+                      </h3>
+                      <p className="text-sm md:text-base text-muted-foreground">
+                        {mention.source}
+                      </p>
+                      <div className="flex items-center justify-center gap-2 text-accent hover:text-accent/80 transition-colors">
+                        <span className="text-sm">Les mer</span>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="h-3 w-3"
+                        >
+                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                          <polyline points="15 3 21 3 21 9"></polyline>
+                          <line x1="10" x2="21" y1="14" y2="3"></line>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Donasjoner Section - Only show if there are donation sponsors */}
+      {SPONSORS_DATA.donation.length > 0 && (
+        <section className="py-12 md:py-20">
+          <div className="container mx-auto px-4">
+            <div className="max-w-7xl mx-auto">
+              {/* Section Header */}
+              <div className="space-y-3 text-center mb-12">
+                <div className="flex items-center gap-3 justify-center">
                   <div className="flex-shrink-0 text-accent">
                     <Heart className="h-6 w-6" />
                   </div>
@@ -198,51 +365,12 @@ export function SponsorsClient() {
                 </p>
               </div>
 
-              {/* Omtale Header - Desktop only */}
-              <div className="hidden lg:block space-y-3 text-center lg:text-left">
-                <div className="flex items-center gap-3 justify-center lg:justify-start">
-                  <div className="flex-shrink-0 text-accent">
-                    <Newspaper className="h-6 w-6" />
-                  </div>
-                  <h2 className="text-2xl md:text-3xl font-bold text-foreground">
-                    Omtale
-                  </h2>
-                </div>
-                <p className="text-sm md:text-base text-muted-foreground">
-                  Barteløpet i media og sosiale medier
-                </p>
-              </div>
-
-              {/* Premier Content Column 1 */}
-              <div className="lg:col-span-1 space-y-4">
-                {SPONSORS_DATA.merchandise.slice(0, Math.ceil(SPONSORS_DATA.merchandise.length / 2)).map((sponsor) => (
+              {/* Donation Sponsors + Spleis CTA - 3 columns */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                {/* Donation Sponsors */}
+                {SPONSORS_DATA.donation.map((sponsor) => (
                   <SponsorCard key={sponsor.id} sponsor={sponsor} />
                 ))}
-              </div>
-
-              {/* Premier Content Column 2 */}
-              <div className="lg:col-span-1 space-y-4">
-                {SPONSORS_DATA.merchandise.slice(Math.ceil(SPONSORS_DATA.merchandise.length / 2)).map((sponsor) => (
-                  <SponsorCard key={sponsor.id} sponsor={sponsor} />
-                ))}
-              </div>
-
-              {/* Donasjoner Section */}
-              <div className="space-y-6 lg:space-y-0">
-                {/* Donasjoner Header - Mobile only */}
-                <div className="lg:hidden space-y-3 text-center lg:text-left mb-6">
-                  <div className="flex items-center gap-3 justify-center lg:justify-start">
-                    <div className="flex-shrink-0 text-accent">
-                      <Heart className="h-6 w-6" />
-                    </div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-foreground">
-                      Donasjoner
-                    </h2>
-                  </div>
-                  <p className="text-sm md:text-base text-muted-foreground">
-                    Bedrifter som støtter med donasjoner
-                  </p>
-                </div>
 
                 {/* Spleis CTA Card */}
                 <a
@@ -252,7 +380,7 @@ export function SponsorsClient() {
                   className="block"
                 >
                   <div className="rounded-lg border text-card-foreground shadow-sm bg-card/50 border-border/50 backdrop-blur hover:border-accent/50 transition-all h-full">
-                    <div className="p-4 md:p-6 space-y-3 text-center">
+                    <div className="p-4 md:p-6 space-y-3 text-center flex flex-col justify-center h-full">
                       <h3 className="text-lg md:text-xl font-semibold text-foreground">
                         Vil du bidra?
                       </h3>
@@ -282,81 +410,10 @@ export function SponsorsClient() {
                   </div>
                 </a>
               </div>
-
-              {/* Omtale Section */}
-              <div className="space-y-6 lg:space-y-0">
-                {/* Omtale Header - Mobile only */}
-                <div className="lg:hidden space-y-3 text-center lg:text-left mb-6">
-                  <div className="flex items-center gap-3 justify-center lg:justify-start">
-                    <div className="flex-shrink-0 text-accent">
-                      <Newspaper className="h-6 w-6" />
-                    </div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-foreground">
-                      Omtale
-                    </h2>
-                  </div>
-                  <p className="text-sm md:text-base text-muted-foreground">
-                    Barteløpet i media og sosiale medier
-                  </p>
-                </div>
-
-                {/* Media Mention Cards */}
-                <div className="space-y-4">
-                  {MEDIA_MENTIONS.map((mention) => (
-                    <a
-                      key={mention.id}
-                      href={mention.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block"
-                    >
-                      <div className="rounded-lg border text-card-foreground shadow-sm bg-card/50 border-border/50 backdrop-blur hover:border-accent/50 transition-all h-full">
-                        <div className="p-4 md:p-6 space-y-3 text-center">
-                          {mention.logo_url && (
-                            <div className="relative w-full h-12 mb-2">
-                              <NextImage
-                                src={mention.logo_url}
-                                alt={`${mention.source} logo`}
-                                fill
-                                className="object-contain"
-                              />
-                            </div>
-                          )}
-                          <h3 className="text-lg md:text-xl font-semibold text-foreground">
-                            {mention.title}
-                          </h3>
-                          <p className="text-sm md:text-base text-muted-foreground">
-                            {mention.source}
-                          </p>
-                          <div className="flex items-center justify-center gap-2 text-accent hover:text-accent/80 transition-colors">
-                            <span className="text-sm">Les mer</span>
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="h-3 w-3"
-                            >
-                              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                              <polyline points="15 3 21 3 21 9"></polyline>
-                              <line x1="10" x2="21" y1="14" y2="3"></line>
-                            </svg>
-                          </div>
-                        </div>
-                      </div>
-                    </a>
-                  ))}
-                </div>
-              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* CTA Section */}
       <section className="border-t border-border/50 py-12 md:py-16">
