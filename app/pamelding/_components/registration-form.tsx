@@ -120,12 +120,10 @@ export function RegistrationForm() {
 
       const nextBibNumber = maxBib ? maxBib.bib_number + 1 : 1;
 
-      let participant;
-
       if (user) {
         // User is already authenticated (came from magic link or confirmation)
         // Insert participant and link to existing auth user
-        const { data: newParticipant, error: insertError } = await supabase
+        const { error: insertError } = await supabase
           .from('participants')
           .insert({
             user_id: user.id, // Link to existing auth user
@@ -135,9 +133,7 @@ export function RegistrationForm() {
             phone_number: data.phone_number,
             bib_number: nextBibNumber,
             event_year: currentEventYear,
-          })
-          .select()
-          .single();
+          });
 
         if (insertError) {
           if (insertError.code === '23505') {
@@ -149,10 +145,8 @@ export function RegistrationForm() {
           return;
         }
 
-        participant = newParticipant;
-
         // User is already logged in, redirect to dashboard immediately
-        setBibNumber(participant.bib_number);
+        setBibNumber(nextBibNumber);
         setTimeout(() => {
           router.push('/dashboard');
         }, 2000);
@@ -191,7 +185,7 @@ export function RegistrationForm() {
         }
 
         // Insert participant record linked to the new user
-        const { data: newParticipant, error: insertError } = await supabase
+        const { error: insertError } = await supabase
           .from('participants')
           .insert({
             user_id: signUpData.user.id, // Link to newly created auth user
@@ -201,9 +195,7 @@ export function RegistrationForm() {
             phone_number: data.phone_number,
             bib_number: nextBibNumber,
             event_year: currentEventYear,
-          })
-          .select()
-          .single();
+          });
 
         if (insertError) {
           console.error('Insert error:', insertError);
@@ -221,8 +213,7 @@ export function RegistrationForm() {
           return;
         }
 
-        participant = newParticipant;
-        setBibNumber(participant.bib_number);
+        setBibNumber(nextBibNumber);
       }
 
     } catch (err) {
