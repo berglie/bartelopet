@@ -23,6 +23,7 @@ export function RegistrationForm() {
     full_name: string;
   } | null>(null);
   const [consentAccepted, setConsentAccepted] = useState(false);
+  const [needsCompletion, setNeedsCompletion] = useState(false);
 
   // Load OAuth user data if logged in
   useEffect(() => {
@@ -30,17 +31,30 @@ export function RegistrationForm() {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
 
-      if (user && user.app_metadata.provider !== 'email') {
-        // User logged in with OAuth (Google/Facebook)
-        setPrefillData({
-          email: user.email || '',
-          full_name: user.user_metadata?.full_name || user.user_metadata?.name || '',
-        });
+      if (user) {
+        // Check if user has a participant record
+        const { data: participant } = await supabase
+          .from('participants')
+          .select('id')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (!participant) {
+          // User is authenticated but has no participant record - needs to complete registration
+          setNeedsCompletion(true);
+          setPrefillData({
+            email: user.email || '',
+            full_name: user.user_metadata?.full_name || user.user_metadata?.name || '',
+          });
+        } else {
+          // User has a participant record, redirect to dashboard
+          router.push('/dashboard');
+        }
       }
     }
 
     loadUserData();
-  }, []);
+  }, [router]);
 
   async function handleOAuthLogin(provider: 'google') {
     setOAuthError('');
@@ -281,14 +295,25 @@ export function RegistrationForm() {
       <CardHeader>
         <CardTitle>Registreringsskjema</CardTitle>
         <CardDescription>
-          {prefillData
+          {needsCompletion
+            ? 'E-posten din er bekreftet! Fullfør registreringen ved å fylle ut informasjonen under'
+            : prefillData
             ? 'Fullfør registreringen din ved å fylle ut informasjonen under'
             : 'Alle feltene må fylles ut bortsett fra telefonnummer'}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        {needsCompletion && (
+          <div className="bg-primary/10 border border-primary rounded-lg p-4 text-sm mb-4">
+            <p className="font-semibold text-accent mb-2">✅ E-post bekreftet!</p>
+            <p className="text-foreground">
+              Din e-postadresse er bekreftet. Fyll ut resten av informasjonen under for å fullføre påmeldingen til Barteløpet.
+            </p>
+          </div>
+        )}
+
         {/* Rask påmelding section */}
-        <div className="space-y-4 pb-4">
+        {!needsCompletion && <div className="space-y-4 pb-4">
       
           
           {oAuthError && (
@@ -335,7 +360,7 @@ export function RegistrationForm() {
               </span>
             </div>
           </div>
-        </div>
+        </div>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
@@ -344,7 +369,7 @@ export function RegistrationForm() {
             </div>
           )}
 
-          {prefillData && (
+          {prefillData && !needsCompletion && (
             <div className="bg-primary/10 border border-primary rounded-lg p-4 text-sm">
               <div className="flex items-start justify-between gap-2 mb-2">
                 <div className="flex-1">
