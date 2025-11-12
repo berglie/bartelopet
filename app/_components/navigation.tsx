@@ -78,13 +78,22 @@ export function Navigation({ isAuthenticated = false }: NavigationProps) {
             {showYearSelector && <YearSelector variant="compact" />}
           </div>
 
-          {/* Mobile menu - right side button */}
-          <div className="md:hidden">
-            <Button asChild size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
-              <Link href={isAuthenticated ? "/dashboard" : "/pamelding"}>
-                {isAuthenticated ? "Dashboard" : "Påmelding"}
-              </Link>
-            </Button>
+          {/* Mobile menu - right side buttons */}
+          <div className="md:hidden flex items-center gap-2">
+            {isAuthenticated ? (
+              <Button asChild size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                <Link href="/dashboard">Dashboard</Link>
+              </Button>
+            ) : (
+              <>
+                <Button asChild size="sm" variant="ghost">
+                  <Link href="/login">Logg inn</Link>
+                </Button>
+                <Button asChild size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                  <Link href="/pamelding">Påmelding</Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>
