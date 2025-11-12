@@ -108,18 +108,22 @@ export function RegistrationForm() {
     try {
       // Check if user is already authenticated
       const { data: { user } } = await supabase.auth.getUser();
+      console.log('Form submit - user authenticated?', !!user, user?.email);
 
       // Get the current event year
       const currentEventYear = getCurrentEventYear();
 
       // Get the next bib number for the current event year
+      // Use participants_safe view since RLS blocks direct table access for non-participants
       const { data: maxBib, error: maxBibError } = await supabase
-        .from('participants')
+        .from('participants_safe')
         .select('bib_number')
         .eq('event_year', currentEventYear)
         .order('bib_number', { ascending: false })
         .limit(1)
         .maybeSingle();
+
+      console.log('Max bib query result:', { maxBib, maxBibError });
 
       // Handle 403/permission errors (likely stale/invalid session)
       if (maxBibError && (
@@ -132,7 +136,8 @@ export function RegistrationForm() {
         return;
       }
 
-      const nextBibNumber = maxBib ? maxBib.bib_number + 1 : 1;
+      const nextBibNumber = (maxBib?.bib_number ?? 0) + 1;
+      console.log('Next bib number calculated:', nextBibNumber);
 
       if (user) {
         // User is already authenticated (came from magic link or confirmation)
