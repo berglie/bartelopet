@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Map, { Source, Layer, NavigationControl, Marker } from 'react-map-gl/mapbox';
+import { useState, useEffect, useRef } from 'react';
+import Map, { Source, Layer, Marker, type MapRef } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { loadGPXRoute, getRouteCenter, getRouteZoom, type RouteData } from '@/app/_shared/lib/gpx-loader';
 
@@ -50,12 +50,57 @@ const MAP_STYLES = {
 
 type MapStyleKey = keyof typeof MAP_STYLES;
 
+// Custom Zoom Control Component
+function CustomZoomControl({ mapRef }: { mapRef: React.RefObject<MapRef | null> }) {
+  const handleZoomIn = () => {
+    mapRef.current?.zoomIn();
+  };
+
+  const handleZoomOut = () => {
+    mapRef.current?.zoomOut();
+  };
+
+  const handleResetNorth = () => {
+    mapRef.current?.resetNorth();
+  };
+
+  return (
+    <div className="absolute top-6 right-6 bg-card/95 backdrop-blur-sm rounded-xl shadow-lg border border-primary/30 overflow-hidden">
+      <div className="flex flex-col">
+        <button
+          onClick={handleZoomIn}
+          className="px-3 py-2 text-lg font-semibold text-foreground hover:bg-muted transition-colors border-b border-primary/20"
+          aria-label="Zoom in"
+        >
+          +
+        </button>
+        <button
+          onClick={handleZoomOut}
+          className="px-3 py-2 text-lg font-semibold text-foreground hover:bg-muted transition-colors border-b border-primary/20"
+          aria-label="Zoom out"
+        >
+          −
+        </button>
+        <button
+          onClick={handleResetNorth}
+          className="px-3 py-2 text-sm font-semibold text-foreground hover:bg-muted transition-colors"
+          aria-label="Reset north"
+          title="Reset north"
+        >
+          N
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function RouteMapMapbox({ year = 2025 }: { year?: number }) {
   const [routeData, setRouteData] = useState<RouteData>(FALLBACK_ROUTE);
   const [viewState, setViewState] = useState(DEFAULT_CENTER);
   const [isLoading, setIsLoading] = useState(true);
   const [mapStyle, setMapStyle] = useState<MapStyleKey>('gater');
   const [isMobile, setIsMobile] = useState(false);
+  const mapRef = useRef<MapRef | null>(null);
 
   // Detect mobile screen size
   useEffect(() => {
@@ -126,6 +171,7 @@ export default function RouteMapMapbox({ year = 2025 }: { year?: number }) {
   return (
     <div className="relative w-full h-[500px] md:h-[600px] rounded-2xl overflow-hidden border-4 border-primary/30 shadow-2xl">
       <Map
+        ref={mapRef}
         {...viewState}
         onMove={(evt) => setViewState(evt.viewState)}
         mapStyle={MAP_STYLES[mapStyle]}
@@ -184,10 +230,10 @@ export default function RouteMapMapbox({ year = 2025 }: { year?: number }) {
         >
           <div className="w-5 h-5 bg-primary rounded-full border-2 border-white shadow-lg" />
         </Marker>
-
-        {/* Navigation Controls (Zoom +/-) */}
-        <NavigationControl position="top-right" showCompass={true} />
       </Map>
+
+      {/* Custom Zoom Controls */}
+      <CustomZoomControl mapRef={mapRef} />
 
       {/* Map Style Switcher */}
       <div className="absolute top-6 left-6 bg-card/95 backdrop-blur-sm rounded-xl shadow-lg border border-primary/30 overflow-hidden">

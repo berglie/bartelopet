@@ -147,17 +147,17 @@ export function ImageViewerDialogMulti({
     },
   })
 
-  // Touch handlers for swipe gestures
-  const onTouchStart = (e: React.TouchEvent) => {
+  // Touch handlers for swipe gestures (passive to avoid blocking scroll)
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
     setTouchEnd(null)
     setTouchStart(e.targetTouches[0].clientX)
-  }
+  }, [])
 
-  const onTouchMove = (e: React.TouchEvent) => {
+  const onTouchMove = useCallback((e: React.TouchEvent) => {
     setTouchEnd(e.targetTouches[0].clientX)
-  }
+  }, [])
 
-  const onTouchEnd = () => {
+  const onTouchEnd = useCallback(() => {
     if (!touchStart || !touchEnd) return
 
     const distance = touchStart - touchEnd
@@ -181,7 +181,7 @@ export function ImageViewerDialogMulti({
         onNavigate('prev')
       }
     }
-  }
+  }, [touchStart, touchEnd, minSwipeDistance, hasMultipleImages, currentImageIndex, completionImages.length, isLastCompletion, isFirstCompletion, onNavigate])
 
   // If no image is available or dialog is not open, don't render
   if (!isOpen || !currentImage) {
