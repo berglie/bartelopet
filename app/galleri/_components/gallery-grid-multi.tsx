@@ -122,56 +122,76 @@ export function GalleryGridMulti({
   }, [initialCompletionId, completionsWithImages])
 
   const handleImageClick = useCallback((index: number, withComments = false) => {
+    // Update state immediately for instant UI response
     setCurrentImageIndex(index)
     setOpenWithComments(withComments)
     setViewerOpen(true)
+    // URL update will happen in the useEffect below (line 163)
+  }, [])
 
-    // Update URL with completion ID
-    if (completionsWithImages[index]) {
-      const completionId = completionsWithImages[index].id
-      if (typeof window !== 'undefined') {
-        const url = new URL(window.location.href)
-        url.searchParams.set('id', completionId)
-        window.history.replaceState({}, '', url.toString())
-      }
-    }
-  }, [completionsWithImages])
+  const handleCommentClick = useCallback((e: React.MouseEvent, index: number) => {
+    e.stopPropagation()
+    handleImageClick(index, true)
+  }, [handleImageClick])
+
+  const handleThumbnailClick = useCallback((e: React.MouseEvent, index: number) => {
+    e.stopPropagation()
+    handleImageClick(index)
+  }, [handleImageClick])
 
   const handleCloseViewer = useCallback(() => {
     setViewerOpen(false)
-    // Remove the id query parameter from URL
+
+    // Defer URL update to next tick to avoid blocking the main thread
     if (typeof window !== 'undefined') {
-      const url = new URL(window.location.href)
-      url.searchParams.delete('id')
-      window.history.replaceState({}, '', url.toString())
+      const updateUrl = () => {
+        const url = new URL(window.location.href)
+        url.searchParams.delete('id')
+        window.history.replaceState({}, '', url.toString())
+      }
+
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(updateUrl, { timeout: 100 })
+      } else {
+        setTimeout(updateUrl, 0)
+      }
     }
   }, [])
 
   const handleNavigate = useCallback(
     (direction: 'prev' | 'next') => {
       setCurrentImageIndex((prev) => {
-        let newIndex = prev
         if (direction === 'prev') {
-          newIndex = prev > 0 ? prev - 1 : prev
+          return prev > 0 ? prev - 1 : prev
         } else {
-          newIndex = prev < completionsWithImages.length - 1 ? prev + 1 : prev
+          return prev < completionsWithImages.length - 1 ? prev + 1 : prev
         }
-
-        // Update URL with new completion ID
-        if (newIndex !== prev && completionsWithImages[newIndex]) {
-          const newCompletionId = completionsWithImages[newIndex].id
-          if (typeof window !== 'undefined') {
-            const url = new URL(window.location.href)
-            url.searchParams.set('id', newCompletionId)
-            window.history.replaceState({}, '', url.toString())
-          }
-        }
-
-        return newIndex
       })
     },
     [completionsWithImages]
   )
+
+  // Update URL when currentImageIndex changes (separate from state update)
+  // Deferred to avoid blocking the main thread during navigation
+  useEffect(() => {
+    if (viewerOpen && completionsWithImages[currentImageIndex]) {
+      const completionId = completionsWithImages[currentImageIndex].id
+      if (typeof window !== 'undefined') {
+        const updateUrl = () => {
+          const url = new URL(window.location.href)
+          url.searchParams.set('id', completionId)
+          window.history.replaceState({}, '', url.toString())
+        }
+
+        // Use requestIdleCallback if available, otherwise setTimeout
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(updateUrl, { timeout: 100 })
+        } else {
+          setTimeout(updateUrl, 0)
+        }
+      }
+    }
+  }, [currentImageIndex, viewerOpen, completionsWithImages])
 
   const handleQuickVote = useCallback(async (completionId: string, participantId: string) => {
     setLoading(completionId)
@@ -313,8 +333,8 @@ export function GalleryGridMulti({
                     </div>
                   )}
 
-                  {/* Hover overlay */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                  {/* Hover overlay - hidden on mobile */}
+                  <div className="hidden md:flex absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors items-center justify-center">
                     <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity text-sm font-medium">
                       Klikk for å se{completion.images.length > 1 ? ' alle bilder' : ' større'}
                     </span>
@@ -329,20 +349,17 @@ export function GalleryGridMulti({
                   )}
                 </div>
 
-                {/* Thumbnail strip (clickable previews) */}
+                {/* Thumbnail strip (clickable previews) - hidden on mobile to avoid overlay issues */}
                 {completion.images.length > 1 && (
-                  <div className="flex gap-1 p-2 bg-muted/50">
+                  <div className="hidden md:flex gap-1 p-2 bg-muted/50">
                     {completion.images.slice(0, 4).map((img, imgIndex) => (
                       <button
                         key={img.id}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleImageClick(index)
-                        }}
+                        onClick={(e) => handleThumbnailClick(e, index)}
                         className="relative w-12 h-12 rounded-sm overflow-hidden flex-shrink-0 border border-border cursor-pointer transition-all hover:ring-2 hover:ring-accent hover:scale-105"
                         title={`Se bilde ${imgIndex + 1}`}
                       >
-                        <Image src={img.image_url} alt="" fill className="object-cover" />
+                        <Image src={img.image_url} alt="" fill className="object-cover" sizes="48px" />
                         {img.is_starred && (
                           <div className="absolute inset-0 bg-accent/20 flex items-center justify-center">
                             <Star className="h-3 w-3 fill-accent text-accent" />
@@ -352,10 +369,7 @@ export function GalleryGridMulti({
                     ))}
                     {completion.images.length > 4 && (
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleImageClick(index)
-                        }}
+                        onClick={(e) => handleThumbnailClick(e, index)}
                         className="w-12 h-12 rounded-sm bg-muted flex items-center justify-center text-xs font-medium border border-border cursor-pointer transition-all hover:ring-2 hover:ring-accent hover:scale-105"
                         title="Se alle bilder"
                       >
@@ -405,10 +419,7 @@ export function GalleryGridMulti({
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleImageClick(index, true)
-                  }}
+                  onClick={(e) => handleCommentClick(e, index)}
                   className="flex items-center gap-1"
                 >
                   <MessageCircle className="h-4 w-4" />

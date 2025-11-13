@@ -286,9 +286,9 @@ export function ImageViewerDialogMulti({
           </div>
         </div>
 
-        {/* Thumbnail strip for multiple images */}
+        {/* Thumbnail strip for multiple images - hidden on mobile */}
         {hasMultipleImages && (
-          <div className="absolute bottom-[18rem] left-0 right-0 md:bottom-[16rem]">
+          <div className="hidden md:block absolute bottom-[18rem] left-0 right-0 md:bottom-[16rem]">
             <ImageThumbnailStrip
               images={completionImages}
               currentIndex={currentImageIndex}
