@@ -37,6 +37,11 @@ export function CommentItem({ comment, currentParticipantId, onDelete }: Comment
     locale: nb,
   })
 
+  // Handle missing participant data
+  if (!comment.participant) {
+    return null
+  }
+
   async function handleDelete() {
     setDeleting(true)
     setError('')

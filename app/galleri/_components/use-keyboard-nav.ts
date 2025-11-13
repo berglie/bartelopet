@@ -21,6 +21,17 @@ export function useKeyboardNav({
     if (!enabled) return
 
     const handleKeyDown = (event: KeyboardEvent) => {
+      // Ignore keyboard shortcuts when user is typing in an input or textarea
+      const target = event.target as HTMLElement
+      const isTyping =
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable
+
+      if (isTyping) {
+        return // Don't handle navigation when typing
+      }
+
       // Prevent default for arrow keys to avoid page scrolling
       if (['ArrowLeft', 'ArrowRight', 'Escape'].includes(event.key)) {
         event.preventDefault()

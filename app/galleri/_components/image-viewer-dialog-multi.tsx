@@ -47,10 +47,21 @@ export function ImageViewerDialogMulti({
   const [showComments, setShowComments] = useState(openWithComments)
   const [comments, setComments] = useState<PhotoCommentWithParticipant[]>([])
   const [commentsLoading, setCommentsLoading] = useState(false)
+  const [isDesktop, setIsDesktop] = useState(false)
 
   // Track current image within this completion
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const imageRef = useRef<HTMLDivElement>(null)
+
+  // Detect desktop viewport
+  useEffect(() => {
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= 768)
+    }
+    checkDesktop()
+    window.addEventListener('resize', checkDesktop)
+    return () => window.removeEventListener('resize', checkDesktop)
+  }, [])
 
   const hasVoted = userVoteIds.includes(completion.id)
   const isFirstCompletion = currentIndex === 0
@@ -72,9 +83,10 @@ export function ImageViewerDialogMulti({
     setCurrentImageIndex(0) // Reset to first image of new completion
   }, [completion.id, openWithComments])
 
-  // Load comments when comments section is opened
+  // Load comments when comments section is opened OR on desktop (always visible)
   useEffect(() => {
-    if (!showComments || comments.length > 0) return
+    const shouldLoadComments = isDesktop || showComments
+    if (!shouldLoadComments || comments.length > 0) return
 
     const loadComments = async () => {
       setCommentsLoading(true)
@@ -91,9 +103,17 @@ export function ImageViewerDialogMulti({
     }
 
     loadComments()
-  }, [showComments, completion.id, comments.length])
+  }, [showComments, completion.id, comments.length, isDesktop])
 
   // Handle vote action
+  const handleToggleComments = useCallback(() => {
+    setShowComments(prev => !prev)
+  }, [])
+
+  const handleCloseComments = useCallback(() => {
+    setShowComments(false)
+  }, [])
+
   const handleVote = async () => {
     setIsVoting(true)
     try {
@@ -229,17 +249,27 @@ export function ImageViewerDialogMulti({
 
       {/* Main content area */}
       <div
-        className="relative flex h-full w-full flex-col items-center justify-center px-4 pb-48 pt-20 md:px-16 md:pb-40"
+        className={cn(
+          "relative flex h-full w-full flex-col items-center justify-center px-4 pt-20 pb-8 md:px-16",
+          showComments && "overflow-y-auto"
+        )}
         onClick={(e) => e.stopPropagation()}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
-        {/* Image container */}
-        <div
-          ref={imageRef}
-          className="relative flex max-h-[calc(100vh-20rem)] w-full max-w-5xl items-center justify-center md:max-h-[calc(100vh-18rem)]"
-        >
+        {/* Centered content wrapper */}
+        <div className="flex flex-col items-center w-full max-w-7xl mx-auto">
+          {/* Image container */}
+          <div
+            ref={imageRef}
+            className={cn(
+              "relative flex w-full items-center justify-center mb-6",
+              showComments
+                ? "max-h-[50vh]"
+                : "max-h-[calc(100vh-28rem)] md:max-h-[calc(100vh-24rem)]"
+            )}
+          >
           {!imageLoaded && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-white" />
@@ -256,53 +286,26 @@ export function ImageViewerDialogMulti({
             )}
             onLoad={() => setImageLoaded(true)}
             priority
+            loading="eager"
           />
-        </div>
-
-        {/* Image counter within completion */}
-        {hasMultipleImages && (
-          <div className="absolute left-4 top-20 rounded-full bg-black/50 px-3 py-1 text-sm text-white md:left-8">
-            {currentImageIndex + 1} / {completionImages.length}
           </div>
-        )}
 
-        {/* Completion counter */}
-        <div className="absolute right-4 top-20 rounded-full bg-black/50 px-3 py-1 text-sm text-white md:right-8">
-          Innsending {currentIndex + 1} / {totalImages}
-        </div>
+          {/* Thumbnail strip for multiple images - below image, hidden on mobile */}
+          {hasMultipleImages && (
+            <div className="hidden md:block w-full max-w-5xl mb-6">
+              <ImageThumbnailStrip
+                images={completionImages}
+                currentIndex={currentImageIndex}
+                onSelect={(index) => {
+                  setCurrentImageIndex(index)
+                  setImageLoaded(false)
+                }}
+              />
+            </div>
+          )}
 
-        {/* Caption if available */}
-        {currentImage.caption && (
-          <div className="absolute left-1/2 top-28 -translate-x-1/2 max-w-2xl rounded-lg bg-black/50 px-4 py-2 text-center text-sm text-white">
-            {currentImage.caption}
-          </div>
-        )}
-
-        {/* Keyboard shortcuts hint */}
-        <div className="absolute bottom-[22rem] left-4 rounded-lg bg-black/50 px-3 py-2 text-xs text-white/70 md:left-8">
-          <div className="flex gap-3">
-            <span>← → Navigér</span>
-            <span>ESC Lukk</span>
-          </div>
-        </div>
-
-        {/* Thumbnail strip for multiple images - hidden on mobile */}
-        {hasMultipleImages && (
-          <div className="hidden md:block absolute bottom-[18rem] left-0 right-0 md:bottom-[16rem]">
-            <ImageThumbnailStrip
-              images={completionImages}
-              currentIndex={currentImageIndex}
-              onSelect={(index) => {
-                setCurrentImageIndex(index)
-                setImageLoaded(false)
-              }}
-            />
-          </div>
-        )}
-
-        {/* Metadata bar */}
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/95 via-black/90 to-transparent pt-16">
-          <div className="mx-auto max-w-5xl p-6 md:p-8">
+          {/* Metadata bar - below thumbnails */}
+          <div className="w-full max-w-5xl bg-gradient-to-t from-black/95 via-black/90 to-transparent rounded-lg p-4 md:p-6 mb-6">
             <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
               {/* Participant info */}
               <div className="flex-1 space-y-2 text-white">
@@ -349,12 +352,12 @@ export function ImageViewerDialogMulti({
                   showLabel={true}
                 />
 
-                {/* Comments button */}
+                {/* Comments button - hidden on desktop (md+) since comments always show */}
                 <Button
-                  onClick={() => setShowComments(!showComments)}
+                  onClick={handleToggleComments}
                   variant="secondary"
                   size="lg"
-                  className="flex items-center gap-2"
+                  className="flex md:hidden items-center gap-2"
                 >
                   <MessageCircle className="h-5 w-5" />
                   <span className="hidden sm:inline">Kommentarer</span>
@@ -379,41 +382,60 @@ export function ImageViewerDialogMulti({
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Comments sidebar */}
-      {showComments && (
-        <div 
-          className="fixed inset-y-0 right-0 z-50 w-full max-w-md overflow-y-auto bg-background shadow-2xl sm:w-96"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Kommentarer</h3>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowComments(false)}
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
-            {commentsLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-muted border-t-accent" />
+          {/* Comments section - below metadata, always visible on desktop */}
+          {(isDesktop || showComments) && (
+            <div
+              className="w-full max-w-5xl bg-background/95 backdrop-blur-sm rounded-lg shadow-2xl p-4 md:p-6 mb-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-foreground">Kommentarer</h3>
+                {/* Close button only on mobile */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleCloseComments}
+                  className="md:hidden"
+                >
+                  <X className="h-5 w-5" />
+                </Button>
               </div>
-            ) : (
-              <CommentList
-                completionId={completion.id}
-                initialComments={comments}
-                currentParticipantId={currentParticipantId}
-                isLoggedIn={isLoggedIn}
-              />
-            )}
-          </div>
+              {commentsLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-muted border-t-accent" />
+                </div>
+              ) : (
+                <CommentList
+                  completionId={completion.id}
+                  initialComments={comments}
+                  currentParticipantId={currentParticipantId}
+                  isLoggedIn={isLoggedIn}
+                />
+              )}
+            </div>
+          )}
         </div>
-      )}
+
+        {/* Image counter within completion */}
+        {hasMultipleImages && (
+          <div className="absolute left-4 top-20 rounded-full bg-black/50 px-3 py-1 text-sm text-white md:left-8">
+            {currentImageIndex + 1} / {completionImages.length}
+          </div>
+        )}
+
+        {/* Completion counter */}
+        <div className="absolute right-4 top-20 rounded-full bg-black/50 px-3 py-1 text-sm text-white md:right-8">
+          Innsending {currentIndex + 1} / {totalImages}
+        </div>
+
+        {/* Caption if available */}
+        {currentImage.caption && (
+          <div className="absolute left-1/2 top-28 -translate-x-1/2 max-w-2xl rounded-lg bg-black/50 px-4 py-2 text-center text-sm text-white">
+            {currentImage.caption}
+          </div>
+        )}i gu
+      </div>
     </div>
   )
 }

@@ -54,7 +54,7 @@ export async function getComments(
     const supabase = await createClient()
 
     // Fetch comments with participant information
-    // Only selecting public-safe fields to prevent PII exposure
+    // Using participants_safe view to ensure data is accessible
     const { data: comments, error } = await supabase
       .from('photo_comments')
       .select(`
@@ -64,12 +64,11 @@ export async function getComments(
         comment_text,
         created_at,
         updated_at,
-        participant:participants (
+        event_year,
+        participant:participants_safe (
           id,
           full_name,
-          bib_number,
-          has_completed,
-          event_year
+          bib_number
         )
       `)
       .eq('completion_id', completionId)
@@ -178,7 +177,7 @@ export async function addComment(
     }
 
     // Insert comment
-    // Only selecting public-safe fields to prevent PII exposure
+    // Using participants_safe view to ensure data is accessible
     const { data: newComment, error: insertError } = await supabase
       .from('photo_comments')
       .insert({
@@ -193,12 +192,11 @@ export async function addComment(
         comment_text,
         created_at,
         updated_at,
-        participant:participants (
+        event_year,
+        participant:participants_safe (
           id,
           full_name,
-          bib_number,
-          has_completed,
-          event_year
+          bib_number
         )
       `)
       .single()

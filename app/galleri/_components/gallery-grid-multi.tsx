@@ -319,6 +319,7 @@ export function GalleryGridMulti({
                       className="object-cover transition-transform group-hover:scale-105"
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       priority={index === 0}
+                      loading={index === 0 ? 'eager' : 'lazy'}
                     />
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center bg-muted">
