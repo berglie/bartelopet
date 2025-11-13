@@ -190,7 +190,7 @@ export function ImageViewerDialogMulti({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black"
+      className="fixed inset-0 z-50 bg-black overflow-y-auto"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -250,8 +250,8 @@ export function ImageViewerDialogMulti({
       {/* Main content area */}
       <div
         className={cn(
-          "relative flex h-full w-full flex-col items-center justify-center px-4 pt-20 pb-8 md:px-16",
-          showComments && "overflow-y-auto"
+          "relative flex w-full flex-col items-center px-4 pt-20 pb-8 md:px-16",
+          showComments ? "min-h-full" : "h-full justify-center"
         )}
         onClick={(e) => e.stopPropagation()}
         onTouchStart={onTouchStart}

@@ -95,7 +95,7 @@ const nextConfig = {
               "img-src 'self' data: blob: https://*.supabase.co https://api.mapbox.com https://strava-embeds.com",
               "font-src 'self' data:",
               "connect-src 'self' https://*.supabase.co https://api.mapbox.com https://events.mapbox.com wss://*.supabase.co https://vercel.live https://strava-embeds.com",
-              "frame-src 'self' https://strava-embeds.com",
+              "frame-src 'self' https://strava-embeds.com https://vercel.live",
               "frame-ancestors 'self'",
               "base-uri 'self'",
               "form-action 'self'",
