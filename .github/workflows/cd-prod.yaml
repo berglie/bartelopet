@@ -4,6 +4,16 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/PULL_REQUEST_TEMPLATE/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.env.example'
+      - '.prettierignore'
+      - '.eslintignore'
   workflow_dispatch:
 
 jobs:
