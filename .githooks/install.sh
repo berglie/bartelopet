@@ -32,9 +32,20 @@ else
     echo "   ⚠️  pre-commit hook not found in $PROJECT_HOOKS_DIR"
 fi
 
+# Install commit-msg hook
+if [ -f "$PROJECT_HOOKS_DIR/commit-msg" ]; then
+    echo "   Installing commit-msg hook..."
+    cp "$PROJECT_HOOKS_DIR/commit-msg" "$GIT_HOOKS_DIR/commit-msg"
+    chmod +x "$GIT_HOOKS_DIR/commit-msg"
+    echo "   ✅ commit-msg hook installed"
+else
+    echo "   ⚠️  commit-msg hook not found in $PROJECT_HOOKS_DIR"
+fi
+
 echo "✅ Git hooks installation complete!"
 echo ""
 echo "The following hooks are now active:"
 echo "  • pre-commit: Automatically formats staged files with Prettier"
+echo "  • commit-msg: Validates commit messages follow conventional format"
 echo ""
 echo "To bypass the hooks (emergency only), use: git commit --no-verify"

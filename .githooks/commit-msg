@@ -1,0 +1,82 @@
+#!/bin/sh
+# Hook to validate commit messages follow conventional commit format
+
+# Skip in CI environments
+if [ "$CI" = "true" ] || [ "$VERCEL" = "1" ] || [ "$GITHUB_ACTIONS" = "true" ]; then
+    exit 0
+fi
+
+# Color codes for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NC='\033[0m' # No Color
+
+# Get the commit message
+commit_msg_file=$1
+commit_msg=$(cat "$commit_msg_file")
+
+# Skip merge commits
+if echo "$commit_msg" | grep -q "^Merge"; then
+    exit 0
+fi
+
+# Skip revert commits
+if echo "$commit_msg" | grep -q "^Revert"; then
+    exit 0
+fi
+
+# Define the conventional commit pattern
+# Format: type(scope): description
+# or: type: description
+pattern="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9-]+\))?: .+$"
+
+# Check if pnpm is available and if commitlint is configured
+if command -v pnpm > /dev/null 2>&1 && [ -f "commitlint.config.js" ]; then
+    echo "🔍 Validating commit message with commitlint..."
+    pnpm exec commitlint --edit "$commit_msg_file"
+    exit_code=$?
+
+    if [ $exit_code -eq 0 ]; then
+        echo "${GREEN}✅ Commit message follows conventional format${NC}"
+    fi
+
+    exit $exit_code
+else
+    # Fallback to regex validation
+    echo "🔍 Validating commit message format..."
+
+    if echo "$commit_msg" | grep -qE "$pattern"; then
+        echo "${GREEN}✅ Commit message follows conventional format${NC}"
+        exit 0
+    else
+        echo "${RED}❌ Commit message doesn't follow conventional format${NC}"
+        echo ""
+        echo "${YELLOW}Expected format:${NC}"
+        echo "  type(scope): description"
+        echo "  type: description"
+        echo ""
+        echo "${YELLOW}Valid types:${NC}"
+        echo "  feat:     New feature"
+        echo "  fix:      Bug fix"
+        echo "  docs:     Documentation changes"
+        echo "  style:    Code style changes (formatting, etc)"
+        echo "  refactor: Code refactoring"
+        echo "  perf:     Performance improvements"
+        echo "  test:     Test changes"
+        echo "  build:    Build system changes"
+        echo "  ci:       CI/CD changes"
+        echo "  chore:    Other changes"
+        echo "  revert:   Revert a previous commit"
+        echo ""
+        echo "${YELLOW}Examples:${NC}"
+        echo "  feat: add user authentication"
+        echo "  fix(auth): resolve login timeout issue"
+        echo "  docs: update README with installation steps"
+        echo ""
+        echo "${YELLOW}Your message:${NC} $commit_msg"
+        echo ""
+        echo "To bypass this check (not recommended), use: git commit --no-verify"
+        exit 1
+    fi
+fi
