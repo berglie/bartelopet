@@ -17,7 +17,6 @@ import {
   Clock,
   Calendar,
   MessageCircle,
-  Heart,
   User,
   Hash,
   ImageIcon,

@@ -10,7 +10,6 @@ import { ManageImagesDialog } from './manage-images-dialog'
 import { useRouter } from 'next/navigation'
 import { getPhotos } from '@/app/actions/photos'
 import type { CompletionImage } from '@/app/_shared/lib/types/database'
-import { cn } from '@/app/_shared/lib/utils/cn'
 
 type Completion = {
   id: string
@@ -39,8 +38,9 @@ export function CompletionDisplayMulti({ completion }: { completion: Completion 
   }, [completion.id])
 
   useEffect(() => {
-    fetchImages()
-  }, [fetchImages])
+    void fetchImages()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [completion.id])
 
   const handleSuccess = () => {
     fetchImages()

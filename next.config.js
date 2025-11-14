@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable no-undef */
 /** @type {import('next').NextConfig} */
 const path = require('path');
 

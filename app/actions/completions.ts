@@ -58,7 +58,7 @@ export async function updateCompletion(
     if (authError || !user) {
       return {
         success: false,
-        error: 'Dumå væreinnlogget for å redigere'
+        error: 'Dumå være innlogget for å redigere'
       }
     }
 
@@ -71,7 +71,7 @@ export async function updateCompletion(
     if (participantError || !participant) {
       return {
         success: false,
-        error: 'Dumå væreregistrert som deltaker'
+        error: 'Dumå være registrert som deltaker'
       }
     }
 
@@ -111,7 +111,7 @@ export async function updateCompletion(
     }
 
     // Build update object with only validated fields (prevent mass assignment)
-    const updateData: Record<string, any> = {
+    const updateData: Record<string, string | null> = {
       updated_at: new Date().toISOString()
     }
 

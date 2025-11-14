@@ -69,18 +69,31 @@ export function YearProvider({ children, initialYear }: YearProviderProps) {
   );
 
   // Sync with URL changes (e.g., browser back/forward)
+  // This effect intentionally updates state when URL params change (browser navigation)
+  // The ref prevents infinite loops by only updating when the param actually changes
+  const prevYearParamRef = React.useRef<string | null>(null);
+
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     const yearParam = searchParams?.get('year');
-    if (yearParam) {
-      const year = parseInt(yearParam, 10);
-      if (isValidEventYear(year) && year !== selectedYear) {
-        setSelectedYearState(year);
-      }
-    } else if (selectedYear !== currentEventYear) {
+
+    // Skip if year param hasn't changed
+    if (prevYearParamRef.current === yearParam) {
+      return;
+    }
+    prevYearParamRef.current = yearParam;
+
+    const parsedYear = yearParam ? parseInt(yearParam, 10) : null;
+
+    // Only update if the year has actually changed to avoid cascading renders
+    if (parsedYear && isValidEventYear(parsedYear) && parsedYear !== selectedYear) {
+      setSelectedYearState(parsedYear);
+    } else if (!yearParam && selectedYear !== currentEventYear) {
       // If no year param but selected year isn't current, reset to current
       setSelectedYearState(currentEventYear);
     }
-  }, [searchParams, currentEventYear, selectedYear]);
+  }, [searchParams, selectedYear, currentEventYear]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   return (
     <YearContext.Provider

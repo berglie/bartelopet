@@ -4,7 +4,7 @@ import { Button } from '@/app/_shared/components/ui/button';
 import { Card, CardContent } from '@/app/_shared/components/ui/card';
 import { createClient } from '@/app/_shared/lib/supabase/server';
 import { RouteMap } from '@/app/_shared/components/route-map';
-import { MapPin, Users, Trophy, Upload, Award, ExternalLink, Heart, Download, BookOpen, AlertTriangle, Lightbulb, Shield } from 'lucide-react';
+import { MapPin, Trophy, Upload, Award, ExternalLink, Heart, Download, BookOpen, AlertTriangle, Lightbulb, Shield } from 'lucide-react';
 import { MustacheSVG } from '@/app/_shared/components/mustache-icon';
 import { getCurrentEventYear, getYearDateRange } from '@/app/_shared/lib/utils/year';
 

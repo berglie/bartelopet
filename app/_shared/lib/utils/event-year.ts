@@ -6,6 +6,9 @@
  * and validate year-related operations.
  */
 
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '@/app/_shared/lib/supabase/types';
+
 /**
  * Get the current event year based on the current date.
  *
@@ -37,7 +40,7 @@ export function getCurrentEventYear(): number {
  * @param supabase Supabase client instance
  * @returns Promise<boolean> true if submission window is open
  */
-export async function isSubmissionWindowOpen(supabase: any): Promise<boolean> {
+export async function isSubmissionWindowOpen(supabase: SupabaseClient<Database>): Promise<boolean> {
   const { data, error } = await supabase
     .from('settings')
     .select('submission_window_open')
@@ -63,7 +66,7 @@ export async function isSubmissionWindowOpen(supabase: any): Promise<boolean> {
  * @param supabase Supabase client instance
  * @returns Promise<boolean> true if the year is editable
  */
-export async function isYearEditable(year: number, supabase: any): Promise<boolean> {
+export async function isYearEditable(year: number, supabase: SupabaseClient<Database>): Promise<boolean> {
   const currentYear = getCurrentEventYear();
   if (year !== currentYear) {
     return false;

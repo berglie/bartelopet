@@ -3,6 +3,7 @@ import { Suspense } from 'react'
 import { createClient } from '@/app/_shared/lib/supabase/server';
 import { GalleryClient } from './_components/GalleryClient';
 import { getCurrentEventYear, getYearDateRange } from '@/app/_shared/lib/utils/year';
+import type { CompletionImage } from '@/app/_shared/lib/types/database';
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
@@ -30,7 +31,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
 
     if (completion) {
       const participantName = completion.participant?.full_name || 'En deltaker';
-      const starredImage = completion.images?.find((img: any) => img.is_starred);
+      const starredImage = completion.images?.find((img: { is_starred: boolean; image_url: string }) => img.is_starred);
       const imageUrl = starredImage?.image_url || completion.images?.[0]?.image_url;
 
       return {
@@ -71,7 +72,58 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
   };
 }
 
-async function getCompletions() {
+type DatabaseCompletion = {
+  id: string | null
+  participant_id: string | null
+  completed_date: string | null
+  duration_text: string | null
+  comment: string | null
+  vote_count: number | null
+  comment_count: number | null
+  image_count: number | null
+  event_year: number | null
+  created_at: string | null
+  updated_at: string | null
+  participant: {
+    id: string
+    user_id: string | null
+    email: string
+    full_name: string
+    postal_address: string
+    phone_number: string | null
+    bib_number: number
+    has_completed: boolean
+    created_at: string
+    updated_at: string
+  } | null
+  images: CompletionImage[]
+}
+
+type CompletionData = {
+  id: string
+  completed_date: string
+  duration_text: string | null
+  comment: string | null
+  vote_count: number
+  comment_count: number
+  image_count: number
+  event_year: number
+  participant: {
+    id: string
+    user_id: string | null
+    email: string
+    full_name: string
+    postal_address: string
+    phone_number: string | null
+    bib_number: number
+    has_completed: boolean
+    created_at: string
+    updated_at: string
+  }
+  images: CompletionImage[]
+}
+
+async function getCompletions(): Promise<CompletionData[]> {
   const supabase = await createClient();
   const currentYear = getCurrentEventYear();
   const { start, end } = getYearDateRange(currentYear);
@@ -103,7 +155,39 @@ async function getCompletions() {
     return [];
   }
 
-  return completions || [];
+  // Filter and transform to CompletionData type
+  const validCompletions: CompletionData[] = (completions as DatabaseCompletion[] | null || [])
+    .filter((c): c is DatabaseCompletion & {
+      id: string;
+      completed_date: string;
+      participant: NonNullable<DatabaseCompletion['participant']>;
+      vote_count: number;
+      comment_count: number;
+      image_count: number;
+      event_year: number;
+    } =>
+      c.id !== null &&
+      c.completed_date !== null &&
+      c.participant !== null &&
+      c.vote_count !== null &&
+      c.comment_count !== null &&
+      c.image_count !== null &&
+      c.event_year !== null
+    )
+    .map(c => ({
+      id: c.id,
+      completed_date: c.completed_date,
+      duration_text: c.duration_text,
+      comment: c.comment,
+      vote_count: c.vote_count,
+      comment_count: c.comment_count,
+      image_count: c.image_count,
+      event_year: c.event_year,
+      participant: c.participant,
+      images: c.images
+    }));
+
+  return validCompletions;
 }
 
 async function getUserVotes() {

@@ -45,6 +45,9 @@ export default [
       ".claude/**",
       ".claude-flow/**",
       ".hive-mind/**",
+      "next.config.js",
+      "postcss.config.js",
+      "tailwind.config.ts",
     ],
   },
 ];

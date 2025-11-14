@@ -3,10 +3,10 @@ declare module '@mapbox/togeojson' {
     type: string;
     features: Array<{
       type: string;
-      properties: Record<string, any>;
+      properties: Record<string, unknown>;
       geometry: {
         type: string;
-        coordinates: any;
+        coordinates: unknown;
       };
     }>;
   }

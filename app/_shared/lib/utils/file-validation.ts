@@ -50,7 +50,7 @@ export async function validateAndSanitizeImage(
       }
     }
 
-    const [, mimeType, base64Data] = base64Match
+    const [, , base64Data] = base64Match
     const buffer = Buffer.from(base64Data, 'base64')
 
     // 2. Validate file size BEFORE processing
@@ -75,7 +75,7 @@ export async function validateAndSanitizeImage(
     let metadata: sharp.Metadata
     try {
       metadata = await sharp(buffer).metadata()
-    } catch (err) {
+    } catch {
       return {
         success: false,
         error: 'Ugyldig bildefil. Filen ser ikke ut til å være et gyldig bilde.',
@@ -83,7 +83,7 @@ export async function validateAndSanitizeImage(
     }
 
     // 4. Validate image format (reject SVG and other potentially dangerous formats)
-    if (!metadata.format || !FILE_CONSTRAINTS.ALLOWED_FORMATS.includes(metadata.format as any)) {
+    if (!metadata.format || !FILE_CONSTRAINTS.ALLOWED_FORMATS.includes(metadata.format as (typeof FILE_CONSTRAINTS.ALLOWED_FORMATS)[number])) {
       return {
         success: false,
         error: `Ugyldig format: ${metadata.format}. Kun JPEG, PNG, og WebP er tillatt.`,

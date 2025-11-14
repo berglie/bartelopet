@@ -2,7 +2,7 @@ import * as toGeoJSON from '@mapbox/togeojson';
 
 export interface RouteData {
   type: 'Feature';
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   geometry: {
     type: 'LineString';
     coordinates: [number, number][];
@@ -38,7 +38,7 @@ export async function loadGPXRoute(gpxPath: string): Promise<RouteData | null> {
         return feature as RouteData;
       } else if (feature.geometry.type === 'MultiLineString') {
         // Convert MultiLineString to single LineString by flattening
-        const coordinates = feature.geometry.coordinates.flat() as [number, number][];
+        const coordinates = (feature.geometry.coordinates as number[][][]).flat() as [number, number][];
         return {
           type: 'Feature',
           properties: feature.properties || {},

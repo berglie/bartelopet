@@ -32,32 +32,39 @@ interface SecurityLogContext {
   action?: string
   success?: boolean
   error?: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 /**
  * Redact PII from log data
  */
-function redactPII(value: any): any {
+function redactPII(value: unknown): unknown {
   if (typeof value === 'string') {
     // Redact email addresses
-    value = value.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '[EMAIL_REDACTED]')
+    let redactedValue = value.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '[EMAIL_REDACTED]')
 
     // Redact phone numbers (various formats)
-    value = value.replace(/(\+?\d{1,4}[-.\s]?)?(\(?\d{3}\)?[-.\s]?)?\d{3}[-.\s]?\d{4}/g, '[PHONE_REDACTED]')
+    redactedValue = redactedValue.replace(/(\+?\d{1,4}[-.\s]?)?(\(?\d{3}\)?[-.\s]?)?\d{3}[-.\s]?\d{4}/g, '[PHONE_REDACTED]')
 
     // Redact Norwegian postal codes with addresses
-    value = value.replace(/\d{4}\s+[A-ZÆØÅ][a-zæøå]+/g, '[ADDRESS_REDACTED]')
+    redactedValue = redactedValue.replace(/\d{4}\s+[A-ZÆØÅ][a-zæøå]+/g, '[ADDRESS_REDACTED]')
+
+    return redactedValue
   } else if (typeof value === 'object' && value !== null) {
     // Redact specific PII fields
     const piiFields = ['email', 'phone', 'phone_number', 'postal_address', 'address', 'ssn']
-    const redacted: any = Array.isArray(value) ? [] : {}
+
+    if (Array.isArray(value)) {
+      return value.map(item => redactPII(item))
+    }
+
+    const redacted: Record<string, unknown> = {}
 
     for (const key in value) {
       if (piiFields.includes(key.toLowerCase())) {
         redacted[key] = '[REDACTED]'
       } else {
-        redacted[key] = redactPII(value[key])
+        redacted[key] = redactPII((value as Record<string, unknown>)[key])
       }
     }
 
@@ -75,7 +82,7 @@ function formatLogMessage(
   context: SecurityLogContext
 ): string {
   const timestamp = new Date().toISOString()
-  const redactedMetadata = context.metadata ? redactPII(context.metadata) : {}
+  const redactedMetadata = context.metadata ? redactPII(context.metadata) as Record<string, unknown> : {}
 
   return JSON.stringify({
     timestamp,
@@ -187,7 +194,7 @@ export const securityLogger = {
   /**
    * Log authentication event
    */
-  auth(success: boolean, userId?: string, error?: string, metadata?: Record<string, any>): void {
+  auth(success: boolean, userId?: string, error?: string, metadata?: Record<string, unknown>): void {
     this.info({
       event: success ? 'auth.login' : 'auth.failed',
       userId,
@@ -249,7 +256,7 @@ export const securityLogger = {
   securityThreat(
     threatType: 'csrf' | 'path_traversal' | 'injection',
     userId?: string,
-    details?: Record<string, any>
+    details?: Record<string, unknown>
   ): void {
     const eventMap = {
       csrf: 'csrf.attempt' as const,
@@ -287,7 +294,7 @@ export const securityLogger = {
   validationFailed(
     resource: string,
     userId?: string,
-    errors?: any
+    errors?: unknown
   ): void {
     this.warn({
       event: 'validation.failed',

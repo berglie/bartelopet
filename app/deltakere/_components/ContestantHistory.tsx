@@ -4,7 +4,7 @@ import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/_shared/components/ui/card'
 import { Badge } from '@/app/_shared/components/ui/badge'
 import { Button } from '@/app/_shared/components/ui/button'
-import { Calendar, Trophy, Award, TrendingUp } from 'lucide-react'
+import { Calendar, Trophy, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 
 interface YearCompletionData {

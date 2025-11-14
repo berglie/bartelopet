@@ -50,7 +50,7 @@ export default function KontaktPage() {
           message: data.message || 'En feil oppstod. Vennligst prøv igjen.',
         });
       }
-    } catch (error) {
+    } catch {
       setSubmitStatus({
         type: 'error',
         message: 'En feil oppstod. Vennligst prøv igjen senere.',
