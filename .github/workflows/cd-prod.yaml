@@ -67,7 +67,14 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           echo "Deploying to Vercel Production..."
-          url=$(npx vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN" | grep -Eo 'https?://[a-zA-Z0-9.-]+\.vercel\.app' | tail -n 1)
+          # Pull Vercel Environment Information
+          vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+
+          # Build Project Artifacts
+          vercel build --prod --token="$VERCEL_TOKEN"
+
+          # Deploy Project Artifacts to Production
+          url=$(vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN")
           echo "url=$url" >> "$GITHUB_OUTPUT"
           echo "Deployed to production: $url"
 
