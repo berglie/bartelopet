@@ -1,11 +1,24 @@
 # 🏃 Barteløpet
 
-**En virtuell veldedighetsløp i Stavanger sentrum til støtte for mental helse gjennom Movember.**
+[![Deploy Production](https://github.com/berglie/bartelopet/actions/workflows/cd-prod.yaml/badge.svg)](https://github.com/berglie/bartelopet/actions/workflows/cd-prod.yaml)
+[![CI](https://github.com/berglie/bartelopet/actions/workflows/ci.yaml/badge.svg)](https://github.com/berglie/bartelopet/actions/workflows/ci.yaml)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue.svg)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black.svg)](https://nextjs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-🌐 **Nettside**: [www.barteløpet.no](https://www.barteløpet.no)
-💰 **Spleis**: [spleis.no/barteløpet2025](https://spleis.no/barteløpet2025)
+> **En virtuell veldedighetsløp i Stavanger sentrum til støtte for mental helse gjennom Movember** 💜
 
-Bygget med Next.js 16, TypeScript og Supabase.
+<div align="center">
+
+  🌐 **[www.barteløpet.no](https://www.barteløpet.no)** |
+  💰 **[Støtt på Spleis](https://spleis.no/barteløpet2025)** |
+  📧 **[Kontakt](mailto:kontakt@barteløpet.no)**
+
+</div>
+
+---
+
+**✨ Bygget med moderne teknologi:** Next.js 16 • TypeScript • Supabase • Tailwind CSS
 
 ---
 
@@ -13,15 +26,36 @@ Bygget med Next.js 16, TypeScript og Supabase.
 
 Barteløpet er et årlig veldedighetsarrangement i Stavanger hvor deltakere løper en definert rute i sentrum i løpet av november. Arrangementet støtter mental helse bevissthet gjennom Movember.
 
-**Slik fungerer det:**
+### 🚀 Slik fungerer det
 
-- 🏃 Løp den definerte ruten i Stavanger sentrum når det passer deg i november
-- 📸 Last opp bilder som bevis på gjennomføring
-- 🗳️ Stem på andre deltakeres beste bilder
-- 🏆 Alle deltakere får en trofé, med ekstra premier for de beste bildene
-- 💜 Alle inntekter går til mental helse via Movember
+| Steg | Beskrivelse |
+|------|-------------|
+| **1. Løp** 🏃 | Løp den definerte ruten i Stavanger sentrum når det passer deg i november |
+| **2. Del** 📸 | Last opp bilder som bevis på gjennomføring |
+| **3. Stem** 🗳️ | Stem på andre deltakeres beste bilder |
+| **4. Vinn** 🏆 | Alle deltakere får en trofé, med ekstra premier for de beste bildene |
+| **5. Støtt** 💜 | Alle inntekter går til mental helse via Movember |
 
-Denne applikasjonen er nettsiden for Barteløpet-arrangementet.
+> 📱 **Denne applikasjonen** er den offisielle nettsiden for Barteløpet-arrangementet.
+
+## ⚡ Quick Start
+
+```bash
+# Klon repositoryet
+git clone https://github.com/berglie/bartelopet.git && cd bartelopet
+
+# Installer avhengigheter
+pnpm install
+
+# Sett opp miljøvariabler
+cp .env.example .env.local
+# ✏️ Rediger .env.local med dine API-nøkler
+
+# Start utviklingsserveren
+pnpm dev
+```
+
+🎉 **Applikasjonen kjører nå på** [http://localhost:3000](http://localhost:3000)
 
 ## 🏗️ Arkitektur
 
@@ -49,30 +83,42 @@ barteløpet/
 └── docs/                       # Dokumentasjon
 ```
 
-## 🚀 Teknologi
+## 🚀 Tech Stack
 
-### Kjerneteknologier
+<table>
+<tr>
+<td valign="top" width="33%">
 
-- **Rammeverk:** [Next.js 16](https://nextjs.org/) (App Router)
-- **Språk:** [TypeScript](https://www.typescriptlang.org/) (Strict mode)
-- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
-- **UI-komponenter:** Egendefinerte komponenter + [Radix UI](https://www.radix-ui.com/)
+### Frontend
+- 🎨 **[Next.js 16](https://nextjs.org/)** - App Router
+- 🔷 **[TypeScript](https://www.typescriptlang.org/)** - Strict mode
+- 🎨 **[Tailwind CSS](https://tailwindcss.com/)** - Styling
+- 🧩 **[Radix UI](https://www.radix-ui.com/)** - UI komponenter
 
-### Backend og Database
+</td>
+<td valign="top" width="33%">
 
-- **BaaS:** [Supabase](https://supabase.com/)
-  - PostgreSQL-database
-  - Autentisering (Magic links)
-  - Fillagring
-  - Row Level Security (RLS)
-- **Rate Limiting:** [Upstash Redis](https://upstash.com/)
-- **E-post:** [Resend](https://resend.com/)
+### Backend & Database
+- 🔥 **[Supabase](https://supabase.com/)** - BaaS
+  - PostgreSQL database
+  - Magic link auth
+  - File storage
+  - Row Level Security
+- ⚡ **[Upstash Redis](https://upstash.com/)** - Rate limiting
+- 📧 **[Resend](https://resend.com/)** - E-post
 
-### Tredjepartsintegrasjoner
+</td>
+<td valign="top" width="33%">
 
-- **Mapbox/MapLibre:** Rutevisualisering
-- **Upstash Redis:** Rate limiting for API-endepunkter
-- **GPX Parser:** Parsing av rutefiler
+### Integrasjoner
+- 🗺️ **Mapbox/MapLibre** - Kart
+- 📍 **GPX Parser** - Rutefiler
+- 🔐 **Zod** - Validering
+- 📊 **Analytics** - Brukerinnsikt
+
+</td>
+</tr>
+</table>
 
 ## 📋 Forutsetninger
 
@@ -114,7 +160,6 @@ Konfigurer følgende miljøvariabler i `.env.local`:
 # Supabase (Påkrevd)
 NEXT_PUBLIC_SUPABASE_URL=din_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=din_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=din_service_role_key
 
 # Upstash Redis (Påkrevd for produksjon)
 UPSTASH_REDIS_REST_URL=din_upstash_url
@@ -182,13 +227,23 @@ pnpm type-check  # Kjør TypeScript-typekontroll
 
 ## 🔑 Hovedfunksjoner
 
-- **Brukerregistrering** - Magic link-autentisering via Supabase
-- **Flere bildeopplastinger** - Deltakere kan laste opp flere gjennomføringsbilder
-- **Stemme system** - Stem på de beste innleveringene
-- **Galleri** - Bla gjennom alle innleveringer
-- **Dashboard** - Personlig statistikk og administrasjon
-- **Flrårstøtte** - Håndterer arrangementer på tvers av forskjellige år
-- **Norsk lokalisering** - Fullstendig norsk UI
+<details>
+<summary><b>✨ Klikk for å se alle funksjoner</b></summary>
+
+| Funksjon | Beskrivelse |
+|----------|-------------|
+| 🔐 **Magic Link Auth** | Sikker pålogging uten passord via Supabase |
+| 📸 **Multi-bildeopplasting** | Last opp flere bilder per gjennomføring |
+| 🗳️ **Stemmesystem** | Stem på de beste bidragene |
+| 🖼️ **Bildegalleri** | Interaktivt galleri med alle innleveringer |
+| 📊 **Dashboard** | Personlig statistikk og administrasjon |
+| 📅 **Flerårstøtte** | Håndterer flere år med separate arrangementer |
+| 🇳🇴 **100% Norsk** | Fullstendig norsk brukergrensesnitt |
+| 📱 **Responsiv** | Fungerer på mobil, tablet og desktop |
+| ⚡ **Rask** | Optimalisert ytelse med Next.js 16 |
+| 🔒 **Sikker** | Row Level Security og rate limiting |
+
+</details>
 
 ## 🗄️ Databaseskjema
 
@@ -219,14 +274,25 @@ Se [`SECURITY.md`](SECURITY.md) for detaljer om sikkerhetsretningslinjer.
 - [`ARCHITECTURE.md`](docs/ARCHITECTURE.md) - Arkitekturoversikt
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) - Bidragsretningslinjer
 
-## 🚢 Distribusjon
+## 🚢 Deployment
 
-Applikasjonen er optimalisert for distribusjon på [Vercel](https://vercel.com/):
+### Automatisk CI/CD Pipeline
 
-1. Push koden din til GitHub
-2. Importer prosjektet til Vercel
-3. Konfigurer miljøvariabler
-4. Distribuer
+Prosjektet bruker GitHub Actions for automatisk deployment:
+
+| Miljø | Trigger | Workflow | Beskrivelse |
+|-------|---------|----------|-------------|
+| **🔵 Preview** | Pull Request | [`cd-preview.yaml`](.github/workflows/cd-preview.yaml) | Automatisk deploy av preview-miljø for hver PR |
+| **🟢 Produksjon** | Push til `main` | [`cd-prod.yaml`](.github/workflows/cd-prod.yaml) | Automatisk deploy til produksjon ved merge til main |
+
+#### Arbeidsflyt
+
+1. **🔀 Lag en Pull Request** → Preview-miljø deployes automatisk
+2. **✅ Review og test** → Test endringene i preview-miljøet
+3. **🔄 Merge til main** → Produksjon oppdateres automatisk
+4. **🚀 Live!** → Endringene er live på [barteløpet.no](https://www.barteløpet.no)
+
+</details>
 
 ## 🤝 Bidra
 
@@ -250,10 +316,32 @@ Dette prosjektet er open source under MIT License. Se [LICENSE](LICENSE) for det
 
 Utviklet for Barteløpet av ÅpenAid til støtte for mental helse gjennom Movember 💜
 
+## 👥 Bidragsytere
+
+<a href="https://github.com/berglie/bartelopet/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=berglie/bartelopet" />
+</a>
+
+*Laget med [contrib.rocks](https://contrib.rocks).*
+
 ## 🆘 Støtte
 
-For problemer og spørsmål, vennligst åpne en issue i GitHub-repositoryet eller kontakt oss via kontaktskjemaet på nettsiden.
+Trenger du hjelp? Vi er her for deg!
+
+- 🐛 **Funnet en bug?** [Åpne en issue](https://github.com/berglie/bartelopet/issues/new?template=bug_report.md)
+- 💡 **Har en idé?** [Foreslå en ny funksjon](https://github.com/berglie/bartelopet/issues/new?template=feature_request.md)
+- 💬 **Generelle spørsmål?** [Start en diskusjon](https://github.com/berglie/bartelopet/discussions)
 
 ---
 
-Bygget med ❤️ for å støtte mental helse bevissthet gjennom Movember
+<div align="center">
+
+**Bygget med ❤️ av ÅpenAid**
+
+*Støtter mental helse bevissthet gjennom Movember* 💜
+
+[![GitHub Stars](https://img.shields.io/github/stars/berglie/bartelopet?style=social)](https://github.com/berglie/bartelopet)
+
+[**Topp ↑**](#-barteløpet)
+
+</div>
