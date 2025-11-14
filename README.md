@@ -228,6 +228,21 @@ pnpm lint        # Kjør ESLint
 pnpm type-check  # Kjør TypeScript-typekontroll
 ```
 
+### 🪝 Git Hooks
+
+Prosjektet bruker git hooks for å sikre kodekvalitet:
+
+- **Pre-commit**: Formaterer automatisk alle staged filer med Prettier
+- Hooks installeres automatisk når du kjører `pnpm install`
+
+```bash
+# Manuelt installer/reinstaller hooks
+pnpm hooks:install
+
+# Hoppe over hooks (kun i nødstilfeller)
+git commit --no-verify
+```
+
 ## 🔑 Hovedfunksjoner
 
 <details>
