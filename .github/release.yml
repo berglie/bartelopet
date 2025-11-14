@@ -1,0 +1,49 @@
+# GitHub Release Configuration
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+    authors:
+      - github-actions
+  categories:
+    - title: '🚀 Breaking Changes'
+      labels:
+        - breaking-change
+        - breaking
+    - title: '✨ New Features'
+      labels:
+        - enhancement
+        - feature
+        - feat
+    - title: '🐛 Bug Fixes'
+      labels:
+        - bug
+        - bugfix
+    - title: '📚 Documentation'
+      labels:
+        - documentation
+        - docs
+    - title: '⚡ Performance'
+      labels:
+        - performance
+        - perf
+    - title: '🔧 Maintenance'
+      labels:
+        - maintenance
+        - chore
+        - refactor
+    - title: '✅ Tests'
+      labels:
+        - test
+        - tests
+    - title: '👷 CI/CD'
+      labels:
+        - ci
+        - cd
+        - cicd
+    - title: '📦 Build System'
+      labels:
+        - build
+    - title: Other Changes
+      labels:
+        - '*'

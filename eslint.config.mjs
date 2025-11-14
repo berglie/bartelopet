@@ -49,6 +49,7 @@ export default [
       'next.config.js',
       'postcss.config.js',
       'tailwind.config.ts',
+      'commitlint.config.js',
     ],
   },
   eslintConfigPrettier,

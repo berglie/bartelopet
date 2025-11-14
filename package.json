@@ -12,7 +12,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "postinstall": "sh .githooks/install.sh",
-    "hooks:install": "sh .githooks/install.sh"
+    "hooks:install": "sh .githooks/install.sh",
+    "release": "semantic-release",
+    "release:dry-run": "semantic-release --dry-run"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -50,6 +52,8 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
     "@tailwindcss/typography": "^0.5.19",
     "@types/leaflet": "^1.9.21",
     "@types/node": "^24.9.2",

@@ -20,8 +20,10 @@ jobs:
   deploy_production:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       deployments: write
+      issues: write
+      pull-requests: write
     environment:
       name: Production
       url: ${{ steps.deploy.outputs.url }}
@@ -29,6 +31,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -105,3 +110,25 @@ jobs:
               environment_url: url,
               description: 'Production deployment successful',
             });
+
+      - name: Install semantic-release dependencies
+        if: success()
+        run: |
+          pnpm add -D @semantic-release/changelog \
+            @semantic-release/commit-analyzer \
+            @semantic-release/git \
+            @semantic-release/github \
+            @semantic-release/npm \
+            @semantic-release/release-notes-generator \
+            conventional-changelog-conventionalcommits \
+            semantic-release
+
+      - name: Create Release
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_AUTHOR_NAME: github-actions[bot]
+          GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+          GIT_COMMITTER_NAME: github-actions[bot]
+          GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+        run: npx semantic-release
