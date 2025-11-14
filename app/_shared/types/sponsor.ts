@@ -25,7 +25,7 @@ export interface SponsorPublic {
   logo_url?: string;
   website_url?: string;
   category: SponsorCategory;
-  prize?: string;
+  contribution?: string;
 }
 
 // Grouped sponsors for display

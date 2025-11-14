@@ -37,12 +37,24 @@ export function SponsorCard({ sponsor, priority = false }: SponsorCardProps) {
         </p>
       )}
 
-      {/* Prize */}
-      {sponsor.prize && (
-        <p className="text-sm md:text-base text-muted-foreground">
-          <span className="font-medium text-foreground">Premie:</span>{' '}
-          {sponsor.prize}
-        </p>
+      {/* Contribution */}
+      {sponsor.contribution && (
+        <div className="mt-3 pt-3 border-t border-border/50">
+          <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1">
+            Bidrag
+          </p>
+          {sponsor.contribution.includes('\n') ? (
+            <ul className="text-sm md:text-base text-foreground font-medium list-disc list-inside text-left space-y-1">
+              {sponsor.contribution.split('\n').map((item, index) => (
+                <li key={index}>{item.replace(/^-\s*/, '')}</li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm md:text-base text-foreground font-medium">
+              {sponsor.contribution}
+            </p>
+          )}
+        </div>
       )}
 
       {/* Website Link */}
