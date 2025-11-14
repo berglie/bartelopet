@@ -42,8 +42,8 @@ export function Navigation({ isAuthenticated = false }: NavigationProps) {
             <Link href={getUrlWithYear("/deltakere")} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Deltakere
             </Link>
-            <Link href="/sponsorer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Sponsorer
+            <Link href="/premier" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Premier
             </Link>
 
             {showYearSelector && <YearSelector variant="compact" />}
@@ -72,8 +72,8 @@ export function Navigation({ isAuthenticated = false }: NavigationProps) {
             <Link href={getUrlWithYear("/deltakere")} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Deltakere
             </Link>
-            <Link href="/sponsorer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Sponsorer
+            <Link href="/premier" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Premier
             </Link>
             {showYearSelector && <YearSelector variant="compact" />}
           </div>

@@ -44,7 +44,7 @@ export function SponsorSection({
           ))
         ) : (
           <p className="text-sm text-muted-foreground italic">
-            Ingen sponsorer i denne kategorien ennå.
+            Ingen bidrag i denne kategorien ennå.
           </p>
         )}
       </div>

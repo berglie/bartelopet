@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/app/_shared/components/ui/button';
 import { Card, CardContent } from '@/app/_shared/components/ui/card';
 import { createClient } from '@/app/_shared/lib/supabase/server';
@@ -68,12 +69,12 @@ export default async function HomePage({
               </h1>
 
               <p className="text-2xl md:text-3xl text-muted-foreground font-light">
-                Ta utfordringen - støtt <span className="text-accent font-normal">mental helse</span>
+                Ta utfordringen - støtt <span className="text-accent font-normal">Mental Helse Ungdom</span>
               </p>
             </div>
 
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Delta ved å donere et valgfritt beløp for startnummeret. Løp eller gå gjennom sentrum i november. Vinn premier. Støtt Mental Helse.
+              Delta ved å donere et valgfritt beløp for startnummeret. Løp eller gå gjennom sentrum i november. <span className="text-accent font-semibold">Vinn flotte premier i premietrekningen!</span>
             </p>
 
             {/* CTA */}
@@ -104,6 +105,38 @@ export default async function HomePage({
                 <div className="text-sm text-muted-foreground uppercase tracking-wider">Km løpt</div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Trophy Prototype Showcase */}
+      <section className="py-12 md:py-20 border-b border-border/50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto">
+            <Card className="bg-card/50 border-accent/30 backdrop-blur relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-accent/10 rounded-full blur-3xl" />
+              <div className="absolute bottom-0 left-0 w-40 h-40 bg-accent/10 rounded-full blur-3xl" />
+              <CardContent className="p-8 md:p-10 relative space-y-6 text-center">
+                <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/30 px-4 py-2 rounded-full">
+                  <Trophy className="h-4 w-4 text-accent" />
+                  <span className="text-sm font-medium text-accent">Pokal-prototype</span>
+                </div>
+                <h3 className="text-2xl md:text-3xl font-bold">Prototype av pokalen!</h3>
+                <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden border-2 border-accent/20">
+                  <Image
+                    src="/images/pokal-prototype.jpg"
+                    alt="Barteløpet pokal prototype - eksklusiv pokal til alle deltakere"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    priority
+                  />
+                </div>
+                <p className="text-muted-foreground">
+                  Vi har fått laget en prototype av pokalen! 🏆 Den ferdige pokalen vil se enda bedre ut. Alle som fullfører løpet får denne eksklusive pokalen levert hjem 🎉
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
@@ -345,13 +378,82 @@ export default async function HomePage({
                     </div>
                     <span className="text-6xl font-bold text-accent/20">04</span>
                   </div>
-                  <h3 className="text-2xl font-bold">Stem & Vinn</h3>
+                  <h3 className="text-2xl font-bold">Vinn premier!</h3>
                   <p className="text-muted-foreground leading-relaxed">
-                    Se andres løp og stem på ditt favorittbilde
+                    Premier trekkes tilfeldig basert på startnummer. Jo tidligere du melder deg på, jo bedre sjanse!
                   </p>
                 </CardContent>
               </Card>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Lottery Draw Highlight */}
+      <section className="py-12 md:py-20 border-b border-border/50 bg-gradient-to-br from-accent/5 via-transparent to-primary/5">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <Card className="bg-gradient-to-br from-accent/10 via-card to-primary/10 border-accent/30 backdrop-blur shadow-2xl">
+              <CardContent className="p-12 md:p-16 space-y-8">
+                {/* Header */}
+                <div className="text-center space-y-4">
+                  <div className="inline-flex items-center justify-center w-20 h-20 bg-accent/20 rounded-full mb-4">
+                    <Trophy className="h-10 w-10 text-accent" />
+                  </div>
+                  <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
+                    Premietrekning basert på startnummer
+                  </h2>
+                  <p className="text-xl md:text-2xl text-muted-foreground font-light">
+                    En spennende lotteri-trekning der alle deltakere har mulighet til å vinne!
+                  </p>
+                </div>
+
+                {/* Content */}
+                <div className="bg-background/80 backdrop-blur-sm p-8 rounded-xl border border-accent/20 space-y-6">
+                  <div className="space-y-6 max-w-2xl mx-auto">
+                    <div className="text-center space-y-3">
+                      <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center mx-auto">
+                        <span className="text-3xl">🎲</span>
+                      </div>
+                      <h3 className="text-xl font-bold text-foreground">Tilfeldig og rettferdig</h3>
+                      <p className="text-base text-muted-foreground leading-relaxed">
+                        Alle som fullfører løpet er automatisk med i trekningen. Vinnere trekkes helt tilfeldig basert på startnumrene som er delt ut ved påmelding.
+                      </p>
+                    </div>
+
+                    <div className="text-center space-y-3">
+                      <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center mx-auto">
+                        <span className="text-3xl">🎁</span>
+                      </div>
+                      <h3 className="text-xl font-bold text-foreground">Sponsorpremiepakker</h3>
+                      <p className="text-base text-muted-foreground leading-relaxed">
+                        Vi trekker ut flere vinnere som får flotte premiepakker fra våre generøse bidragsytere.
+                      </p>
+                    </div>
+
+                    <div className="text-center space-y-3">
+                      <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center mx-auto">
+                        <span className="text-3xl">🏆</span>
+                      </div>
+                      <h3 className="text-xl font-bold text-foreground">Alle vinner</h3>
+                      <p className="text-base text-muted-foreground leading-relaxed">
+                        Selv om ikke alle vinner i trekningen, får alle som fullfører løpet en eksklusiv pokal levert hjem - i tillegg til følelsen av å ha gjort en god gjerning!
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* CTA */}
+                <div className="text-center pt-4">
+                  <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 h-14 px-10 text-lg shadow-lg shadow-accent/30">
+                    <Link href="/pamelding" className="flex items-center justify-center">
+                      <Trophy className="mr-2 h-6 w-6" />
+                      Meld deg på og vær med i trekningen!
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
@@ -363,9 +465,13 @@ export default async function HomePage({
             <div className="text-center space-y-4">
               <div className="inline-flex items-center gap-3 bg-accent/10 border border-accent/30 px-5 py-2 rounded-full">
                 <MustacheSVG className="h-4 w-8 text-accent" />
-                <span className="text-sm font-medium text-accent">Premier & Belønninger</span>
+                <span className="text-sm font-medium text-accent">Premietrekning & Belønninger</span>
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold">Hva vinner du?</h2>
+              <h2 className="text-4xl md:text-5xl font-bold">Flotte premier å vinne!</h2>
+              <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                Alle som fullfører får pokal, men vi trekker også ut vinnere av ekstra premier basert på startnummer.
+                <span className="text-accent font-semibold"> Delta og vinn gode premier fra våre bidragsytere!</span>
+              </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
@@ -373,7 +479,7 @@ export default async function HomePage({
                 <div className="absolute top-0 right-0 w-32 h-32 bg-accent/10 rounded-full blur-2xl" />
                 <CardContent className="p-8 relative space-y-4 text-center">
                   <div className="text-6xl">🏆</div>
-                  <h3 className="text-2xl font-bold">Pokal</h3>
+                  <h3 className="text-2xl font-bold">Pokal til alle</h3>
                   <p className="text-muted-foreground">
                     Alle som fullfører får en eksklusiv pokal levert hjem
                   </p>
@@ -383,10 +489,10 @@ export default async function HomePage({
               <Card className="bg-card/50 border-accent/20 backdrop-blur relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-accent/10 rounded-full blur-2xl" />
                 <CardContent className="p-8 relative space-y-4 text-center">
-                  <div className="text-6xl">📸</div>
-                  <h3 className="text-2xl font-bold">Beste bilde</h3>
+                  <div className="text-6xl">🎲</div>
+                  <h3 className="text-2xl font-bold">Tilfeldig trekning</h3>
                   <p className="text-muted-foreground">
-                    Beste bilde langs løypen vinner en ekstra premie
+                    Vinnere trekkes tilfeldig basert på startnummer - alle har sjanse til å vinne!
                   </p>
                 </CardContent>
               </Card>
@@ -395,9 +501,9 @@ export default async function HomePage({
                 <div className="absolute top-0 right-0 w-32 h-32 bg-accent/10 rounded-full blur-2xl" />
                 <CardContent className="p-8 relative space-y-4 text-center">
                   <div className="text-6xl">🎁</div>
-                  <h3 className="text-2xl font-bold">Swag</h3>
+                  <h3 className="text-2xl font-bold">Sponsorpremiepakker</h3>
                   <p className="text-muted-foreground">
-                    Reklameartikler sponset av lokale bedrifter
+                    Flotte premiepakker fra lokale bedrifter trekkes ut blant deltakerne
                   </p>
                 </CardContent>
               </Card>
