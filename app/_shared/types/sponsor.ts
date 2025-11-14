@@ -1,9 +1,9 @@
 // Sponsor types for Barteløpet premier page
 
 export type SponsorCategory =
-  | 'merchandise'  // Companies providing merchandise or prizes
-  | 'trophy'       // Trophy prize (Metallteknikk)
-  | 'donation';    // Companies providing donations
+  | 'merchandise' // Companies providing merchandise or prizes
+  | 'trophy' // Trophy prize (Metallteknikk)
+  | 'donation'; // Companies providing donations
 
 export interface Sponsor {
   id: string;

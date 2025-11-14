@@ -1,13 +1,13 @@
-'use server'
+'use server';
 
-import { createClient } from '@/app/_shared/lib/supabase/server'
-import type { ParticipantDetail } from '@/app/deltakere/_utils/queries'
+import { createClient } from '@/app/_shared/lib/supabase/server';
+import type { ParticipantDetail } from '@/app/deltakere/_utils/queries';
 
 export async function getParticipantDetailAction(
   bibNumber: number,
   year: number
 ): Promise<ParticipantDetail | null> {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   // First get participant data
   const { data: participant, error: participantError } = await supabase
@@ -15,15 +15,15 @@ export async function getParticipantDetailAction(
     .select('id, full_name, bib_number, has_completed, event_year, created_at')
     .eq('bib_number', bibNumber)
     .eq('event_year', year)
-    .single()
+    .single();
 
   if (participantError || !participant || !participant.id) {
-    console.error('Error fetching participant:', participantError)
-    return null
+    console.error('Error fetching participant:', participantError);
+    return null;
   }
 
   // Type assertion for safe fields
-  const participantData = participant as ParticipantDetail
+  const participantData = participant as ParticipantDetail;
 
   // If participant has completed, fetch completion data
   if (participant.has_completed) {
@@ -32,7 +32,7 @@ export async function getParticipantDetailAction(
       .from('completions_with_counts')
       .select('*')
       .eq('participant_id', participant.id!)
-      .single()
+      .single();
 
     if (completionWithCounts && !viewError && completionWithCounts.id) {
       // Fetch the images from the photos table
@@ -41,39 +41,47 @@ export async function getParticipantDetailAction(
         .select('id, image_url, is_starred, caption, display_order')
         .eq('completion_id', completionWithCounts.id)
         .order('is_starred', { ascending: false })
-        .order('display_order', { ascending: true })
+        .order('display_order', { ascending: true });
 
       if (imagesError) {
-        console.error('Error fetching photos for completion_id:', completionWithCounts.id, 'Error:', imagesError)
+        console.error(
+          'Error fetching photos for completion_id:',
+          completionWithCounts.id,
+          'Error:',
+          imagesError
+        );
       }
 
       // All images are in the photos table only - no fallback
-      const finalImages = images || []
+      const finalImages = images || [];
 
       return {
         ...participantData,
         completion: {
           id: completionWithCounts.id,
-          completion_date: completionWithCounts.completed_date || completionWithCounts.created_at || '',
+          completion_date:
+            completionWithCounts.completed_date || completionWithCounts.created_at || '',
           duration_minutes: null, // duration_text exists but we need duration_minutes - set to null for now
           submission_comment: completionWithCounts.comment || null,
           comment_count: completionWithCounts.comment_count || 0,
           vote_count: completionWithCounts.vote_count || 0,
-          images: finalImages
-        }
-      }
+          images: finalImages,
+        },
+      };
     } else {
       // Fallback to direct query
       const { data: completion, error: completionError } = await supabase
         .from('completions')
-        .select(`
+        .select(
+          `
           id,
           created_at,
           duration_text,
           comment
-        `)
+        `
+        )
         .eq('participant_id', participant.id)
-        .single()
+        .single();
 
       if (completion && !completionError) {
         // Fetch images from photos table
@@ -82,7 +90,7 @@ export async function getParticipantDetailAction(
           .select('id, image_url, is_starred, caption, display_order')
           .eq('completion_id', completion.id)
           .order('is_starred', { ascending: false })
-          .order('display_order', { ascending: true })
+          .order('display_order', { ascending: true });
 
         // Get comment and vote counts
         const [commentCount, voteCount] = await Promise.all([
@@ -93,8 +101,8 @@ export async function getParticipantDetailAction(
           supabase
             .from('photo_votes')
             .select('*', { count: 'exact', head: true })
-            .eq('completion_id', completion.id)
-        ])
+            .eq('completion_id', completion.id),
+        ]);
 
         return {
           ...participantData,
@@ -105,14 +113,18 @@ export async function getParticipantDetailAction(
             submission_comment: completion.comment || null,
             comment_count: commentCount.count || 0,
             vote_count: voteCount.count || 0,
-            images: images || []
-          }
-        }
+            images: images || [],
+          },
+        };
       } else {
-        console.error('Could not fetch completion for participant:', participant.id, completionError)
+        console.error(
+          'Could not fetch completion for participant:',
+          participant.id,
+          completionError
+        );
       }
     }
   }
 
-  return participantData
+  return participantData;
 }

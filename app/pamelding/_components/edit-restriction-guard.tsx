@@ -3,7 +3,11 @@
 import React from 'react';
 import { AlertCircle, Lock, Calendar } from 'lucide-react';
 import { Card, CardContent } from '@/app/_shared/components/ui/card';
-import { isSubmissionWindowOpen, getSubmissionWindowText, canSubmitForYear } from '@/app/_shared/lib/utils/year';
+import {
+  isSubmissionWindowOpen,
+  getSubmissionWindowText,
+  canSubmitForYear,
+} from '@/app/_shared/lib/utils/year';
 import { useIsCurrentYear, useSelectedYear } from '@/contexts/year-context';
 
 interface EditRestrictionGuardProps {
@@ -18,7 +22,7 @@ interface EditRestrictionGuardProps {
 export function EditRestrictionGuard({
   children,
   year,
-  showMessage = true
+  showMessage = true,
 }: EditRestrictionGuardProps) {
   const contextYear = useSelectedYear();
   const isCurrentYear = useIsCurrentYear();
@@ -33,9 +37,7 @@ export function EditRestrictionGuard({
     return null;
   }
 
-  return (
-    <ReadOnlyMessage year={targetYear} isCurrentYear={isCurrentYear} />
-  );
+  return <ReadOnlyMessage year={targetYear} isCurrentYear={isCurrentYear} />;
 }
 
 /**
@@ -43,9 +45,9 @@ export function EditRestrictionGuard({
  */
 function ReadOnlyMessage({ year, isCurrentYear }: { year: number; isCurrentYear: boolean }) {
   return (
-    <Card className="bg-muted/50 border-muted">
-      <CardContent className="p-8 text-center space-y-4">
-        <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto">
+    <Card className="border-muted bg-muted/50">
+      <CardContent className="space-y-4 p-8 text-center">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-muted">
           <Lock className="h-8 w-8 text-muted-foreground" />
         </div>
 
@@ -53,9 +55,7 @@ function ReadOnlyMessage({ year, isCurrentYear }: { year: number; isCurrentYear:
           <h3 className="text-xl font-semibold">
             {isCurrentYear ? 'Innsendingsvinduet er stengt' : 'Historisk visning'}
           </h3>
-          <p className="text-muted-foreground">
-            {getSubmissionWindowText(year)}
-          </p>
+          <p className="text-muted-foreground">{getSubmissionWindowText(year)}</p>
         </div>
 
         {isCurrentYear && !isSubmissionWindowOpen() && (
@@ -82,14 +82,12 @@ export function ReadOnlyBanner({ year }: { year?: number }) {
   }
 
   return (
-    <div className="bg-muted border-l-4 border-muted-foreground/30 p-4 mb-6">
+    <div className="mb-6 border-l-4 border-muted-foreground/30 bg-muted p-4">
       <div className="flex items-start gap-3">
-        <AlertCircle className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+        <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
         <div className="space-y-1">
-          <p className="font-medium text-sm">Kun lesevisning</p>
-          <p className="text-sm text-muted-foreground">
-            {getSubmissionWindowText(targetYear)}
-          </p>
+          <p className="text-sm font-medium">Kun lesevisning</p>
+          <p className="text-sm text-muted-foreground">{getSubmissionWindowText(targetYear)}</p>
         </div>
       </div>
     </div>
@@ -111,7 +109,7 @@ export function useCanEdit(year?: number): boolean {
 export function EditableWrapper({
   children,
   year,
-  fallback
+  fallback,
 }: {
   children: React.ReactNode;
   year?: number;

@@ -19,17 +19,11 @@ function validateRedirectPath(path: string | null): string {
   const pathOnly = path.split('?')[0];
 
   // Whitelist of allowed redirect paths
-  const allowedPaths = [
-    '/dashboard',
-    '/galleri',
-    '/pamelding',
-    '/deltakere',
-    '/profil',
-  ];
+  const allowedPaths = ['/dashboard', '/galleri', '/pamelding', '/deltakere', '/profil'];
 
   // Check if path matches allowed patterns
-  const isAllowed = allowedPaths.some(allowed =>
-    pathOnly === allowed || pathOnly.startsWith(allowed + '/')
+  const isAllowed = allowedPaths.some(
+    (allowed) => pathOnly === allowed || pathOnly.startsWith(allowed + '/')
   );
 
   if (!isAllowed) {
@@ -67,7 +61,9 @@ export async function GET(request: Request) {
     }
 
     // Check if user has participant record
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (user) {
       const { data: participant } = await supabase
@@ -94,7 +90,9 @@ export async function GET(request: Request) {
 
     if (!error) {
       // Link participant record to auth user if not already linked
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
       if (user) {
         // Check if participant exists and needs linking
@@ -132,7 +130,10 @@ export async function GET(request: Request) {
 
     console.error('Auth verification error:', error);
     return NextResponse.redirect(
-      new URL(`/login?error=verification_failed&message=${encodeURIComponent(error.message)}`, origin)
+      new URL(
+        `/login?error=verification_failed&message=${encodeURIComponent(error.message)}`,
+        origin
+      )
     );
   }
 
@@ -142,7 +143,10 @@ export async function GET(request: Request) {
     if (!email) {
       console.error('[Auth] Email parameter missing for legacy token verification');
       return NextResponse.redirect(
-        new URL('/login?error=confirmation_failed&message=Kunne ikke bekrefte e-postadressen. Vennligst prøv igjen.', origin)
+        new URL(
+          '/login?error=confirmation_failed&message=Kunne ikke bekrefte e-postadressen. Vennligst prøv igjen.',
+          origin
+        )
       );
     }
 
@@ -167,24 +171,39 @@ export async function GET(request: Request) {
       console.error('Token verification failed:', verifyError);
 
       // If user was deleted after confirmation email was sent
-      if (verifyError.message?.includes('does not exist') || verifyError.code === 'user_not_found') {
+      if (
+        verifyError.message?.includes('does not exist') ||
+        verifyError.code === 'user_not_found'
+      ) {
         return NextResponse.redirect(
-          new URL('/pamelding?error=user_deleted&message=Your account was removed. Please register again.', origin)
+          new URL(
+            '/pamelding?error=user_deleted&message=Your account was removed. Please register again.',
+            origin
+          )
         );
       }
 
       return NextResponse.redirect(
-        new URL('/login?error=confirmation_failed&message=Could not confirm email. Please try again.', origin)
+        new URL(
+          '/login?error=confirmation_failed&message=Could not confirm email. Please try again.',
+          origin
+        )
       );
     }
 
     // Now check if user is authenticated
-    const { data: { user }, error: getUserError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: getUserError,
+    } = await supabase.auth.getUser();
 
     if (getUserError || !user) {
       console.error('User not authenticated after verification:', getUserError);
       return NextResponse.redirect(
-        new URL('/login?error=confirmation_failed&message=Could not confirm email. Please try again.', origin)
+        new URL(
+          '/login?error=confirmation_failed&message=Could not confirm email. Please try again.',
+          origin
+        )
       );
     }
 
@@ -197,10 +216,7 @@ export async function GET(request: Request) {
         .maybeSingle();
 
       if (participant && !participant.user_id) {
-        await supabase
-          .from('participants')
-          .update({ user_id: user.id })
-          .eq('email', user.email);
+        await supabase.from('participants').update({ user_id: user.id }).eq('email', user.email);
       }
     }
 

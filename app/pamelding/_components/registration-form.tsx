@@ -5,7 +5,13 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/app/_shared/components/ui/button';
 import { Input } from '@/app/_shared/components/ui/input';
 import { Label } from '@/app/_shared/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/_shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/app/_shared/components/ui/card';
 import { Checkbox } from '@/app/_shared/components/ui/checkbox';
 import { createClient } from '@/app/_shared/lib/supabase/client';
 import { getCurrentEventYear } from '@/app/_shared/lib/utils/event-year';
@@ -29,7 +35,9 @@ export function RegistrationForm() {
   useEffect(() => {
     async function loadUserData() {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
       if (user) {
         // Check if user has a participant record
@@ -100,14 +108,16 @@ export function RegistrationForm() {
       full_name: formData.get('full_name') as string,
       email: formData.get('email') as string,
       postal_address: formData.get('postal_address') as string,
-      phone_number: formData.get('phone_number') as string || null,
+      phone_number: (formData.get('phone_number') as string) || null,
     };
 
     const supabase = createClient();
 
     try {
       // Check if user is already authenticated
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       console.log('Form submit - user authenticated?', !!user, user?.email);
 
       // Get the current event year
@@ -126,11 +136,12 @@ export function RegistrationForm() {
       console.log('Max bib query result:', { maxBib, maxBibError });
 
       // Handle 403/permission errors (likely stale/invalid session)
-      if (maxBibError && (
-        maxBibError.message?.includes('permission denied') ||
-        maxBibError.message?.includes('JWT') ||
-        maxBibError.code === 'PGRST301'  // PostgREST 403 error code
-      )) {
+      if (
+        maxBibError &&
+        (maxBibError.message?.includes('permission denied') ||
+          maxBibError.message?.includes('JWT') ||
+          maxBibError.code === 'PGRST301') // PostgREST 403 error code
+      ) {
         console.error('Max bib error:', maxBibError);
         setError('Det oppstod en tilgangsfeil. Vennligst prøv å logge ut og inn igjen.');
         return;
@@ -142,17 +153,15 @@ export function RegistrationForm() {
       if (user) {
         // User is already authenticated (came from magic link or confirmation)
         // Insert participant and link to existing auth user
-        const { error: insertError } = await supabase
-          .from('participants')
-          .insert({
-            user_id: user.id, // Link to existing auth user
-            full_name: data.full_name,
-            email: data.email,
-            postal_address: data.postal_address,
-            phone_number: data.phone_number,
-            bib_number: nextBibNumber,
-            event_year: currentEventYear,
-          });
+        const { error: insertError } = await supabase.from('participants').insert({
+          user_id: user.id, // Link to existing auth user
+          full_name: data.full_name,
+          email: data.email,
+          postal_address: data.postal_address,
+          phone_number: data.phone_number,
+          bib_number: nextBibNumber,
+          event_year: currentEventYear,
+        });
 
         if (insertError) {
           if (insertError.code === '23505') {
@@ -169,7 +178,6 @@ export function RegistrationForm() {
         setTimeout(() => {
           router.push('/dashboard');
         }, 2000);
-
       } else {
         // User is NOT authenticated (normal registration flow)
         // Create new auth user with proper signup
@@ -204,17 +212,15 @@ export function RegistrationForm() {
         }
 
         // Insert participant record linked to the new user
-        const { error: insertError } = await supabase
-          .from('participants')
-          .insert({
-            user_id: signUpData.user.id, // Link to newly created auth user
-            full_name: data.full_name,
-            email: data.email,
-            postal_address: data.postal_address,
-            phone_number: data.phone_number,
-            bib_number: nextBibNumber,
-            event_year: currentEventYear,
-          });
+        const { error: insertError } = await supabase.from('participants').insert({
+          user_id: signUpData.user.id, // Link to newly created auth user
+          full_name: data.full_name,
+          email: data.email,
+          postal_address: data.postal_address,
+          phone_number: data.phone_number,
+          bib_number: nextBibNumber,
+          event_year: currentEventYear,
+        });
 
         if (insertError) {
           console.error('Insert error:', insertError);
@@ -234,7 +240,6 @@ export function RegistrationForm() {
 
         setBibNumber(nextBibNumber);
       }
-
     } catch (err) {
       console.error('Registration error:', err);
       setError('Noe gikk galt. Prøv igjen.');
@@ -253,30 +258,32 @@ export function RegistrationForm() {
           <CardDescription>Du er nå påmeldt Barteløpet 2025</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="text-center py-8">
-            <p className="text-sm text-muted-foreground mb-2">Ditt startnummer er</p>
+          <div className="py-8 text-center">
+            <p className="mb-2 text-sm text-muted-foreground">Ditt startnummer er</p>
             <p className="text-6xl font-bold text-accent">{bibNumber}</p>
           </div>
 
           {isOAuthUser ? (
-            <div className="bg-primary/10 border border-primary rounded-lg p-4 space-y-2">
+            <div className="space-y-2 rounded-lg border border-primary bg-primary/10 p-4">
               <p className="font-semibold text-accent">✅ Logget inn med Google</p>
               <p className="text-sm text-foreground">
-                Du er nå påmeldt og din e-postadresse er bekreftet. Du blir automatisk sendt til dashboardet.
+                Du er nå påmeldt og din e-postadresse er bekreftet. Du blir automatisk sendt til
+                dashboardet.
               </p>
             </div>
           ) : (
-            <div className="bg-primary/10 border border-primary rounded-lg p-4 space-y-2">
+            <div className="space-y-2 rounded-lg border border-primary bg-primary/10 p-4">
               <p className="font-semibold text-accent">📧 Bekreft e-postadressen din</p>
               <p className="text-sm text-foreground">
-                Vi har sendt en bekreftelseslenke til din e-post. Klikk på lenken for å aktivere kontoen din og logge inn.
+                Vi har sendt en bekreftelseslenke til din e-post. Klikk på lenken for å aktivere
+                kontoen din og logge inn.
               </p>
             </div>
           )}
 
-          <div className="bg-muted p-4 rounded-lg space-y-2">
+          <div className="space-y-2 rounded-lg bg-muted p-4">
             <p className="font-semibold">Neste steg:</p>
-            <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
+            <ol className="list-inside list-decimal space-y-1 text-sm text-muted-foreground">
               {!isOAuthUser && <li>Sjekk e-posten din og klikk på bekreftelseslenken</li>}
               {!isOAuthUser && <li>Du vil bli automatisk innlogget</li>}
               <li>Løp løypen i november</li>
@@ -303,84 +310,84 @@ export function RegistrationForm() {
           {needsCompletion
             ? 'E-posten din er bekreftet! Fullfør registreringen ved å fylle ut informasjonen under'
             : prefillData
-            ? 'Fullfør registreringen din ved å fylle ut informasjonen under'
-            : 'Alle feltene må fylles ut bortsett fra telefonnummer'}
+              ? 'Fullfør registreringen din ved å fylle ut informasjonen under'
+              : 'Alle feltene må fylles ut bortsett fra telefonnummer'}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {needsCompletion && (
-          <div className="bg-primary/10 border border-primary rounded-lg p-4 text-sm mb-4">
-            <p className="font-semibold text-accent mb-2">✅ E-post bekreftet!</p>
+          <div className="mb-4 rounded-lg border border-primary bg-primary/10 p-4 text-sm">
+            <p className="mb-2 font-semibold text-accent">✅ E-post bekreftet!</p>
             <p className="text-foreground">
-              Din e-postadresse er bekreftet. Fyll ut resten av informasjonen under for å fullføre påmeldingen til Barteløpet.
+              Din e-postadresse er bekreftet. Fyll ut resten av informasjonen under for å fullføre
+              påmeldingen til Barteløpet.
             </p>
           </div>
         )}
 
         {/* Rask påmelding section */}
-        {!needsCompletion && <div className="space-y-4 pb-4">
-      
-          
-          {oAuthError && (
-            <div className="bg-destructive/10 text-destructive px-4 py-3 rounded-lg text-sm">
-              {oAuthError}
-            </div>
-          )}
+        {!needsCompletion && (
+          <div className="space-y-4 pb-4">
+            {oAuthError && (
+              <div className="rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">
+                {oAuthError}
+              </div>
+            )}
 
-          {/* Google Signup Button */}
-          <Button
-            onClick={() => handleOAuthLogin('google')}
-            variant="outline"
-            className="w-full"
-            type="button"
-          >
-            <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
-              <path
-                fill="#4285F4"
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-              />
-              <path
-                fill="#34A853"
-                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-              />
-              <path
-                fill="#FBBC05"
-                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-              />
-              <path
-                fill="#EA4335"
-                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-              />
-            </svg>
-            Meld deg på med Google
-          </Button>
+            {/* Google Signup Button */}
+            <Button
+              onClick={() => handleOAuthLogin('google')}
+              variant="outline"
+              className="w-full"
+              type="button"
+            >
+              <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                />
+              </svg>
+              Meld deg på med Google
+            </Button>
 
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">
-                Eller fyll ut skjemaet under
-              </span>
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">
+                  Eller fyll ut skjemaet under
+                </span>
+              </div>
             </div>
           </div>
-        </div>}
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="bg-destructive/10 text-destructive px-4 py-3 rounded-lg">
-              {error}
-            </div>
+            <div className="rounded-lg bg-destructive/10 px-4 py-3 text-destructive">{error}</div>
           )}
 
           {prefillData && !needsCompletion && (
-            <div className="bg-primary/10 border border-primary rounded-lg p-4 text-sm">
-              <div className="flex items-start justify-between gap-2 mb-2">
+            <div className="rounded-lg border border-primary bg-primary/10 p-4 text-sm">
+              <div className="mb-2 flex items-start justify-between gap-2">
                 <div className="flex-1">
-                  <p className="font-semibold text-accent mb-1">✅ Logget inn med Google</p>
+                  <p className="mb-1 font-semibold text-accent">✅ Logget inn med Google</p>
                   <p className="text-foreground">
-                    Vi har hentet ditt navn og e-post fra Google. Fyll ut resten av informasjonen for å fullføre påmeldingen.
+                    Vi har hentet ditt navn og e-post fra Google. Fyll ut resten av informasjonen
+                    for å fullføre påmeldingen.
                   </p>
                 </div>
                 <Button
@@ -389,7 +396,7 @@ export function RegistrationForm() {
                   disabled={signingOut}
                   variant="ghost"
                   size="sm"
-                  className="text-accent hover:text-accent/90 hover:bg-primary/20"
+                  className="text-accent hover:bg-primary/20 hover:text-accent/90"
                 >
                   Logg ut
                 </Button>
@@ -398,10 +405,11 @@ export function RegistrationForm() {
           )}
 
           {error && error.includes('tilgangsfeil') && (
-            <div className="bg-primary/10 border border-primary rounded-lg p-4 text-sm">
-              <p className="font-semibold text-accent mb-2">🔓 Prøv å logge ut</p>
-              <p className="text-foreground mb-3">
-                Det ser ut til at økten din er ugyldig. Klikk knappen under for å logge ut og prøve igjen.
+            <div className="rounded-lg border border-primary bg-primary/10 p-4 text-sm">
+              <p className="mb-2 font-semibold text-accent">🔓 Prøv å logge ut</p>
+              <p className="mb-3 text-foreground">
+                Det ser ut til at økten din er ugyldig. Klikk knappen under for å logge ut og prøve
+                igjen.
               </p>
               <Button
                 type="button"
@@ -438,7 +446,7 @@ export function RegistrationForm() {
               placeholder="ola@example.com"
               disabled={loading}
               readOnly={!!prefillData?.email}
-              className={prefillData?.email ? 'bg-muted cursor-not-allowed' : ''}
+              className={prefillData?.email ? 'cursor-not-allowed bg-muted' : ''}
             />
             <p className="text-sm text-muted-foreground">
               {prefillData?.email
@@ -456,9 +464,7 @@ export function RegistrationForm() {
               placeholder="Gateveien 1, 4000 Stavanger"
               disabled={loading}
             />
-            <p className="text-sm text-muted-foreground">
-              Pokalen sendes til denne adressen
-            </p>
+            <p className="text-sm text-muted-foreground">Pokalen sendes til denne adressen</p>
           </div>
 
           <div className="space-y-2">
@@ -473,7 +479,7 @@ export function RegistrationForm() {
           </div>
 
           <div className="space-y-3 pt-2">
-            <div className="flex items-start space-x-3 bg-muted/50 p-4 rounded-lg border">
+            <div className="flex items-start space-x-3 rounded-lg border bg-muted/50 p-4">
               <Checkbox
                 id="consent"
                 checked={consentAccepted}
@@ -484,28 +490,29 @@ export function RegistrationForm() {
               <div className="flex-1">
                 <Label
                   htmlFor="consent"
-                  className="text-sm font-normal cursor-pointer leading-relaxed text-foreground"
+                  className="cursor-pointer text-sm font-normal leading-relaxed text-foreground"
                 >
                   Jeg har lest og aksepterer{' '}
                   <Link
                     href="/vilkar"
                     target="_blank"
-                    className="text-accent hover:text-accent/90 hover:underline font-medium underline"
+                    className="font-medium text-accent underline hover:text-accent/90 hover:underline"
                   >
                     vilkårene for bruk
-                  </Link>
-                  {' '}og{' '}
+                  </Link>{' '}
+                  og{' '}
                   <Link
                     href="/personvern"
                     target="_blank"
-                    className="text-accent hover:text-accent/90 hover:underline font-medium underline"
+                    className="font-medium text-accent underline hover:text-accent/90 hover:underline"
                   >
                     personvernerklæringen
                   </Link>
-                  . Jeg samtykker til at mine opplysninger behandles i henhold til personvernerklæringen.
-                  {' '}
-                  <span className="block mt-2">
-                    Premier vil bli utlevert i starten av desember. Arrangøren fratar ansvar fra at utlevering kan ta lengre tid.
+                  . Jeg samtykker til at mine opplysninger behandles i henhold til
+                  personvernerklæringen.{' '}
+                  <span className="mt-2 block">
+                    Premier vil bli utlevert i starten av desember. Arrangøren fratar ansvar fra at
+                    utlevering kan ta lengre tid.
                   </span>
                 </Label>
               </div>

@@ -1,5 +1,5 @@
-import sharp from 'sharp'
-import { createHash } from 'crypto'
+import sharp from 'sharp';
+import { createHash } from 'crypto';
 
 /**
  * File validation utilities for secure image uploads
@@ -12,18 +12,18 @@ export const FILE_CONSTRAINTS = {
   ALLOWED_FORMATS: ['jpeg', 'jpg', 'png', 'webp', 'heic', 'heif'] as const,
   OUTPUT_FORMAT: 'jpeg' as const,
   OUTPUT_QUALITY: 90,
-}
+};
 
 export interface FileValidationResult {
-  success: boolean
-  error?: string
-  buffer?: Buffer
+  success: boolean;
+  error?: string;
+  buffer?: Buffer;
   metadata?: {
-    width: number
-    height: number
-    format: string
-    size: number
-  }
+    width: number;
+    height: number;
+    format: string;
+    size: number;
+  };
 }
 
 /**
@@ -36,74 +36,79 @@ export interface FileValidationResult {
 export async function validateAndSanitizeImage(
   fileData: string,
   options?: {
-    maxSize?: number
-    maxDimension?: number
+    maxSize?: number;
+    maxDimension?: number;
   }
 ): Promise<FileValidationResult> {
   try {
     // 1. Parse base64 data
-    const base64Match = fileData.match(/^data:([^;]+);base64,(.+)$/)
+    const base64Match = fileData.match(/^data:([^;]+);base64,(.+)$/);
     if (!base64Match) {
       return {
         success: false,
         error: 'Ugyldig filformat. Last opp et bilde (JPEG, PNG, eller WebP).',
-      }
+      };
     }
 
-    const [, , base64Data] = base64Match
-    const buffer = Buffer.from(base64Data, 'base64')
+    const [, , base64Data] = base64Match;
+    const buffer = Buffer.from(base64Data, 'base64');
 
     // 2. Validate file size BEFORE processing
-    const maxSize = options?.maxSize ?? FILE_CONSTRAINTS.MAX_SIZE
+    const maxSize = options?.maxSize ?? FILE_CONSTRAINTS.MAX_SIZE;
     if (buffer.length > maxSize) {
-      const sizeMB = (buffer.length / 1024 / 1024).toFixed(1)
-      const maxSizeMB = (maxSize / 1024 / 1024).toFixed(0)
+      const sizeMB = (buffer.length / 1024 / 1024).toFixed(1);
+      const maxSizeMB = (maxSize / 1024 / 1024).toFixed(0);
       return {
         success: false,
         error: `Filen er for stor: ${sizeMB}MB (maks ${maxSizeMB}MB)`,
-      }
+      };
     }
 
     if (buffer.length < FILE_CONSTRAINTS.MIN_SIZE) {
       return {
         success: false,
         error: 'Filen er for liten eller korrupt.',
-      }
+      };
     }
 
     // 3. Verify it's actually an image using sharp (validates magic bytes)
-    let metadata: sharp.Metadata
+    let metadata: sharp.Metadata;
     try {
-      metadata = await sharp(buffer).metadata()
+      metadata = await sharp(buffer).metadata();
     } catch {
       return {
         success: false,
         error: 'Ugyldig bildefil. Filen ser ikke ut til å være et gyldig bilde.',
-      }
+      };
     }
 
     // 4. Validate image format (reject SVG and other potentially dangerous formats)
-    if (!metadata.format || !FILE_CONSTRAINTS.ALLOWED_FORMATS.includes(metadata.format as (typeof FILE_CONSTRAINTS.ALLOWED_FORMATS)[number])) {
+    if (
+      !metadata.format ||
+      !FILE_CONSTRAINTS.ALLOWED_FORMATS.includes(
+        metadata.format as (typeof FILE_CONSTRAINTS.ALLOWED_FORMATS)[number]
+      )
+    ) {
       return {
         success: false,
         error: `Ugyldig format: ${metadata.format}. Kun JPEG, PNG, og WebP er tillatt.`,
-      }
+      };
     }
 
     // 5. Validate image dimensions
-    const maxDimension = options?.maxDimension ?? FILE_CONSTRAINTS.MAX_DIMENSION
+    const maxDimension = options?.maxDimension ?? FILE_CONSTRAINTS.MAX_DIMENSION;
     if (!metadata.width || !metadata.height) {
       return {
         success: false,
         error: 'Kan ikke lese bildedimensjoner.',
-      }
+      };
     }
 
     if (metadata.width > maxDimension || metadata.height > maxDimension) {
       return {
         success: false,
         error: `Bildet er for stort: ${metadata.width}x${metadata.height}px (maks ${maxDimension}px)`,
-      }
+      };
     }
 
     // 6. Re-encode image to strip EXIF metadata and ensure safety
@@ -118,7 +123,7 @@ export async function validateAndSanitizeImage(
         quality: FILE_CONSTRAINTS.OUTPUT_QUALITY,
         mozjpeg: true, // Better compression
       })
-      .toBuffer()
+      .toBuffer();
 
     return {
       success: true,
@@ -129,13 +134,13 @@ export async function validateAndSanitizeImage(
         format: metadata.format,
         size: safeBuffer.length,
       },
-    }
+    };
   } catch (error) {
-    console.error('[File Validation] Unexpected error:', error)
+    console.error('[File Validation] Unexpected error:', error);
     return {
       success: false,
       error: 'Kunne ikke behandle bildefilen. Prøv et annet bilde.',
-    }
+    };
   }
 }
 
@@ -150,9 +155,9 @@ export function generateSecureFilename(
   participantId: string,
   extension: string = 'jpg'
 ): string {
-  const hash = createHash('sha256').update(buffer).digest('hex').slice(0, 16)
-  const timestamp = Date.now()
-  return `${participantId}-${timestamp}-${hash}.${extension}`
+  const hash = createHash('sha256').update(buffer).digest('hex').slice(0, 16);
+  const timestamp = Date.now();
+  return `${participantId}-${timestamp}-${hash}.${extension}`;
 }
 
 /**
@@ -167,8 +172,8 @@ export function isValidMimeType(mimeType: string): boolean {
     'image/webp',
     'image/heic',
     'image/heif',
-  ]
-  return validMimeTypes.includes(mimeType.toLowerCase())
+  ];
+  return validMimeTypes.includes(mimeType.toLowerCase());
 }
 
 /**
@@ -177,6 +182,6 @@ export function isValidMimeType(mimeType: string): boolean {
  */
 export function estimateProcessingTime(fileSizeBytes: number): number {
   // Rough estimate: 1MB = 1 second processing time
-  const estimatedSeconds = Math.ceil(fileSizeBytes / (1024 * 1024))
-  return Math.min(estimatedSeconds * 1000, 30000) // Max 30 seconds
+  const estimatedSeconds = Math.ceil(fileSizeBytes / (1024 * 1024));
+  return Math.min(estimatedSeconds * 1000, 30000); // Max 30 seconds
 }

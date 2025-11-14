@@ -1,16 +1,19 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react'
-import Image from 'next/image'
-import { X, ChevronLeft, ChevronRight, Heart, MessageCircle } from 'lucide-react'
-import { CompletionWithParticipant, PhotoCommentWithParticipant } from '@/app/_shared/lib/types/database'
-import { Button } from '@/app/_shared/components/ui/button'
-import { useKeyboardNav } from './use-keyboard-nav'
-import { cn } from '@/app/_shared/lib/utils/cn'
-import { CommentList } from './comments/comment-list'
-import { getComments } from '@/app/actions/comments'
-import { ShareButton } from './share-button'
-import { createPhotoShareData } from '@/app/_shared/lib/utils/share'
+import { useState, useEffect, useRef, useCallback } from 'react';
+import Image from 'next/image';
+import { X, ChevronLeft, ChevronRight, Heart, MessageCircle } from 'lucide-react';
+import {
+  CompletionWithParticipant,
+  PhotoCommentWithParticipant,
+} from '@/app/_shared/lib/types/database';
+import { Button } from '@/app/_shared/components/ui/button';
+import { useKeyboardNav } from './use-keyboard-nav';
+import { cn } from '@/app/_shared/lib/utils/cn';
+import { CommentList } from './comments/comment-list';
+import { getComments } from '@/app/actions/comments';
+import { ShareButton } from './share-button';
+import { createPhotoShareData } from '@/app/_shared/lib/utils/share';
 
 // Extended type for backward compatibility with photo_url
 type CompletionWithPhotoUrl = CompletionWithParticipant & {
@@ -18,17 +21,17 @@ type CompletionWithPhotoUrl = CompletionWithParticipant & {
 };
 
 interface ImageViewerDialogProps {
-  isOpen: boolean
-  onClose: () => void
-  completion: CompletionWithPhotoUrl
-  currentIndex: number
-  onNavigate: (direction: 'prev' | 'next') => void
-  onVote: (completionId: string) => Promise<void>
-  userVoteIds: string[]
-  totalImages: number
-  currentParticipantId: string | null
-  isLoggedIn: boolean
-  openWithComments?: boolean
+  isOpen: boolean;
+  onClose: () => void;
+  completion: CompletionWithPhotoUrl;
+  currentIndex: number;
+  onNavigate: (direction: 'prev' | 'next') => void;
+  onVote: (completionId: string) => Promise<void>;
+  userVoteIds: string[];
+  totalImages: number;
+  currentParticipantId: string | null;
+  isLoggedIn: boolean;
+  openWithComments?: boolean;
 }
 
 export function ImageViewerDialog({
@@ -44,127 +47,127 @@ export function ImageViewerDialog({
   isLoggedIn,
   openWithComments = false,
 }: ImageViewerDialogProps) {
-  const [imageLoaded, setImageLoaded] = useState(false)
-  const [isVoting, setIsVoting] = useState(false)
-  const [touchStart, setTouchStart] = useState<number | null>(null)
-  const [touchEnd, setTouchEnd] = useState<number | null>(null)
-  const [showComments, setShowComments] = useState(openWithComments)
-  const [comments, setComments] = useState<PhotoCommentWithParticipant[]>([])
-  const [commentsLoading, setCommentsLoading] = useState(false)
-  const imageRef = useRef<HTMLDivElement>(null)
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [isVoting, setIsVoting] = useState(false);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [showComments, setShowComments] = useState(openWithComments);
+  const [comments, setComments] = useState<PhotoCommentWithParticipant[]>([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const imageRef = useRef<HTMLDivElement>(null);
 
-  const hasVoted = userVoteIds.includes(completion.id)
-  const isFirstImage = currentIndex === 0
-  const isLastImage = currentIndex === totalImages - 1
+  const hasVoted = userVoteIds.includes(completion.id);
+  const isFirstImage = currentIndex === 0;
+  const isLastImage = currentIndex === totalImages - 1;
 
   // Minimum swipe distance (in px)
-  const minSwipeDistance = 50
+  const minSwipeDistance = 50;
 
   // Reset image loaded state when completion changes
   useEffect(() => {
-    setImageLoaded(false)
-    setShowComments(openWithComments)
-    setComments([])
-  }, [completion.id, openWithComments])
+    setImageLoaded(false);
+    setShowComments(openWithComments);
+    setComments([]);
+  }, [completion.id, openWithComments]);
 
   // Load comments when comments section is opened
   useEffect(() => {
-    if (!showComments || comments.length > 0) return
+    if (!showComments || comments.length > 0) return;
 
     const loadComments = async () => {
-      setCommentsLoading(true)
+      setCommentsLoading(true);
       try {
-        const result = await getComments(completion.id)
+        const result = await getComments(completion.id);
         if (result.success && result.data) {
-          setComments(result.data)
+          setComments(result.data);
         }
       } catch (error) {
-        console.error('Error loading comments:', error)
+        console.error('Error loading comments:', error);
       } finally {
-        setCommentsLoading(false)
+        setCommentsLoading(false);
       }
-    }
+    };
 
-    loadComments()
-  }, [showComments, completion.id, comments.length])
+    loadComments();
+  }, [showComments, completion.id, comments.length]);
 
   // Preload adjacent images for better UX
   useEffect(() => {
-    if (!isOpen) return
+    if (!isOpen) return;
 
     // We would need the adjacent completions passed as props to preload them
     // For now, we'll just rely on browser caching
-  }, [isOpen, currentIndex])
+  }, [isOpen, currentIndex]);
 
   // Handle keyboard navigation
   const handlePrevious = useCallback(() => {
     if (!isFirstImage) {
-      onNavigate('prev')
+      onNavigate('prev');
     }
-  }, [isFirstImage, onNavigate])
+  }, [isFirstImage, onNavigate]);
 
   const handleNext = useCallback(() => {
     if (!isLastImage) {
-      onNavigate('next')
+      onNavigate('next');
     }
-  }, [isLastImage, onNavigate])
+  }, [isLastImage, onNavigate]);
 
   useKeyboardNav({
     enabled: isOpen,
     onPrevious: handlePrevious,
     onNext: handleNext,
     onClose,
-  })
+  });
 
   // Handle touch gestures for mobile
   const onTouchStart = (e: React.TouchEvent) => {
-    setTouchEnd(null)
-    setTouchStart(e.targetTouches[0].clientX)
-  }
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
 
   const onTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX)
-  }
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
 
   const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return
+    if (!touchStart || !touchEnd) return;
 
-    const distance = touchStart - touchEnd
-    const isLeftSwipe = distance > minSwipeDistance
-    const isRightSwipe = distance < -minSwipeDistance
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
 
     if (isLeftSwipe && !isLastImage) {
-      onNavigate('next')
+      onNavigate('next');
     } else if (isRightSwipe && !isFirstImage) {
-      onNavigate('prev')
+      onNavigate('prev');
     }
-  }
+  };
 
   const handleVote = async () => {
-    if (isVoting) return
+    if (isVoting) return;
 
-    setIsVoting(true)
+    setIsVoting(true);
     try {
-      await onVote(completion.id)
+      await onVote(completion.id);
     } finally {
-      setIsVoting(false)
+      setIsVoting(false);
     }
-  }
+  };
 
   // Lock body scroll when dialog is open
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden'
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = 'unset'
+      document.body.style.overflow = 'unset';
     }
 
     return () => {
-      document.body.style.overflow = 'unset'
-    }
-  }, [isOpen])
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div
@@ -186,8 +189,8 @@ export function ImageViewerDialog({
       {/* Previous button */}
       <button
         onClick={(e) => {
-          e.stopPropagation()
-          handlePrevious()
+          e.stopPropagation();
+          handlePrevious();
         }}
         disabled={isFirstImage}
         className={cn(
@@ -203,8 +206,8 @@ export function ImageViewerDialog({
       {/* Next button */}
       <button
         onClick={(e) => {
-          e.stopPropagation()
-          handleNext()
+          e.stopPropagation();
+          handleNext();
         }}
         disabled={isLastImage}
         className={cn(
@@ -260,15 +263,13 @@ export function ImageViewerDialog({
             <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
               {/* Participant info */}
               <div className="flex-1 space-y-2 text-white">
-                <h2
-                  id="image-viewer-title"
-                  className="text-xl font-bold md:text-2xl"
-                >
+                <h2 id="image-viewer-title" className="text-xl font-bold md:text-2xl">
                   {completion.participant.full_name}
                 </h2>
                 <div className="flex flex-wrap gap-4 text-sm text-white/80">
                   <div>
-                    <span className="font-medium">Startnr:</span> {completion.participant.bib_number}
+                    <span className="font-medium">Startnr:</span>{' '}
+                    {completion.participant.bib_number}
                   </div>
                   {completion.completed_date && (
                     <div>
@@ -283,9 +284,7 @@ export function ImageViewerDialog({
                   )}
                 </div>
                 {completion.comment && (
-                  <p className="mt-2 text-sm text-white/90 md:text-base">
-                    {completion.comment}
-                  </p>
+                  <p className="mt-2 text-sm text-white/90 md:text-base">{completion.comment}</p>
                 )}
               </div>
 
@@ -325,12 +324,7 @@ export function ImageViewerDialog({
                   size="lg"
                   className="flex items-center gap-2 transition-all"
                 >
-                  <Heart
-                    className={cn(
-                      'h-5 w-5',
-                      hasVoted && 'fill-current'
-                    )}
-                  />
+                  <Heart className={cn('h-5 w-5', hasVoted && 'fill-current')} />
                   <span className="hidden sm:inline">
                     {isVoting ? 'Stemmer...' : hasVoted ? 'Fjern stemme' : 'Stem'}
                   </span>
@@ -343,7 +337,7 @@ export function ImageViewerDialog({
 
             {/* Comments section */}
             {showComments && (
-              <div 
+              <div
                 className="mt-6 max-h-[300px] overflow-y-auto rounded-lg bg-black/60 p-4 backdrop-blur-md md:max-h-[400px]"
                 onClick={(e) => e.stopPropagation()}
               >
@@ -370,5 +364,5 @@ export function ImageViewerDialog({
         Bruk piltaster eller H/L for å navigere • ESC for å lukke
       </div>
     </div>
-  )
+  );
 }

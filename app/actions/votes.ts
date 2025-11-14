@@ -1,20 +1,23 @@
-'use server'
+'use server';
 
-import { createClient } from '@/app/_shared/lib/supabase/server'
-import { revalidatePath } from 'next/cache'
+import { createClient } from '@/app/_shared/lib/supabase/server';
+import { revalidatePath } from 'next/cache';
 
 export async function togglePhotoVote(completionId: string) {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   // Check if user is logged in
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
   if (authError || !user) {
     return {
       success: false,
       error: 'Du må være logget inn for å stemme',
-      requiresAuth: true
-    }
+      requiresAuth: true,
+    };
   }
 
   // Get the voter's participant ID
@@ -22,13 +25,13 @@ export async function togglePhotoVote(completionId: string) {
     .from('participants')
     .select('id')
     .eq('user_id', user.id)
-    .single()
+    .single();
 
   if (voterError || !voter) {
     return {
       success: false,
-      error: 'Du må være registrert som deltaker for å stemme'
-    }
+      error: 'Du må være registrert som deltaker for å stemme',
+    };
   }
 
   // Check if the voter owns this completion
@@ -36,20 +39,20 @@ export async function togglePhotoVote(completionId: string) {
     .from('completions')
     .select('participant_id')
     .eq('id', completionId)
-    .single()
+    .single();
 
   if (completionError || !completion) {
     return {
       success: false,
-      error: 'Kunne ikke finne bildet'
-    }
+      error: 'Kunne ikke finne bildet',
+    };
   }
 
   if (completion.participant_id === voter.id) {
     return {
       success: false,
-      error: 'Du kan ikke stemme på ditt eget bilde'
-    }
+      error: 'Du kan ikke stemme på ditt eget bilde',
+    };
   }
 
   // Check if user has already voted for this photo
@@ -58,10 +61,10 @@ export async function togglePhotoVote(completionId: string) {
     .select('id')
     .eq('voter_id', voter.id)
     .eq('completion_id', completionId)
-    .single()
+    .single();
 
-  let hasVoted = false
-  let voteCount = 0
+  let hasVoted = false;
+  let voteCount = 0;
 
   try {
     if (existingVote) {
@@ -69,46 +72,44 @@ export async function togglePhotoVote(completionId: string) {
       const { error: deleteError } = await supabase
         .from('photo_votes')
         .delete()
-        .eq('id', existingVote.id)
+        .eq('id', existingVote.id);
 
-      if (deleteError) throw deleteError
-      hasVoted = false
+      if (deleteError) throw deleteError;
+      hasVoted = false;
     } else {
       // Add the vote
-      const { error: insertError } = await supabase
-        .from('photo_votes')
-        .insert({
-          voter_id: voter.id,
-          completion_id: completionId,
-          event_year: new Date().getFullYear()
-        })
+      const { error: insertError } = await supabase.from('photo_votes').insert({
+        voter_id: voter.id,
+        completion_id: completionId,
+        event_year: new Date().getFullYear(),
+      });
 
-      if (insertError) throw insertError
-      hasVoted = true
+      if (insertError) throw insertError;
+      hasVoted = true;
     }
 
     // Get updated vote count
     const { count } = await supabase
       .from('photo_votes')
       .select('*', { count: 'exact', head: true })
-      .eq('completion_id', completionId)
+      .eq('completion_id', completionId);
 
-    voteCount = count || 0
+    voteCount = count || 0;
 
     // Revalidate relevant paths
-    revalidatePath('/galleri')
-    revalidatePath('/deltakere')
+    revalidatePath('/galleri');
+    revalidatePath('/deltakere');
 
     return {
       success: true,
       hasVoted,
-      voteCount
-    }
+      voteCount,
+    };
   } catch (error) {
-    console.error('Error toggling vote:', error)
+    console.error('Error toggling vote:', error);
     return {
       success: false,
-      error: 'Kunne ikke oppdatere stemme'
-    }
+      error: 'Kunne ikke oppdatere stemme',
+    };
   }
 }

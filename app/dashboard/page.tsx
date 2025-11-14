@@ -10,7 +10,10 @@ export default async function DashboardPage() {
   const supabase = await createClient();
 
   // Check if user is authenticated
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
   if (authError || !user) {
     redirect('/login');
@@ -42,11 +45,11 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-16 max-w-4xl">
+    <div className="container mx-auto max-w-4xl px-4 py-16">
       {/* Header */}
-      <div className="flex justify-between items-start mb-8">
+      <div className="mb-8 flex items-start justify-between">
         <div>
-          <h1 className="text-4xl font-bold mb-2">
+          <h1 className="mb-2 text-4xl font-bold">
             <span className="md:hidden">Dashboard</span>
             <span className="hidden md:inline">Min Side</span>
           </h1>
@@ -64,21 +67,21 @@ export default async function DashboardPage() {
         {/* Mobile view - single card */}
         <Card className="md:hidden">
           <CardHeader className="p-4">
-            <div className="flex justify-between items-start">
-              <div className="text-center flex-1">
-                <CardDescription className="text-xs mb-1">Startnummer</CardDescription>
-                <CardTitle className="text-2xl text-accent">
-                  #{participant.bib_number}
-                </CardTitle>
+            <div className="flex items-start justify-between">
+              <div className="flex-1 text-center">
+                <CardDescription className="mb-1 text-xs">Startnummer</CardDescription>
+                <CardTitle className="text-2xl text-accent">#{participant.bib_number}</CardTitle>
               </div>
-              <div className="text-center flex-1">
-                <CardDescription className="text-xs mb-1">Status</CardDescription>
-                <CardTitle className={`text-2xl ${participant.has_completed ? 'text-accent' : 'text-muted-foreground'}`}>
+              <div className="flex-1 text-center">
+                <CardDescription className="mb-1 text-xs">Status</CardDescription>
+                <CardTitle
+                  className={`text-2xl ${participant.has_completed ? 'text-accent' : 'text-muted-foreground'}`}
+                >
                   {participant.has_completed ? '✓' : '✗'}
                 </CardTitle>
               </div>
-              <div className="text-center flex-1">
-                <CardDescription className="text-xs mb-1">Stemmer</CardDescription>
+              <div className="flex-1 text-center">
+                <CardDescription className="mb-1 text-xs">Stemmer</CardDescription>
                 <CardTitle className="text-2xl text-accent">
                   {completion?.vote_count || 0}
                 </CardTitle>
@@ -88,20 +91,20 @@ export default async function DashboardPage() {
         </Card>
 
         {/* Desktop view - three separate cards */}
-        <div className="hidden md:grid md:grid-cols-3 gap-6">
+        <div className="hidden gap-6 md:grid md:grid-cols-3">
           <Card>
             <CardHeader>
               <CardDescription>Startnummer</CardDescription>
-              <CardTitle className="text-4xl text-accent">
-                {participant.bib_number}
-              </CardTitle>
+              <CardTitle className="text-4xl text-accent">{participant.bib_number}</CardTitle>
             </CardHeader>
           </Card>
 
           <Card>
             <CardHeader>
               <CardDescription>Status</CardDescription>
-              <CardTitle className={`text-4xl ${participant.has_completed ? 'text-accent' : 'text-muted-foreground'}`}>
+              <CardTitle
+                className={`text-4xl ${participant.has_completed ? 'text-accent' : 'text-muted-foreground'}`}
+              >
                 {participant.has_completed ? '✓' : '✗'}
               </CardTitle>
             </CardHeader>
@@ -110,9 +113,7 @@ export default async function DashboardPage() {
           <Card>
             <CardHeader>
               <CardDescription>Stemmer</CardDescription>
-              <CardTitle className="text-4xl text-accent">
-                {completion?.vote_count || 0}
-              </CardTitle>
+              <CardTitle className="text-4xl text-accent">{completion?.vote_count || 0}</CardTitle>
             </CardHeader>
           </Card>
         </div>
@@ -121,15 +122,17 @@ export default async function DashboardPage() {
       {/* Main Content */}
       {completion && completion.id && completion.participant_id ? (
         <div className="space-y-6">
-          <CompletionDisplayMulti completion={{
-            id: completion.id,
-            participant_id: completion.participant_id,
-            completed_date: completion.completed_date || completion.created_at || '',
-            duration_text: completion.duration_text,
-            comment: completion.comment,
-            vote_count: completion.vote_count || 0,
-            image_count: completion.image_count || 0,
-          }} />
+          <CompletionDisplayMulti
+            completion={{
+              id: completion.id,
+              participant_id: completion.participant_id,
+              completed_date: completion.completed_date || completion.created_at || '',
+              duration_text: completion.duration_text,
+              comment: completion.comment,
+              vote_count: completion.vote_count || 0,
+              image_count: completion.image_count || 0,
+            }}
+          />
 
           <div className="flex gap-4">
             <Button asChild className="flex-1">

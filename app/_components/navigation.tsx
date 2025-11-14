@@ -29,21 +29,33 @@ export function Navigation({ isAuthenticated = false }: NavigationProps) {
   };
 
   return (
-    <nav className="border-b border-border/50 backdrop-blur-lg bg-background/80 sticky top-0 z-50">
+    <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <Link href={getUrlWithYear("/")} className="font-bold text-xl text-foreground hover:text-accent transition-colors hidden md:block">
+        <div className="flex h-16 items-center justify-between">
+          <Link
+            href={getUrlWithYear('/')}
+            className="hidden text-xl font-bold text-foreground transition-colors hover:text-accent md:block"
+          >
             Barteløpet
           </Link>
 
-          <div className="hidden md:flex items-center gap-8">
-            <Link href={getUrlWithYear("/galleri")} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <div className="hidden items-center gap-8 md:flex">
+            <Link
+              href={getUrlWithYear('/galleri')}
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
               Galleri
             </Link>
-            <Link href={getUrlWithYear("/deltakere")} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href={getUrlWithYear('/deltakere')}
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
               Deltakere
             </Link>
-            <Link href="/premier" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href="/premier"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
               Premier
             </Link>
 
@@ -55,7 +67,10 @@ export function Navigation({ isAuthenticated = false }: NavigationProps) {
               </Button>
             ) : (
               <>
-                <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  href="/login"
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
                   Logg inn
                 </Link>
                 <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
@@ -66,32 +81,55 @@ export function Navigation({ isAuthenticated = false }: NavigationProps) {
           </div>
 
           {/* Mobile menu - home icon only on left */}
-          <Link href={getUrlWithYear("/")} className="md:hidden text-muted-foreground hover:text-foreground transition-colors">
+          <Link
+            href={getUrlWithYear('/')}
+            className="text-muted-foreground transition-colors hover:text-foreground md:hidden"
+          >
             <Home size={18} />
           </Link>
 
           {/* Mobile menu - all other links on right */}
-          <div className="md:hidden flex items-center gap-2">
-            <Link href={getUrlWithYear("/galleri")} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+          <div className="flex items-center gap-2 md:hidden">
+            <Link
+              href={getUrlWithYear('/galleri')}
+              className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+            >
               Galleri
             </Link>
-            <Link href={getUrlWithYear("/deltakere")} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href={getUrlWithYear('/deltakere')}
+              className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+            >
               Deltakere
             </Link>
-            <Link href="/premier" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href="/premier"
+              className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+            >
               Premier
             </Link>
             {showYearSelector && <YearSelector variant="compact" />}
             {isAuthenticated ? (
-              <Button asChild size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 h-7 px-2 text-xs">
+              <Button
+                asChild
+                size="sm"
+                className="h-7 bg-accent px-2 text-xs text-accent-foreground hover:bg-accent/90"
+              >
                 <Link href="/dashboard">Dashboard</Link>
               </Button>
             ) : (
               <>
-                <Link href="/login" className="text-xs text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">
+                <Link
+                  href="/login"
+                  className="whitespace-nowrap text-xs text-muted-foreground transition-colors hover:text-foreground"
+                >
                   Logg inn
                 </Link>
-                <Button asChild size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 h-7 px-2 text-xs">
+                <Button
+                  asChild
+                  size="sm"
+                  className="h-7 bg-accent px-2 text-xs text-accent-foreground hover:bg-accent/90"
+                >
                   <Link href="/pamelding">Påmelding</Link>
                 </Button>
               </>

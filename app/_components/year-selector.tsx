@@ -57,12 +57,10 @@ export function YearSelector({ variant = 'default', className = '' }: YearSelect
               onClick={() => setSelectedYear(year)}
               className={isSelected ? 'bg-accent/10' : ''}
             >
-              <div className="flex items-center justify-between w-full">
-                <span className={isSelected ? 'font-semibold' : ''}>
-                  {year}
-                </span>
+              <div className="flex w-full items-center justify-between">
+                <span className={isSelected ? 'font-semibold' : ''}>{year}</span>
                 {isCurrent && (
-                  <span className="text-xs bg-accent/20 text-accent px-2 py-0.5 rounded-full">
+                  <span className="rounded-full bg-accent/20 px-2 py-0.5 text-xs text-accent">
                     Nåværende
                   </span>
                 )}
@@ -95,15 +93,11 @@ export function YearTabs({ className = '' }: { className?: string }) {
           <button
             key={year}
             onClick={() => setSelectedYear(year)}
-            className={`
-              px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap
-              transition-colors
-              ${
-                isSelected
-                  ? 'bg-accent text-accent-foreground'
-                  : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-              }
-            `}
+            className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+              isSelected
+                ? 'bg-accent text-accent-foreground'
+                : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+            } `}
           >
             {year}
           </button>

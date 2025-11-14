@@ -4,27 +4,19 @@ export type {
   ParticipantCreate,
   ParticipantUpdate,
   ParticipantPublic,
-  ParticipantHistory
+  ParticipantHistory,
 } from './participant';
 
 export type {
   Completion,
   CompletionCreate,
   CompletionUpdate,
-  CompletionWithParticipant
+  CompletionWithParticipant,
 } from './completion';
 
-export type {
-  Vote,
-  VoteCreate,
-  VoteStats
-} from './vote';
+export type { Vote, VoteCreate, VoteStats } from './vote';
 
-export type {
-  PhotoComment,
-  PhotoCommentCreate,
-  PhotoCommentUpdate
-} from './comment';
+export type { PhotoComment, PhotoCommentCreate, PhotoCommentUpdate } from './comment';
 
 export type {
   ApiResponse,
@@ -32,11 +24,7 @@ export type {
   ApiMeta,
   PaginatedResponse,
   ParticipantStatsResponse,
-  LeaderboardResponse
+  LeaderboardResponse,
 } from './api';
 
-export type {
-  FormState,
-  UploadState,
-  ToastState
-} from './ui';
+export type { FormState, UploadState, ToastState } from './ui';

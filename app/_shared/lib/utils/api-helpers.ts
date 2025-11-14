@@ -59,7 +59,10 @@ export function validateYear(year: number): NextResponse | null {
  * @param supabase Supabase client instance
  * @returns Promise<NextResponse | null> NextResponse with error if not allowed, null if allowed
  */
-export async function checkEditPermission(year: number, supabase: SupabaseClient<Database>): Promise<NextResponse | null> {
+export async function checkEditPermission(
+  year: number,
+  supabase: SupabaseClient<Database>
+): Promise<NextResponse | null> {
   const currentYear = getCurrentEventYear();
 
   if (year !== currentYear) {
@@ -172,10 +175,7 @@ export function getPaginationParams(searchParams: URLSearchParams): {
   to: number;
 } {
   const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
-  const perPage = Math.min(
-    100,
-    Math.max(1, parseInt(searchParams.get('per_page') || '20', 10))
-  );
+  const perPage = Math.min(100, Math.max(1, parseInt(searchParams.get('per_page') || '20', 10)));
 
   const from = (page - 1) * perPage;
   const to = from + perPage - 1;
@@ -259,7 +259,12 @@ export function validateRequiredFields(
 export function isSupabaseError(
   error: unknown
 ): error is { code: string; message: string; details?: string } {
-  return typeof error === 'object' && error !== null && 'code' in error && typeof (error as { code: unknown }).code === 'string';
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    typeof (error as { code: unknown }).code === 'string'
+  );
 }
 
 /**
@@ -281,11 +286,7 @@ export function handleSupabaseError(error: unknown): NextResponse {
       case 'PGRST116': // No rows returned
         return errorResponse('Fant ikke ressurs', undefined, 404);
       default:
-        return errorResponse(
-          'Database feil',
-          { code: error.code, message: error.message },
-          500
-        );
+        return errorResponse('Database feil', { code: error.code, message: error.message }, 500);
     }
   }
 

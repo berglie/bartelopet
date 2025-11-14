@@ -85,7 +85,8 @@ const SPONSORS_DATA: GroupedSponsors = {
       id: '23',
       name: 'Brødrene Pedersen',
       category: 'merchandise',
-      website_url: 'https://www.designforevig.no/butikker/brodrenepedersen/brodrenepedersenbreigata/',
+      website_url:
+        'https://www.designforevig.no/butikker/brodrenepedersen/brodrenepedersenbreigata/',
       logo_url: '/images/sponsors/brodrene-pedersen.svg',
       contribution: '- Valbergtårnet lyshus\n- Domkirken lyshus',
     },
@@ -236,58 +237,51 @@ export function PremierClient() {
       {/* Hero Section */}
       <section className="relative overflow-hidden border-b border-border/50">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/5" />
-        <div className="container mx-auto px-4 py-16 md:py-20 relative">
-          <div className="max-w-3xl mx-auto text-center space-y-4">
+        <div className="container relative mx-auto px-4 py-16 md:py-20">
+          <div className="mx-auto max-w-3xl space-y-4 text-center">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/30 px-4 py-2 rounded-full">
+            <div className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-4 py-2">
               <Heart className="h-4 w-4 text-accent" />
-              <span className="text-sm font-medium text-accent">
-                Premier og bidrag
-              </span>
+              <span className="text-sm font-medium text-accent">Premier og bidrag</span>
             </div>
 
             {/* Title */}
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground">
-              Premier og bidrag
-            </h1>
+            <h1 className="text-4xl font-bold text-foreground md:text-5xl">Premier og bidrag</h1>
 
             {/* Description */}
-            <p className="text-base md:text-lg text-muted-foreground">
-              Disse bedriftene bidrar til å gjøre Barteløpet mulig og støtter
-              Mental Helse Ungdom
+            <p className="text-base text-muted-foreground md:text-lg">
+              Disse bedriftene bidrar til å gjøre Barteløpet mulig og støtter Mental Helse Ungdom
             </p>
           </div>
         </div>
       </section>
 
       {/* Premier Section */}
-      <section className="py-12 md:py-20 border-b border-border/50">
+      <section className="border-b border-border/50 py-12 md:py-20">
         <div className="container mx-auto px-4">
-          <div className="max-w-7xl mx-auto">
+          <div className="mx-auto max-w-7xl">
             {/* Section Header */}
-            <div className="space-y-3 text-center mb-12">
-              <div className="flex items-center gap-3 justify-center">
+            <div className="mb-12 space-y-3 text-center">
+              <div className="flex items-center justify-center gap-3">
                 <div className="flex-shrink-0 text-accent">
                   <Gift className="h-6 w-6" />
                 </div>
-                <h2 className="text-2xl md:text-3xl font-bold text-foreground">
-                  Premier
-                </h2>
+                <h2 className="text-2xl font-bold text-foreground md:text-3xl">Premier</h2>
               </div>
-              <p className="text-sm md:text-base text-muted-foreground">
+              <p className="text-sm text-muted-foreground md:text-base">
                 Bedrifter som bidrar med premier og reklameartikler
               </p>
             </div>
 
             {/* Trophy Showcase */}
-            <div className="max-w-3xl mx-auto mb-12">
-              <div className="rounded-lg border text-card-foreground shadow-sm bg-card/50 border-accent/30 backdrop-blur relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-40 h-40 bg-accent/10 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 left-0 w-40 h-40 bg-accent/10 rounded-full blur-3xl" />
-                <div className="p-6 md:p-8 relative">
-                  <div className="grid md:grid-cols-2 gap-6 items-center">
+            <div className="mx-auto mb-12 max-w-3xl">
+              <div className="relative overflow-hidden rounded-lg border border-accent/30 bg-card/50 text-card-foreground shadow-sm backdrop-blur">
+                <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-accent/10 blur-3xl" />
+                <div className="absolute bottom-0 left-0 h-40 w-40 rounded-full bg-accent/10 blur-3xl" />
+                <div className="relative p-6 md:p-8">
+                  <div className="grid items-center gap-6 md:grid-cols-2">
                     {/* Trophy Image */}
-                    <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden border-2 border-accent/20">
+                    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg border-2 border-accent/20">
                       <NextImage
                         src="/images/pokal-prototype.jpg"
                         alt="Barteløpet pokal prototype - eksklusiv pokal til alle deltakere"
@@ -299,19 +293,23 @@ export function PremierClient() {
                     </div>
                     {/* Trophy Info */}
                     <div className="space-y-4 text-center md:text-left">
-                      <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/30 px-4 py-2 rounded-full">
+                      <div className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-4 py-2">
                         <Trophy className="h-4 w-4 text-accent" />
                         <span className="text-sm font-medium text-accent">Pokal-prototype</span>
                       </div>
-                      <h3 className="text-2xl md:text-3xl font-bold text-foreground">
+                      <h3 className="text-2xl font-bold text-foreground md:text-3xl">
                         Prototype av pokalen!
                       </h3>
                       <p className="text-base text-muted-foreground">
-                        Vi har fått laget en prototype av pokalen! 🏆 Den ferdige pokalen vil se enda bedre ut. Alle som fullfører Barteløpet får denne eksklusive pokalen levert hjem 🎉
-                        <br /><br />
-                        Pokalen er produsert av <strong>Metallteknikk AS</strong>, vår hovedsponsor for pokaler.
+                        Vi har fått laget en prototype av pokalen! 🏆 Den ferdige pokalen vil se
+                        enda bedre ut. Alle som fullfører Barteløpet får denne eksklusive pokalen
+                        levert hjem 🎉
+                        <br />
+                        <br />
+                        Pokalen er produsert av <strong>Metallteknikk AS</strong>, vår hovedsponsor
+                        for pokaler.
                       </p>
-                      <div className="text-sm text-muted-foreground italic">
+                      <div className="text-sm italic text-muted-foreground">
                         Pokal leveres etter at løpet er fullført og verifisert
                       </div>
                     </div>
@@ -322,7 +320,7 @@ export function PremierClient() {
 
             {/* First Sponsor (Pokal) - Centered */}
             {SPONSORS_DATA.merchandise.length > 0 && (
-              <div className="flex justify-center mb-8">
+              <div className="mb-8 flex justify-center">
                 <div className="w-full max-w-sm">
                   <SponsorCard sponsor={SPONSORS_DATA.merchandise[0]} priority />
                 </div>
@@ -330,7 +328,7 @@ export function PremierClient() {
             )}
 
             {/* Remaining Sponsors Grid - 4 columns on desktop */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
               {SPONSORS_DATA.merchandise.slice(1).map((sponsor) => (
                 <SponsorCard key={sponsor.id} sponsor={sponsor} />
               ))}
@@ -340,26 +338,24 @@ export function PremierClient() {
       </section>
 
       {/* Omtale Section */}
-      <section className="py-12 md:py-20 border-b border-border/50">
+      <section className="border-b border-border/50 py-12 md:py-20">
         <div className="container mx-auto px-4">
-          <div className="max-w-7xl mx-auto">
+          <div className="mx-auto max-w-7xl">
             {/* Section Header */}
-            <div className="space-y-3 text-center mb-12">
-              <div className="flex items-center gap-3 justify-center">
+            <div className="mb-12 space-y-3 text-center">
+              <div className="flex items-center justify-center gap-3">
                 <div className="flex-shrink-0 text-accent">
                   <Newspaper className="h-6 w-6" />
                 </div>
-                <h2 className="text-2xl md:text-3xl font-bold text-foreground">
-                  Omtale
-                </h2>
+                <h2 className="text-2xl font-bold text-foreground md:text-3xl">Omtale</h2>
               </div>
-              <p className="text-sm md:text-base text-muted-foreground">
+              <p className="text-sm text-muted-foreground md:text-base">
                 Barteløpet i media og sosiale medier
               </p>
             </div>
 
             {/* Media Mention Cards - 2 columns */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            <div className="mx-auto grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-2">
               {MEDIA_MENTIONS.map((mention) => (
                 <a
                   key={mention.id}
@@ -368,11 +364,11 @@ export function PremierClient() {
                   rel="noopener noreferrer"
                   className="block"
                 >
-                  <div className="rounded-lg border text-card-foreground shadow-sm bg-card/50 border-border/50 backdrop-blur hover:border-accent/50 transition-all h-full overflow-hidden">
+                  <div className="h-full overflow-hidden rounded-lg border border-border/50 bg-card/50 text-card-foreground shadow-sm backdrop-blur transition-all hover:border-accent/50">
                     {mention.screenshot_url ? (
-                      <div className="flex flex-col h-full">
+                      <div className="flex h-full flex-col">
                         {/* Screenshot */}
-                        <div className="relative w-full aspect-[16/9] bg-muted">
+                        <div className="relative aspect-[16/9] w-full bg-muted">
                           <NextImage
                             src={mention.screenshot_url}
                             alt={mention.title}
@@ -382,14 +378,14 @@ export function PremierClient() {
                           />
                         </div>
                         {/* Content */}
-                        <div className="p-4 md:p-6 space-y-3 flex-1 flex flex-col">
-                          <h3 className="text-lg md:text-xl font-semibold text-foreground">
+                        <div className="flex flex-1 flex-col space-y-3 p-4 md:p-6">
+                          <h3 className="text-lg font-semibold text-foreground md:text-xl">
                             {mention.title}
                           </h3>
-                          <p className="text-sm md:text-base text-muted-foreground flex-1">
+                          <p className="flex-1 text-sm text-muted-foreground md:text-base">
                             {mention.source}
                           </p>
-                          <div className="flex items-center gap-2 text-accent hover:text-accent/80 transition-colors">
+                          <div className="flex items-center gap-2 text-accent transition-colors hover:text-accent/80">
                             <span className="text-sm">Se innlegg</span>
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -411,9 +407,9 @@ export function PremierClient() {
                         </div>
                       </div>
                     ) : (
-                      <div className="p-4 md:p-6 space-y-3 text-center">
+                      <div className="space-y-3 p-4 text-center md:p-6">
                         {mention.logo_url && (
-                          <div className="relative w-full h-12 mb-2">
+                          <div className="relative mb-2 h-12 w-full">
                             <NextImage
                               src={mention.logo_url}
                               alt={`${mention.source} logo`}
@@ -423,13 +419,13 @@ export function PremierClient() {
                             />
                           </div>
                         )}
-                        <h3 className="text-lg md:text-xl font-semibold text-foreground">
+                        <h3 className="text-lg font-semibold text-foreground md:text-xl">
                           {mention.title}
                         </h3>
-                        <p className="text-sm md:text-base text-muted-foreground">
+                        <p className="text-sm text-muted-foreground md:text-base">
                           {mention.source}
                         </p>
-                        <div className="flex items-center justify-center gap-2 text-accent hover:text-accent/80 transition-colors">
+                        <div className="flex items-center justify-center gap-2 text-accent transition-colors hover:text-accent/80">
                           <span className="text-sm">Les mer</span>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -462,45 +458,38 @@ export function PremierClient() {
       {SPONSORS_DATA.donation.length > 0 && (
         <section className="py-12 md:py-20">
           <div className="container mx-auto px-4">
-            <div className="max-w-7xl mx-auto">
+            <div className="mx-auto max-w-7xl">
               {/* Section Header */}
-              <div className="space-y-3 text-center mb-12">
-                <div className="flex items-center gap-3 justify-center">
+              <div className="mb-12 space-y-3 text-center">
+                <div className="flex items-center justify-center gap-3">
                   <div className="flex-shrink-0 text-accent">
                     <Heart className="h-6 w-6" />
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-bold text-foreground">
-                    Donasjoner
-                  </h2>
+                  <h2 className="text-2xl font-bold text-foreground md:text-3xl">Donasjoner</h2>
                 </div>
-                <p className="text-sm md:text-base text-muted-foreground">
+                <p className="text-sm text-muted-foreground md:text-base">
                   Bedrifter som støtter med donasjoner
                 </p>
               </div>
 
               {/* Donation Sponsors + Spleis CTA - 3 columns */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+              <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {/* Donation Sponsors */}
                 {SPONSORS_DATA.donation.map((sponsor) => (
                   <SponsorCard key={sponsor.id} sponsor={sponsor} />
                 ))}
 
                 {/* Spleis CTA Card */}
-                <a
-                  href={SPLEIS_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block"
-                >
-                  <div className="rounded-lg border text-card-foreground shadow-sm bg-card/50 border-border/50 backdrop-blur hover:border-accent/50 transition-all h-full">
-                    <div className="p-4 md:p-6 space-y-3 text-center flex flex-col justify-center h-full">
-                      <h3 className="text-lg md:text-xl font-semibold text-foreground">
+                <a href={SPLEIS_URL} target="_blank" rel="noopener noreferrer" className="block">
+                  <div className="h-full rounded-lg border border-border/50 bg-card/50 text-card-foreground shadow-sm backdrop-blur transition-all hover:border-accent/50">
+                    <div className="flex h-full flex-col justify-center space-y-3 p-4 text-center md:p-6">
+                      <h3 className="text-lg font-semibold text-foreground md:text-xl">
                         Vil du bidra?
                       </h3>
-                      <p className="text-sm md:text-base text-muted-foreground">
+                      <p className="text-sm text-muted-foreground md:text-base">
                         Støtt Barteløpet og Mental Helse Ungdom gjennom vår spleis
                       </p>
-                      <div className="flex items-center justify-center gap-2 text-accent hover:text-accent/80 transition-colors">
+                      <div className="flex items-center justify-center gap-2 text-accent transition-colors hover:text-accent/80">
                         <span className="text-sm">Besøk spleis</span>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -531,19 +520,15 @@ export function PremierClient() {
       {/* CTA Section */}
       <section className="border-t border-border/50 py-12 md:py-16">
         <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto text-center space-y-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+          <div className="mx-auto max-w-2xl space-y-8 text-center">
+            <h2 className="text-2xl font-bold text-foreground md:text-3xl">
               Interessert i å bidra til Barteløpet?
             </h2>
-            <p className="text-base md:text-lg text-muted-foreground">
-              Vi setter stor pris på alle bidrag som hjelper oss å støtte Mental
-              Helse Ungdom
+            <p className="text-base text-muted-foreground md:text-lg">
+              Vi setter stor pris på alle bidrag som hjelper oss å støtte Mental Helse Ungdom
             </p>
             <Link href="/kontakt">
-              <Button
-                size="lg"
-                className="gap-2 bg-accent hover:bg-accent/90 text-primary"
-              >
+              <Button size="lg" className="gap-2 bg-accent text-primary hover:bg-accent/90">
                 <Mail className="h-4 w-4" />
                 Kontakt oss
               </Button>

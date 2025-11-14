@@ -35,7 +35,9 @@ export function GalleryGrid({
   useEffect(() => {
     const fetchUser = async () => {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       setCurrentUserId(user?.id || null);
 
       // Fetch participant ID if user is logged in
@@ -63,83 +65,89 @@ export function GalleryGrid({
     setViewerOpen(false);
   }, []);
 
-  const handleNavigate = useCallback((direction: 'prev' | 'next') => {
-    setCurrentImageIndex((prev) => {
-      if (direction === 'prev') {
-        return prev > 0 ? prev - 1 : prev;
-      } else {
-        return prev < completions.length - 1 ? prev + 1 : prev;
+  const handleNavigate = useCallback(
+    (direction: 'prev' | 'next') => {
+      setCurrentImageIndex((prev) => {
+        if (direction === 'prev') {
+          return prev > 0 ? prev - 1 : prev;
+        } else {
+          return prev < completions.length - 1 ? prev + 1 : prev;
+        }
+      });
+    },
+    [completions.length]
+  );
+
+  const handleVote = useCallback(
+    async (completionId: string) => {
+      const supabase = createClient();
+
+      // Check if user is logged in
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        router.push('/login');
+        return;
       }
-    });
-  }, [completions.length]);
 
-  const handleVote = useCallback(async (completionId: string) => {
-    const supabase = createClient();
-
-    // Check if user is logged in
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      router.push('/login');
-      return;
-    }
-
-    // Get participant ID
-    const { data: currentParticipant } = await supabase
-      .from('participants')
-      .select('id')
-      .eq('user_id', user.id)
-      .single();
-
-    if (!currentParticipant) {
-      alert('Du må være registrert for å stemme');
-      return;
-    }
-
-    // Find the completion to check ownership
-    const completion = completions.find(c => c.id === completionId);
-    if (completion && currentParticipant.id === completion.participant.id) {
-      alert('Du kan ikke stemme på ditt eget bilde');
-      return;
-    }
-
-    try {
-      // Check if already voted for this completion
-      const { data: existingVote } = await supabase
-        .from('photo_votes')
+      // Get participant ID
+      const { data: currentParticipant } = await supabase
+        .from('participants')
         .select('id')
-        .eq('voter_id', currentParticipant.id)
-        .eq('completion_id', completionId)
-        .eq('event_year', completion?.event_year || 2025)
-        .maybeSingle();
+        .eq('user_id', user.id)
+        .single();
 
-      if (existingVote) {
-        // Remove vote
-        await supabase.from('photo_votes').delete().eq('id', existingVote.id);
-        setVotedIds((prev) => prev.filter((id) => id !== completionId));
-      } else {
-        // Add new vote
-        const { error } = await supabase
+      if (!currentParticipant) {
+        alert('Du må være registrert for å stemme');
+        return;
+      }
+
+      // Find the completion to check ownership
+      const completion = completions.find((c) => c.id === completionId);
+      if (completion && currentParticipant.id === completion.participant.id) {
+        alert('Du kan ikke stemme på ditt eget bilde');
+        return;
+      }
+
+      try {
+        // Check if already voted for this completion
+        const { data: existingVote } = await supabase
           .from('photo_votes')
-          .insert({
+          .select('id')
+          .eq('voter_id', currentParticipant.id)
+          .eq('completion_id', completionId)
+          .eq('event_year', completion?.event_year || 2025)
+          .maybeSingle();
+
+        if (existingVote) {
+          // Remove vote
+          await supabase.from('photo_votes').delete().eq('id', existingVote.id);
+          setVotedIds((prev) => prev.filter((id) => id !== completionId));
+        } else {
+          // Add new vote
+          const { error } = await supabase.from('photo_votes').insert({
             voter_id: currentParticipant.id,
             completion_id: completionId,
             event_year: completion?.event_year || 2025,
           });
 
-        if (error) {
-          console.error('Vote error:', error);
-          alert('Kunne ikke registrere stemme');
-        } else {
-          setVotedIds((prev) => [...prev, completionId]);
+          if (error) {
+            console.error('Vote error:', error);
+            alert('Kunne ikke registrere stemme');
+          } else {
+            setVotedIds((prev) => [...prev, completionId]);
+          }
         }
-      }
 
-      router.refresh();
-    } catch (error) {
-      console.error('Vote error:', error);
-      alert('Noe gikk galt');
-    }
-  }, [completions, router]);
+        router.refresh();
+      } catch (error) {
+        console.error('Vote error:', error);
+        alert('Noe gikk galt');
+      }
+    },
+    [completions, router]
+  );
 
   async function handleQuickVote(completionId: string, participantId: string) {
     setLoading(completionId);
@@ -147,7 +155,9 @@ export function GalleryGrid({
     const supabase = createClient();
 
     // Check if user is logged in
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       router.push('/login');
       return;
@@ -174,7 +184,7 @@ export function GalleryGrid({
     }
 
     // Find the completion to get event_year
-    const completion = completions.find(c => c.id === completionId);
+    const completion = completions.find((c) => c.id === completionId);
 
     try {
       // Check if already voted for this completion
@@ -192,13 +202,11 @@ export function GalleryGrid({
         setVotedIds((prev) => prev.filter((id) => id !== completionId));
       } else {
         // Add new vote
-        const { error } = await supabase
-          .from('photo_votes')
-          .insert({
-            voter_id: currentParticipant.id,
-            completion_id: completionId,
-            event_year: completion?.event_year || 2025,
-          });
+        const { error } = await supabase.from('photo_votes').insert({
+          voter_id: currentParticipant.id,
+          completion_id: completionId,
+          event_year: completion?.event_year || 2025,
+        });
 
         if (error) {
           console.error('Vote error:', error);
@@ -221,12 +229,12 @@ export function GalleryGrid({
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {completions.map((completion, index) => (
           <Card key={completion.id} className="overflow-hidden">
             <CardHeader className="p-0">
               <div
-                className="relative aspect-square w-full cursor-pointer group"
+                className="group relative aspect-square w-full cursor-pointer"
                 onClick={() => handleImageClick(index)}
               >
                 <Image
@@ -237,8 +245,8 @@ export function GalleryGrid({
                   sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   priority={index === 0}
                 />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                  <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity text-sm font-medium">
+                <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors group-hover:bg-black/10">
+                  <span className="text-sm font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
                     Klikk for å se større
                   </span>
                 </div>
@@ -246,7 +254,7 @@ export function GalleryGrid({
             </CardHeader>
 
             <CardContent className="p-4">
-              <div className="flex justify-between items-start mb-2">
+              <div className="mb-2 flex items-start justify-between">
                 <div>
                   <h3 className="font-semibold">{completion.participant.full_name}</h3>
                   <p className="text-sm text-muted-foreground">
@@ -255,7 +263,7 @@ export function GalleryGrid({
                 </div>
               </div>
 
-              <div className="text-sm text-muted-foreground mb-2">
+              <div className="mb-2 text-sm text-muted-foreground">
                 <p>
                   {new Date(completion.completed_date).toLocaleDateString('nb-NO')}
                   {completion.duration_text && ` · ${completion.duration_text}`}
@@ -263,14 +271,14 @@ export function GalleryGrid({
               </div>
 
               {completion.comment && (
-                <p className="text-sm mt-2 line-clamp-2">{completion.comment}</p>
+                <p className="mt-2 line-clamp-2 text-sm">{completion.comment}</p>
               )}
             </CardContent>
 
-            <CardFooter className="p-4 pt-0 flex gap-2">
+            <CardFooter className="flex gap-2 p-4 pt-0">
               <Button
                 variant={votedIds.includes(completion.id) ? 'default' : 'outline'}
-                className="flex-1 flex items-center justify-center"
+                className="flex flex-1 items-center justify-center"
                 onClick={() => handleQuickVote(completion.id, completion.participant.id)}
                 disabled={loading === completion.id}
               >

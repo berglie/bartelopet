@@ -1,17 +1,17 @@
-'use server'
+'use server';
 
-import { revalidatePath } from 'next/cache'
-import { createClient } from '@/app/_shared/lib/supabase/server'
-import type { PhotoCommentWithParticipant } from '@/app/_shared/lib/types/database'
-import { checkRateLimit } from '@/app/_shared/lib/utils/rate-limit'
-import { sanitizeSupabaseError } from '@/app/_shared/lib/utils/error-handler'
+import { revalidatePath } from 'next/cache';
+import { createClient } from '@/app/_shared/lib/supabase/server';
+import type { PhotoCommentWithParticipant } from '@/app/_shared/lib/types/database';
+import { checkRateLimit } from '@/app/_shared/lib/utils/rate-limit';
+import { sanitizeSupabaseError } from '@/app/_shared/lib/utils/error-handler';
 
 // Response type for consistent error handling
 type ActionResponse<T = void> = {
-  success: boolean
-  error?: string
-  data?: T
-}
+  success: boolean;
+  error?: string;
+  data?: T;
+};
 
 /**
  * Get the current user's participant ID
@@ -19,26 +19,29 @@ type ActionResponse<T = void> = {
  */
 export async function getCurrentParticipantId(): Promise<string | null> {
   try {
-    const supabase = await createClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return null
+      return null;
     }
 
     const { data: participant, error: participantError } = await supabase
       .from('participants')
       .select('id')
       .eq('user_id', user.id)
-      .single()
+      .single();
 
     if (participantError || !participant) {
-      return null
+      return null;
     }
 
-    return participant.id
+    return participant.id;
   } catch {
-    return null
+    return null;
   }
 }
 
@@ -51,13 +54,14 @@ export async function getComments(
   completionId: string
 ): Promise<ActionResponse<PhotoCommentWithParticipant[]>> {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Fetch comments with participant information
     // Using participants_safe view to ensure data is accessible
     const { data: comments, error } = await supabase
       .from('photo_comments')
-      .select(`
+      .select(
+        `
         id,
         completion_id,
         participant_id,
@@ -70,31 +74,32 @@ export async function getComments(
           full_name,
           bib_number
         )
-      `)
+      `
+      )
       .eq('completion_id', completionId)
-      .order('created_at', { ascending: true })
+      .order('created_at', { ascending: true });
 
     if (error) {
-      console.error('Error fetching comments:', error)
+      console.error('Error fetching comments:', error);
       return {
         success: false,
-        error: 'Kunne ikke hente kommentarer'
-      }
+        error: 'Kunne ikke hente kommentarer',
+      };
     }
 
     // Type assertion needed because Supabase doesn't know about nested types
-    const typedComments = comments as unknown as PhotoCommentWithParticipant[]
+    const typedComments = comments as unknown as PhotoCommentWithParticipant[];
 
     return {
       success: true,
-      data: typedComments
-    }
+      data: typedComments,
+    };
   } catch (error) {
-    console.error('Unexpected error in getComments:', error)
+    console.error('Unexpected error in getComments:', error);
     return {
       success: false,
-      error: 'En uventet feil oppstod'
-    }
+      error: 'En uventet feil oppstod',
+    };
   }
 }
 
@@ -109,27 +114,30 @@ export async function addComment(
   commentText: string
 ): Promise<ActionResponse<PhotoCommentWithParticipant>> {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Check authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
       return {
         success: false,
-        error: 'Du må være innlogget for å legge til kommentarer'
-      }
+        error: 'Du må være innlogget for å legge til kommentarer',
+      };
     }
 
     // Rate limiting check for comments
-    const rateLimitResult = await checkRateLimit('comment', user.id)
+    const rateLimitResult = await checkRateLimit('comment', user.id);
     if (!rateLimitResult.success) {
       return {
         success: false,
         error: `For mange kommentarer. Prøv igjen om ${Math.ceil(
           (rateLimitResult.reset - Date.now()) / 60000
         )} minutter.`,
-      }
+      };
     }
 
     // Get participant information
@@ -137,29 +145,29 @@ export async function addComment(
       .from('participants')
       .select('id')
       .eq('user_id', user.id)
-      .single()
+      .single();
 
     if (participantError || !participant) {
       return {
         success: false,
-        error: 'Du må være registrert som deltaker for å kommentere'
-      }
+        error: 'Du må være registrert som deltaker for å kommentere',
+      };
     }
 
     // Validate comment text
-    const trimmedText = commentText.trim()
+    const trimmedText = commentText.trim();
     if (!trimmedText) {
       return {
         success: false,
-        error: 'Kommentaren kan ikke være tom'
-      }
+        error: 'Kommentaren kan ikke være tom',
+      };
     }
 
     if (trimmedText.length > 500) {
       return {
         success: false,
-        error: 'Kommentaren kan ikke være lengre enn 500 tegn'
-      }
+        error: 'Kommentaren kan ikke være lengre enn 500 tegn',
+      };
     }
 
     // Verify completion exists
@@ -167,13 +175,13 @@ export async function addComment(
       .from('completions')
       .select('id')
       .eq('id', completionId)
-      .single()
+      .single();
 
     if (completionError || !completion) {
       return {
         success: false,
-        error: 'Fant ikke fullføringen'
-      }
+        error: 'Fant ikke fullføringen',
+      };
     }
 
     // Insert comment
@@ -183,9 +191,10 @@ export async function addComment(
       .insert({
         completion_id: completionId,
         participant_id: participant.id,
-        comment_text: trimmedText
+        comment_text: trimmedText,
       })
-      .select(`
+      .select(
+        `
         id,
         completion_id,
         participant_id,
@@ -198,8 +207,9 @@ export async function addComment(
           full_name,
           bib_number
         )
-      `)
-      .single()
+      `
+      )
+      .single();
 
     if (insertError) {
       return {
@@ -208,20 +218,20 @@ export async function addComment(
           location: 'addComment',
           userId: user.id,
         }),
-      }
+      };
     }
 
     // Type assertion for nested participant data
-    const typedComment = newComment as unknown as PhotoCommentWithParticipant
+    const typedComment = newComment as unknown as PhotoCommentWithParticipant;
 
     // Revalidate paths to update cache
-    revalidatePath('/galleri')
-    revalidatePath(`/galleri/${completionId}`)
+    revalidatePath('/galleri');
+    revalidatePath(`/galleri/${completionId}`);
 
     return {
       success: true,
-      data: typedComment
-    }
+      data: typedComment,
+    };
   } catch (error) {
     return {
       success: false,
@@ -229,7 +239,7 @@ export async function addComment(
         location: 'addComment:catch',
         userId: undefined,
       }),
-    }
+    };
   }
 }
 
@@ -238,20 +248,21 @@ export async function addComment(
  * @param commentId - The ID of the comment to delete
  * @returns Success or error response
  */
-export async function deleteComment(
-  commentId: string
-): Promise<ActionResponse> {
+export async function deleteComment(commentId: string): Promise<ActionResponse> {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Check authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
       return {
         success: false,
-        error: 'Du må være innlogget for å slette kommentarer'
-      }
+        error: 'Du må være innlogget for å slette kommentarer',
+      };
     }
 
     // Get participant information
@@ -259,13 +270,13 @@ export async function deleteComment(
       .from('participants')
       .select('id')
       .eq('user_id', user.id)
-      .single()
+      .single();
 
     if (participantError || !participant) {
       return {
         success: false,
-        error: 'Du må være registrert som deltaker'
-      }
+        error: 'Du må være registrert som deltaker',
+      };
     }
 
     // Get the comment to verify ownership and get completion_id
@@ -273,21 +284,21 @@ export async function deleteComment(
       .from('photo_comments')
       .select('id, participant_id, completion_id')
       .eq('id', commentId)
-      .single()
+      .single();
 
     if (commentError || !comment) {
       return {
         success: false,
-        error: 'Fant ikke kommentaren'
-      }
+        error: 'Fant ikke kommentaren',
+      };
     }
 
     // Check ownership
     if (comment.participant_id !== participant.id) {
       return {
         success: false,
-        error: 'Du kan bare slette dine egne kommentarer'
-      }
+        error: 'Du kan bare slette dine egne kommentarer',
+      };
     }
 
     // Delete the comment (RLS policy will also enforce ownership)
@@ -295,28 +306,28 @@ export async function deleteComment(
       .from('photo_comments')
       .delete()
       .eq('id', commentId)
-      .eq('participant_id', participant.id) // Extra safety check
+      .eq('participant_id', participant.id); // Extra safety check
 
     if (deleteError) {
-      console.error('Error deleting comment:', deleteError)
+      console.error('Error deleting comment:', deleteError);
       return {
         success: false,
-        error: 'Kunne ikke slette kommentaren'
-      }
+        error: 'Kunne ikke slette kommentaren',
+      };
     }
 
     // Revalidate paths to update cache
-    revalidatePath('/galleri')
-    revalidatePath(`/galleri/${comment.completion_id}`)
+    revalidatePath('/galleri');
+    revalidatePath(`/galleri/${comment.completion_id}`);
 
     return {
-      success: true
-    }
+      success: true,
+    };
   } catch (error) {
-    console.error('Unexpected error in deleteComment:', error)
+    console.error('Unexpected error in deleteComment:', error);
     return {
       success: false,
-      error: 'En uventet feil oppstod'
-    }
+      error: 'En uventet feil oppstod',
+    };
   }
 }

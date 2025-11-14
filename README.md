@@ -14,6 +14,7 @@ Bygget med Next.js 16, TypeScript og Supabase.
 Barteløpet er et årlig veldedighetsarrangement i Stavanger hvor deltakere løper en definert rute i sentrum i løpet av november. Arrangementet støtter mental helse bevissthet gjennom Movember.
 
 **Slik fungerer det:**
+
 - 🏃 Løp den definerte ruten i Stavanger sentrum når det passer deg i november
 - 📸 Last opp bilder som bevis på gjennomføring
 - 🗳️ Stem på andre deltakeres beste bilder
@@ -51,12 +52,14 @@ barteløpet/
 ## 🚀 Teknologi
 
 ### Kjerneteknologier
+
 - **Rammeverk:** [Next.js 16](https://nextjs.org/) (App Router)
 - **Språk:** [TypeScript](https://www.typescriptlang.org/) (Strict mode)
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/)
 - **UI-komponenter:** Egendefinerte komponenter + [Radix UI](https://www.radix-ui.com/)
 
 ### Backend og Database
+
 - **BaaS:** [Supabase](https://supabase.com/)
   - PostgreSQL-database
   - Autentisering (Magic links)
@@ -66,6 +69,7 @@ barteløpet/
 - **E-post:** [Resend](https://resend.com/)
 
 ### Tredjepartsintegrasjoner
+
 - **Mapbox/MapLibre:** Rutevisualisering
 - **Upstash Redis:** Rate limiting for API-endepunkter
 - **GPX Parser:** Parsing av rutefiler
@@ -82,12 +86,14 @@ barteløpet/
 ## 🛠️ Installasjon
 
 ### 1. Klon repositoryet
+
 ```bash
 git clone https://github.com/berglie/bartelopet.git
 cd bartelopet
 ```
 
 ### 2. Installer avhengigheter
+
 ```bash
 pnpm install
 # eller
@@ -97,6 +103,7 @@ npm install
 ### 3. Miljøvariabeloppsett
 
 Kopier eksempelfilen for miljøvariabler:
+
 ```bash
 cp .env.example .env.local
 ```
@@ -141,6 +148,7 @@ Se [`docs/setup/SUPABASE_SETUP.md`](docs/setup/SUPABASE_SETUP.md) for detaljerte
 ## 🚀 Utvikling
 
 ### Start utviklingsserveren
+
 ```bash
 pnpm dev
 # eller
@@ -150,6 +158,7 @@ npm run dev
 Åpne [http://localhost:3000](http://localhost:3000) i nettleseren din.
 
 ### Bygg for produksjon
+
 ```bash
 pnpm build
 # eller
@@ -157,6 +166,7 @@ npm run build
 ```
 
 ### Kjør produksjonsbygg lokalt
+
 ```bash
 pnpm start
 # eller
@@ -164,6 +174,7 @@ npm start
 ```
 
 ### Linting og typekontroll
+
 ```bash
 pnpm lint        # Kjør ESLint
 pnpm type-check  # Kjør TypeScript-typekontroll
@@ -182,6 +193,7 @@ pnpm type-check  # Kjør TypeScript-typekontroll
 ## 🗄️ Databaseskjema
 
 Viktige tabeller:
+
 - `participants` - Brukerregistreringer per år
 - `completions` - Løpsinnleveringer
 - `completion_images` - Flere bilder per innlevering
@@ -229,6 +241,7 @@ Vi setter pris på bidrag! Se [`CONTRIBUTING.md`](CONTRIBUTING.md) for retningsl
 ## 📝 Kjente problemer
 
 ### Avhengighetssårbarheter
+
 Det er kjente sårbarheter i `gpxparser`-pakken (v3.0.8) som kommer fra utdaterte avhengigheter (`jsdom`, `request`). Disse brukes kun server-side for parsing av GPX-filer og utgjør ingen direkte sikkerhetsrisiko for brukere. Vi overvåker situasjonen og vil oppdatere når en ny versjon er tilgjengelig.
 
 ## 📄 Lisens

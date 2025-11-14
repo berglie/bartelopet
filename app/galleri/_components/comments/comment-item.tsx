@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { formatDistanceToNow } from 'date-fns'
-import { nb } from 'date-fns/locale'
-import { Trash2 } from 'lucide-react'
-import { Button } from '@/app/_shared/components/ui/button'
+import { useState } from 'react';
+import { formatDistanceToNow } from 'date-fns';
+import { nb } from 'date-fns/locale';
+import { Trash2 } from 'lucide-react';
+import { Button } from '@/app/_shared/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -13,81 +13,71 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/app/_shared/components/ui/dialog'
-import { deleteComment } from '@/app/actions/comments'
-import type { PhotoCommentWithParticipant } from '@/app/_shared/lib/types/database'
+} from '@/app/_shared/components/ui/dialog';
+import { deleteComment } from '@/app/actions/comments';
+import type { PhotoCommentWithParticipant } from '@/app/_shared/lib/types/database';
 
 interface CommentItemProps {
-  comment: PhotoCommentWithParticipant
-  currentParticipantId: string | null
-  onDelete?: () => void
+  comment: PhotoCommentWithParticipant;
+  currentParticipantId: string | null;
+  onDelete?: () => void;
 }
 
 export function CommentItem({ comment, currentParticipantId, onDelete }: CommentItemProps) {
-  const [deleting, setDeleting] = useState(false)
-  const [error, setError] = useState('')
-  const [dialogOpen, setDialogOpen] = useState(false)
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState('');
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   // Check ownership by comparing participant IDs
-  const isOwner = currentParticipantId === comment.participant_id
+  const isOwner = currentParticipantId === comment.participant_id;
 
   // Format the relative time
   const relativeTime = formatDistanceToNow(new Date(comment.created_at), {
     addSuffix: true,
     locale: nb,
-  })
+  });
 
   // Handle missing participant data
   if (!comment.participant) {
-    return null
+    return null;
   }
 
   async function handleDelete() {
-    setDeleting(true)
-    setError('')
+    setDeleting(true);
+    setError('');
 
     try {
-      const result = await deleteComment(comment.id)
+      const result = await deleteComment(comment.id);
 
       if (!result.success) {
-        setError(result.error || 'Kunne ikke slette kommentar')
-        return
+        setError(result.error || 'Kunne ikke slette kommentar');
+        return;
       }
 
       // Success - close dialog and notify parent
-      setDialogOpen(false)
+      setDialogOpen(false);
       if (onDelete) {
-        onDelete()
+        onDelete();
       }
     } catch (err) {
-      console.error('Error deleting comment:', err)
-      setError('En uventet feil oppstod. Prøv igjen.')
+      console.error('Error deleting comment:', err);
+      setError('En uventet feil oppstod. Prøv igjen.');
     } finally {
-      setDeleting(false)
+      setDeleting(false);
     }
   }
 
   return (
-    <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+    <div className="space-y-2 rounded-lg bg-muted/50 p-4">
       <div className="flex items-start justify-between gap-2">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-medium text-sm">
-              {comment.participant.full_name}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              #{comment.participant.bib_number}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              •
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {relativeTime}
-            </span>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm font-medium">{comment.participant.full_name}</span>
+            <span className="text-xs text-muted-foreground">#{comment.participant.bib_number}</span>
+            <span className="text-xs text-muted-foreground">•</span>
+            <span className="text-xs text-muted-foreground">{relativeTime}</span>
           </div>
-          <p className="text-sm mt-2 whitespace-pre-wrap break-words">
-            {comment.comment_text}
-          </p>
+          <p className="mt-2 whitespace-pre-wrap break-words text-sm">{comment.comment_text}</p>
         </div>
 
         {isOwner && (
@@ -106,29 +96,22 @@ export function CommentItem({ comment, currentParticipantId, onDelete }: Comment
               <DialogHeader>
                 <DialogTitle>Slett kommentar</DialogTitle>
                 <DialogDescription>
-                  Er du sikker på at du vil slette denne kommentaren? Denne handlingen kan ikke angres.
+                  Er du sikker på at du vil slette denne kommentaren? Denne handlingen kan ikke
+                  angres.
                 </DialogDescription>
               </DialogHeader>
 
               {error && (
-                <div className="bg-destructive/10 text-destructive px-3 py-2 rounded-md text-sm">
+                <div className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
                   {error}
                 </div>
               )}
 
               <DialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => setDialogOpen(false)}
-                  disabled={deleting}
-                >
+                <Button variant="outline" onClick={() => setDialogOpen(false)} disabled={deleting}>
                   Avbryt
                 </Button>
-                <Button
-                  variant="destructive"
-                  onClick={handleDelete}
-                  disabled={deleting}
-                >
+                <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
                   {deleting ? 'Sletter...' : 'Slett'}
                 </Button>
               </DialogFooter>
@@ -137,5 +120,5 @@ export function CommentItem({ comment, currentParticipantId, onDelete }: Comment
         )}
       </div>
     </div>
-  )
+  );
 }

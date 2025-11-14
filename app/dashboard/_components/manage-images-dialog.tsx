@@ -1,18 +1,18 @@
-'use client'
+'use client';
 
-import { useState, useRef, useEffect } from 'react'
-import Image from 'next/image'
-import { Star, Trash2, AlertTriangle, Plus } from 'lucide-react'
-import { Button } from '@/app/_shared/components/ui/button'
-import { Input } from '@/app/_shared/components/ui/input'
-import { Label } from '@/app/_shared/components/ui/label'
+import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
+import { Star, Trash2, AlertTriangle, Plus } from 'lucide-react';
+import { Button } from '@/app/_shared/components/ui/button';
+import { Input } from '@/app/_shared/components/ui/input';
+import { Label } from '@/app/_shared/components/ui/label';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/app/_shared/components/ui/dialog'
+} from '@/app/_shared/components/ui/dialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,23 +22,23 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/app/_shared/components/ui/alert-dialog'
+} from '@/app/_shared/components/ui/alert-dialog';
 import {
   addCompletionImage,
   deleteCompletionImage,
   updateStarredImage,
   updateImageCaption,
   getPhotos,
-} from '@/app/actions/photos'
-import type { CompletionImage } from '@/app/_shared/lib/types/database'
-import { validateImageFiles, IMAGE_CONSTRAINTS } from '@/app/_shared/lib/constants/images'
-import { cn } from '@/app/_shared/lib/utils/cn'
+} from '@/app/actions/photos';
+import type { CompletionImage } from '@/app/_shared/lib/types/database';
+import { validateImageFiles, IMAGE_CONSTRAINTS } from '@/app/_shared/lib/constants/images';
+import { cn } from '@/app/_shared/lib/utils/cn';
 
 interface ManageImagesDialogProps {
-  isOpen: boolean
-  onClose: () => void
-  completionId: string
-  onSuccess: () => void
+  isOpen: boolean;
+  onClose: () => void;
+  completionId: string;
+  onSuccess: () => void;
 }
 
 export function ManageImagesDialog({
@@ -47,152 +47,145 @@ export function ManageImagesDialog({
   completionId,
   onSuccess,
 }: ManageImagesDialogProps) {
-  const [images, setImages] = useState<CompletionImage[]>([])
-  const [loading, setLoading] = useState(true)
-  const [uploading, setUploading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
-  const [starConfirm, setStarConfirm] = useState<string | null>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [images, setImages] = useState<CompletionImage[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [starConfirm, setStarConfirm] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchImages = async () => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
 
-    const result = await getPhotos(completionId)
+    const result = await getPhotos(completionId);
     if (result.success && result.data) {
-      setImages(result.data)
+      setImages(result.data);
     } else {
-      setError(result.error || 'Kunne ikke hente bilder')
+      setError(result.error || 'Kunne ikke hente bilder');
     }
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   // Fetch images when dialog opens
   useEffect(() => {
     if (isOpen) {
-      fetchImages()
+      fetchImages();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, completionId])
+  }, [isOpen, completionId]);
 
   const handleAddImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const file = e.target.files?.[0];
+    if (!file) return;
 
     // Validate
-    const validation = validateImageFiles([file], images.length)
+    const validation = validateImageFiles([file], images.length);
     if (!validation.valid) {
-      setError(validation.errors[0]?.message || 'Ugyldig fil')
-      return
+      setError(validation.errors[0]?.message || 'Ugyldig fil');
+      return;
     }
 
-    setUploading(true)
-    setError(null)
+    setUploading(true);
+    setError(null);
 
     try {
       // Convert to base64
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onloadend = async () => {
-        const base64Data = reader.result as string
+        const base64Data = reader.result as string;
 
-        const result = await addCompletionImage(
-          completionId,
-          base64Data,
-          file.name,
-          file.type
-        )
+        const result = await addCompletionImage(completionId, base64Data, file.name, file.type);
 
         if (result.success) {
-          await fetchImages()
-          onSuccess()
+          await fetchImages();
+          onSuccess();
         } else {
-          setError(result.error || 'Kunne ikke laste opp bilde')
+          setError(result.error || 'Kunne ikke laste opp bilde');
         }
 
-        setUploading(false)
+        setUploading(false);
 
         // Reset file input
         if (fileInputRef.current) {
-          fileInputRef.current.value = ''
+          fileInputRef.current.value = '';
         }
-      }
-      reader.readAsDataURL(file)
+      };
+      reader.readAsDataURL(file);
     } catch (err) {
-      console.error('Error uploading image:', err)
-      setError('En uventet feil oppstod')
-      setUploading(false)
+      console.error('Error uploading image:', err);
+      setError('En uventet feil oppstod');
+      setUploading(false);
     }
-  }
+  };
 
   const handleStarImage = async (imageId: string) => {
-    const image = images.find((img) => img.id === imageId)
-    if (!image || image.is_starred) return
+    const image = images.find((img) => img.id === imageId);
+    if (!image || image.is_starred) return;
 
     // Show confirmation if this will reset votes
-    setStarConfirm(imageId)
-  }
+    setStarConfirm(imageId);
+  };
 
   const confirmStarChange = async () => {
-    if (!starConfirm) return
+    if (!starConfirm) return;
 
-    setError(null)
+    setError(null);
 
-    const result = await updateStarredImage(completionId, starConfirm, true)
+    const result = await updateStarredImage(completionId, starConfirm, true);
 
     if (result.success) {
-      await fetchImages()
-      onSuccess()
-      setStarConfirm(null)
+      await fetchImages();
+      onSuccess();
+      setStarConfirm(null);
     } else {
-      setError(result.error || 'Kunne ikke oppdatere hovedbilde')
+      setError(result.error || 'Kunne ikke oppdatere hovedbilde');
     }
-  }
+  };
 
   const handleDeleteImage = async (imageId: string) => {
-    setDeleteConfirm(imageId)
-  }
+    setDeleteConfirm(imageId);
+  };
 
   const confirmDelete = async () => {
-    if (!deleteConfirm) return
+    if (!deleteConfirm) return;
 
-    setError(null)
+    setError(null);
 
-    const result = await deleteCompletionImage(completionId, deleteConfirm)
+    const result = await deleteCompletionImage(completionId, deleteConfirm);
 
     if (result.success) {
-      await fetchImages()
-      onSuccess()
-      setDeleteConfirm(null)
+      await fetchImages();
+      onSuccess();
+      setDeleteConfirm(null);
     } else {
-      setError(result.error || 'Kunne ikke slette bilde')
+      setError(result.error || 'Kunne ikke slette bilde');
     }
-  }
+  };
 
   const handleCaptionChange = async (imageId: string, caption: string) => {
     // Update locally immediately for better UX
-    setImages((prev) =>
-      prev.map((img) => (img.id === imageId ? { ...img, caption } : img))
-    )
+    setImages((prev) => prev.map((img) => (img.id === imageId ? { ...img, caption } : img)));
 
     // Debounce API call would be better, but for now just call directly
-    const result = await updateImageCaption(imageId, caption)
+    const result = await updateImageCaption(imageId, caption);
 
     if (!result.success) {
-      setError(result.error || 'Kunne ikke oppdatere bildetekst')
+      setError(result.error || 'Kunne ikke oppdatere bildetekst');
       // Revert on error
-      await fetchImages()
+      await fetchImages();
     }
-  }
+  };
 
-  const starredImage = images.find((img) => img.is_starred)
-  const canAddMore = images.length < IMAGE_CONSTRAINTS.MAX_IMAGES_PER_COMPLETION
+  const starredImage = images.find((img) => img.is_starred);
+  const canAddMore = images.length < IMAGE_CONSTRAINTS.MAX_IMAGES_PER_COMPLETION;
 
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Administrer bilder</DialogTitle>
             <DialogDescription>
@@ -223,20 +216,21 @@ export function ManageImagesDialog({
                     {images.length} av {IMAGE_CONSTRAINTS.MAX_IMAGES_PER_COMPLETION} bilder
                   </p>
                   {starredImage && (
-                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <p className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Star className="h-3 w-3 fill-accent text-accent" />
                       Hovedbilde valgt
                     </p>
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   {images.map((image) => (
                     <div
                       key={image.id}
                       className={cn(
-                        'rounded-lg border overflow-hidden transition-all',
-                        image.is_starred && 'ring-2 ring-accent ring-offset-2 ring-offset-background'
+                        'overflow-hidden rounded-lg border transition-all',
+                        image.is_starred &&
+                          'ring-2 ring-accent ring-offset-2 ring-offset-background'
                       )}
                     >
                       {/* Image */}
@@ -250,14 +244,14 @@ export function ManageImagesDialog({
 
                         {/* Starred badge */}
                         {image.is_starred && (
-                          <div className="absolute top-2 left-2 bg-accent text-accent-foreground rounded-full px-2 py-1 text-xs font-medium flex items-center gap-1 shadow-lg">
+                          <div className="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-accent px-2 py-1 text-xs font-medium text-accent-foreground shadow-lg">
                             <Star className="h-3 w-3 fill-current" />
                             Hovedbilde
                           </div>
                         )}
 
                         {/* Action buttons */}
-                        <div className="absolute top-2 right-2 flex gap-1">
+                        <div className="absolute right-2 top-2 flex gap-1">
                           <Button
                             size="icon"
                             variant={image.is_starred ? 'default' : 'secondary'}
@@ -294,9 +288,9 @@ export function ManageImagesDialog({
                           onChange={(e) => handleCaptionChange(image.id, e.target.value)}
                           disabled={uploading}
                           maxLength={IMAGE_CONSTRAINTS.MAX_CAPTION_LENGTH}
-                          className="text-sm mt-1"
+                          className="mt-1 text-sm"
                         />
-                        <p className="text-xs text-muted-foreground mt-1 text-right">
+                        <p className="mt-1 text-right text-xs text-muted-foreground">
                           {image.caption?.length || 0}/{IMAGE_CONSTRAINTS.MAX_CAPTION_LENGTH}
                         </p>
                       </div>
@@ -308,7 +302,7 @@ export function ManageImagesDialog({
 
             {/* Add more button */}
             {!loading && canAddMore && (
-              <div className="border-2 border-dashed rounded-lg p-6">
+              <div className="rounded-lg border-2 border-dashed p-6">
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -331,11 +325,12 @@ export function ManageImagesDialog({
                   ) : (
                     <>
                       <Plus className="mr-2 h-4 w-4" />
-                      Legg til flere bilder ({IMAGE_CONSTRAINTS.MAX_IMAGES_PER_COMPLETION - images.length} igjen)
+                      Legg til flere bilder (
+                      {IMAGE_CONSTRAINTS.MAX_IMAGES_PER_COMPLETION - images.length} igjen)
                     </>
                   )}
                 </Button>
-                <p className="text-xs text-muted-foreground text-center mt-2">
+                <p className="mt-2 text-center text-xs text-muted-foreground">
                   Maks 10MB per bilde
                 </p>
               </div>
@@ -344,8 +339,7 @@ export function ManageImagesDialog({
             {/* Max limit reached */}
             {!loading && !canAddMore && (
               <div className="text-center text-sm text-muted-foreground">
-                Du har nådd maksimalt antall bilder (
-                {IMAGE_CONSTRAINTS.MAX_IMAGES_PER_COMPLETION})
+                Du har nådd maksimalt antall bilder ({IMAGE_CONSTRAINTS.MAX_IMAGES_PER_COMPLETION})
               </div>
             )}
 
@@ -368,7 +362,10 @@ export function ManageImagesDialog({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Avbryt</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
               Slett
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -393,12 +390,10 @@ export function ManageImagesDialog({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Avbryt</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmStarChange}>
-              Ja, endre hovedbilde
-            </AlertDialogAction>
+            <AlertDialogAction onClick={confirmStarChange}>Ja, endre hovedbilde</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </>
-  )
+  );
 }
