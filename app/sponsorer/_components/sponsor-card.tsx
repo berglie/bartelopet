@@ -5,9 +5,10 @@ import Image from 'next/image';
 
 interface SponsorCardProps {
   sponsor: SponsorPublic;
+  priority?: boolean;
 }
 
-export function SponsorCard({ sponsor }: SponsorCardProps) {
+export function SponsorCard({ sponsor, priority = false }: SponsorCardProps) {
   const cardContent = (
     <CardContent className="p-4 md:p-6 space-y-3 text-center">
       {/* Logo */}
@@ -17,6 +18,8 @@ export function SponsorCard({ sponsor }: SponsorCardProps) {
             src={sponsor.logo_url}
             alt={`${sponsor.name} logo`}
             fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            priority={priority}
             className="object-contain"
           />
         </div>

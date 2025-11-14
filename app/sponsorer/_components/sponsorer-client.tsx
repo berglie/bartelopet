@@ -34,6 +34,13 @@ const MEDIA_MENTIONS: MediaMention[] = [
     url: 'https://www.linkedin.com/posts/lie-ventilasjon_jeg-har-startet-bartel%C3%B8pet-et-veldedig-activity-7392086471974940672-s-7h?utm_source=share&utm_medium=member_desktop&rcm=ACoAABLk3McBGObaNo_XK90D3zZNFfEQn7s6120',
     logo_url: '/images/sponsors/lie-ventilasjon.svg',
   },
+  {
+    id: '3',
+    title: 'Art By Me Margaret sponser Barteløpet med maleri',
+    source: 'Facebook',
+    url: 'https://www.facebook.com/ARTBYMEMargaret/',
+    logo_url: '/images/sponsors/art-by-me-margaret.avif',
+  },
 ];
 
 // Sponsor data (alfabetisk sortert)
@@ -56,11 +63,27 @@ const SPONSORS_DATA: GroupedSponsors = {
       prize: 'Brettspill',
     },
     {
+      id: '22',
+      name: 'Art By Me Margaret',
+      category: 'merchandise',
+      website_url: 'https://artbymemargaret.no/',
+      logo_url: '/images/sponsors/art-by-me-margaret.avif',
+      prize: 'Maleri',
+    },
+    {
       id: '20',
       name: 'BRGN',
       category: 'merchandise',
       website_url: 'https://brgn.com/',
       logo_url: '/images/sponsors/brgn.webp',
+      prize: 'Gave',
+    },
+    {
+      id: '23',
+      name: 'Brødrene Pedersen',
+      category: 'merchandise',
+      website_url: 'https://www.designforevig.no/butikker/brodrenepedersen/brodrenepedersenbreigata/',
+      logo_url: '/images/sponsors/brodrene-pedersen.svg',
       prize: 'Gave',
     },
     {
@@ -265,7 +288,7 @@ export function SponsorsClient() {
             {SPONSORS_DATA.merchandise.length > 0 && (
               <div className="flex justify-center mb-8">
                 <div className="w-full max-w-sm">
-                  <SponsorCard sponsor={SPONSORS_DATA.merchandise[0]} />
+                  <SponsorCard sponsor={SPONSORS_DATA.merchandise[0]} priority />
                 </div>
               </div>
             )}
@@ -317,6 +340,7 @@ export function SponsorsClient() {
                             src={mention.logo_url}
                             alt={`${mention.source} logo`}
                             fill
+                            sizes="(max-width: 768px) 100vw, 50vw"
                             className="object-contain"
                           />
                         </div>
