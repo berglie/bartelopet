@@ -1,0 +1,51 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Next.js
+.next
+out
+dist
+
+# Testing
+coverage
+
+# Production
+build
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files
+.env
+.env.local
+.env.production.local
+.env.development.local
+.env.test.local
+
+# Vercel
+.vercel
+
+# IDE
+.vscode
+.idea
+
+# Claude
+.claude
+.claude-flow
+.hive-mind
+
+# Generated files
+*.generated.*
+
+# Package manager
+pnpm-lock.yaml
+package-lock.json
+yarn.lock

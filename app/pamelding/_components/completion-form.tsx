@@ -61,7 +61,9 @@ export function CompletionForm() {
     const formData = new FormData(e.currentTarget);
 
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       setError('Du må være innlogget');
@@ -74,8 +76,8 @@ export function CompletionForm() {
       // This ensures proper validation and prevents participant_id manipulation
       const completionResult = await createCompletion({
         completed_date: formData.get('completed_date') as string,
-        duration_text: formData.get('duration_text') as string || null,
-        comment: formData.get('comment') as string || null,
+        duration_text: (formData.get('duration_text') as string) || null,
+        comment: (formData.get('comment') as string) || null,
       });
 
       if (!completionResult.success || !completionResult.data) {
@@ -94,11 +96,13 @@ export function CompletionForm() {
         // Upload the image using the new upload system
         const uploadResult = await uploadCompletionImages(
           completion.id,
-          [{
-            fileData,
-            fileName: imageFile.name,
-            fileType: imageFile.type,
-          }],
+          [
+            {
+              fileData,
+              fileName: imageFile.name,
+              fileType: imageFile.type,
+            },
+          ],
           0 // First image is starred by default
         );
 
@@ -137,9 +141,7 @@ export function CompletionForm() {
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="bg-destructive/10 text-destructive px-4 py-3 rounded-lg">
-              {error}
-            </div>
+            <div className="rounded-lg bg-destructive/10 px-4 py-3 text-destructive">{error}</div>
           )}
 
           <div className="space-y-2">
@@ -179,8 +181,8 @@ export function CompletionForm() {
               />
               <Label
                 htmlFor="photo"
-                className={`flex items-center justify-center w-full px-4 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md cursor-pointer transition-colors ${
-                  loading ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''
+                className={`flex w-full cursor-pointer items-center justify-center rounded-md border border-input bg-background px-4 py-2 transition-colors hover:bg-accent hover:text-accent-foreground ${
+                  loading ? 'pointer-events-none cursor-not-allowed opacity-50' : ''
                 }`}
               >
                 Velg fil
@@ -192,7 +194,7 @@ export function CompletionForm() {
           </div>
 
           {imagePreview && (
-            <div className="relative aspect-video w-full max-w-md mx-auto overflow-hidden rounded-lg border">
+            <div className="relative mx-auto aspect-video w-full max-w-md overflow-hidden rounded-lg border">
               <Image
                 src={imagePreview}
                 alt="Forhåndsvisning"

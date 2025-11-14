@@ -1,9 +1,9 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Button } from '@/app/_shared/components/ui/button'
-import { Label } from '@/app/_shared/components/ui/label'
-import { Textarea } from '@/app/_shared/components/ui/textarea'
+import { useState } from 'react';
+import { Button } from '@/app/_shared/components/ui/button';
+import { Label } from '@/app/_shared/components/ui/label';
+import { Textarea } from '@/app/_shared/components/ui/textarea';
 import {
   Dialog,
   DialogContent,
@@ -11,24 +11,24 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/app/_shared/components/ui/dialog'
-import { updateCompletion } from '@/app/actions/completions'
-import { getCurrentEventYear } from '@/app/_shared/lib/utils/event-year'
+} from '@/app/_shared/components/ui/dialog';
+import { updateCompletion } from '@/app/actions/completions';
+import { getCurrentEventYear } from '@/app/_shared/lib/utils/event-year';
 
 type Completion = {
-  id: string
-  participant_id: string
-  completed_date: string
-  duration_text: string | null
-  comment: string | null
-}
+  id: string;
+  participant_id: string;
+  completed_date: string;
+  duration_text: string | null;
+  comment: string | null;
+};
 
 interface EditFieldDialogProps {
-  isOpen: boolean
-  onClose: () => void
-  completion: Completion
-  field: 'date' | 'time' | 'comment'
-  onSuccess: () => void
+  isOpen: boolean;
+  onClose: () => void;
+  completion: Completion;
+  field: 'date' | 'time' | 'comment';
+  onSuccess: () => void;
 }
 
 export function EditFieldDialog({
@@ -39,60 +39,56 @@ export function EditFieldDialog({
   onSuccess,
 }: EditFieldDialogProps) {
   const [value, setValue] = useState(() => {
-    if (field === 'date') return completion.completed_date.split('T')[0]
-    if (field === 'time') return completion.duration_text || ''
-    return completion.comment || ''
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+    if (field === 'date') return completion.completed_date.split('T')[0];
+    if (field === 'time') return completion.duration_text || '';
+    return completion.comment || '';
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const getTitle = () => {
-    if (field === 'date') return 'Endre dato'
-    if (field === 'time') return 'Endre tid'
-    return 'Endre kommentar'
-  }
+    if (field === 'date') return 'Endre dato';
+    if (field === 'time') return 'Endre tid';
+    return 'Endre kommentar';
+  };
 
   const getDescription = () => {
-    if (field === 'date') return 'Oppdater dato for fullforingen'
-    if (field === 'time') return 'Oppdater tid brukt pa lopet'
-    return 'Oppdater kommentaren din'
-  }
+    if (field === 'date') return 'Oppdater dato for fullforingen';
+    if (field === 'time') return 'Oppdater tid brukt pa lopet';
+    return 'Oppdater kommentaren din';
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    setError(null)
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
 
     try {
-      const updateData: Record<string, string | null> = {}
+      const updateData: Record<string, string | null> = {};
 
       if (field === 'date') {
-        updateData.completed_date = value
+        updateData.completed_date = value;
       } else if (field === 'time') {
-        updateData.duration_text = value || null
+        updateData.duration_text = value || null;
       } else {
-        updateData.comment = value || null
+        updateData.comment = value || null;
       }
 
-      const result = await updateCompletion(
-        completion.id,
-        updateData,
-        false
-      )
+      const result = await updateCompletion(completion.id, updateData, false);
 
       if (result.success) {
-        onSuccess()
-        onClose()
+        onSuccess();
+        onClose();
       } else {
-        setError(result.error || 'Kunne ikke oppdatere')
+        setError(result.error || 'Kunne ikke oppdatere');
       }
     } catch (err) {
-      console.error('Error updating field:', err)
-      setError('En uventet feil oppstod')
+      console.error('Error updating field:', err);
+      setError('En uventet feil oppstod');
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -148,9 +144,7 @@ export function EditFieldDialog({
                 disabled={isSubmitting}
                 className="resize-none"
               />
-              <p className="text-xs text-muted-foreground text-right">
-                {value.length}/500 tegn
-              </p>
+              <p className="text-right text-xs text-muted-foreground">{value.length}/500 tegn</p>
             </div>
           )}
 
@@ -161,12 +155,7 @@ export function EditFieldDialog({
           )}
 
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              disabled={isSubmitting}
-            >
+            <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
               Avbryt
             </Button>
             <Button type="submit" disabled={isSubmitting}>
@@ -183,5 +172,5 @@ export function EditFieldDialog({
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

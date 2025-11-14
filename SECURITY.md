@@ -93,23 +93,27 @@ Når vi mottar en sikkerhetsrapport, forplikter vi oss til:
 Barteløpet implementerer flere sikkerhetslag:
 
 ### Autentisering og autorisasjon
+
 - Magic link-autentisering via Supabase
 - Row Level Security (RLS) på alle databasetabeller
 - Session-basert autorisasjon
 - Automatisk session-utløp
 
 ### Input-validering
+
 - Zod-schema-validering på alle server actions
 - HTML-escaping av bruker-generert innhold
 - E-post header injection-beskyttelse
 - XSS-beskyttelse
 
 ### Rate Limiting
+
 - Redis-basert rate limiting via Upstash
 - Beskytter API-endepunkter mot spam og brute-force
 - IP-basert begrensning
 
 ### Sikkerhetshoder
+
 - `Strict-Transport-Security` (HSTS)
 - `X-Frame-Options` (Clickjacking-beskyttelse)
 - `X-Content-Type-Options` (MIME-sniffing-beskyttelse)
@@ -118,6 +122,7 @@ Barteløpet implementerer flere sikkerhetslag:
 - `Permissions-Policy`
 
 ### Filopplasting
+
 - Filtype-validering
 - Størrelsebegrensninger (5MB per bilde)
 - Sharp-basert bildevalidering
@@ -125,6 +130,7 @@ Barteløpet implementerer flere sikkerhetslag:
 - Sikker lagring i Supabase Storage
 
 ### Database
+
 - PostgreSQL Row Level Security (RLS)
 - Prepared statements (via Supabase-klienten)
 - Ingen direkte SQL-spørringer fra klienten
@@ -137,6 +143,7 @@ Barteløpet implementerer flere sikkerhetslag:
 Vi er klar over følgende sårbarheter i tredjepartsavhengigheter:
 
 #### gpxparser (v3.0.8)
+
 - **Status**: Overvåket
 - **Sårbarhet**: Avhenger av utdaterte pakker (`jsdom`, `request`)
 - **Påvirkning**: Lav - Brukes kun server-side for parsing av GPX-filer
@@ -171,15 +178,17 @@ Hvis du bidrar til prosjektet, vennligst sikre at du:
 
 Vi ønsker å takke følgende personer for ansvarlig avsløring av sikkerhetssårbarheter:
 
-*Ingen rapporterte sårbarheter ennå*
+_Ingen rapporterte sårbarheter ennå_
 
 ## 📞 Kontakt
 
 For ikke-sikkerhetsspørsmål:
+
 - GitHub Issues: https://github.com/berglie/bartelopet/issues
 - Kontaktskjema: https://barteløpet.no/kontakt
 
 For sikkerhetsspørsmål:
+
 - GitHub Security Advisories: https://github.com/berglie/bartelopet/security/advisories
 - Kontaktskjema: https://barteløpet.no/kontakt (merk "[SIKKERHET]" i emnefeltet)
 
@@ -205,37 +214,40 @@ I konteksten av denne applikasjonen er følgende felter klassifisert som PII og 
 ### Offentlig vs Privat Deltakerinformasjon
 
 #### ❌ Privat (`Participant` type)
+
 Inneholder PII - Bruk kun for:
+
 - Server-side operasjoner
 - Brukerens egen profildata
 - Admin-funksjoner
 
 ```typescript
 interface Participant {
-  id: string
-  user_id: string | null        // ⚠️ PII
-  email: string                  // ⚠️ PII
-  full_name: string
-  postal_address: string         // ⚠️ PII
-  phone_number: string | null    // ⚠️ PII
-  bib_number: number
-  has_completed: boolean
-  event_year: number
-  created_at: string
-  updated_at: string
+  id: string;
+  user_id: string | null; // ⚠️ PII
+  email: string; // ⚠️ PII
+  full_name: string;
+  postal_address: string; // ⚠️ PII
+  phone_number: string | null; // ⚠️ PII
+  bib_number: number;
+  has_completed: boolean;
+  event_year: number;
+  created_at: string;
+  updated_at: string;
 }
 ```
 
 #### ✅ Offentlig (`ParticipantPublic` type)
+
 Trygg for offentlige APIer og klient-side:
 
 ```typescript
 interface ParticipantPublic {
-  id: string
-  full_name: string
-  bib_number: number
-  has_completed: boolean
-  event_year: number
+  id: string;
+  full_name: string;
+  bib_number: number;
+  has_completed: boolean;
+  event_year: number;
 }
 ```
 
@@ -244,24 +256,23 @@ interface ParticipantPublic {
 #### 1. Supabase-spørringer - Bruk alltid eksplisitt feltvalg
 
 ❌ **ALDRI GJØR DETTE:**
+
 ```typescript
-const { data } = await supabase
-  .from('participants')
-  .select('*')  // Henter ALLE felt inkludert PII
+const { data } = await supabase.from('participants').select('*'); // Henter ALLE felt inkludert PII
 ```
 
 ✅ **ALLTID GJØR DETTE:**
+
 ```typescript
 const { data } = await supabase
   .from('participants')
-  .select('id, full_name, bib_number, has_completed, event_year')
+  .select('id, full_name, bib_number, has_completed, event_year');
 ```
 
 Eller bruk den offentlige viewen:
+
 ```typescript
-const { data } = await supabase
-  .from('participants_public')
-  .select('*')
+const { data } = await supabase.from('participants_public').select('*');
 ```
 
 #### 2. Server Actions - Returner kun trygge data
@@ -269,11 +280,11 @@ const { data } = await supabase
 Ved retur av deltakerinformasjon fra Server Actions:
 
 ```typescript
-import { sanitizeParticipant } from '@/app/_shared/lib/utils/data-sanitization'
+import { sanitizeParticipant } from '@/app/_shared/lib/utils/data-sanitization';
 
 // Etter henting av full deltakerinformasjon
-const sanitizedParticipant = sanitizeParticipant(participant)
-return { success: true, data: sanitizedParticipant }
+const sanitizedParticipant = sanitizeParticipant(participant);
+return { success: true, data: sanitizedParticipant };
 ```
 
 #### 3. Supabase Joins - Velg spesifikke felt
@@ -299,6 +310,7 @@ Når du joiner med participants-tabellen:
 Plassering: `app/_shared/lib/utils/data-sanitization.ts`
 
 Tilgjengelige funksjoner:
+
 - `sanitizeParticipant(participant: Participant): ParticipantPublic`
 - `sanitizeParticipants(participants: Participant[]): ParticipantPublic[]`
 - `containsPII(obj: unknown): boolean` - Utviklingshjelpeverktøy
@@ -306,7 +318,9 @@ Tilgjengelige funksjoner:
 ### Database-views
 
 #### `participants_public`
+
 Trygg view for offentlige spørringer:
+
 ```sql
 SELECT id, full_name, bib_number, has_completed, event_year, created_at
 FROM participants
@@ -316,4 +330,4 @@ Bruk denne viewen i stedet for participants-tabellen for offentlige funksjoner.
 
 ---
 
-*Denne sikkerhetspolicyen kan oppdateres over tid. Sist oppdatert: November 2025*
+_Denne sikkerhetspolicyen kan oppdateres over tid. Sist oppdatert: November 2025_

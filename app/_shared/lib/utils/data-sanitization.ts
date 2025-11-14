@@ -10,7 +10,7 @@
  * PII exposure (email, postal_address, phone_number, user_id).
  */
 
-import type { Participant, ParticipantPublic } from '@/app/_shared/types/participant'
+import type { Participant, ParticipantPublic } from '@/app/_shared/types/participant';
 
 /**
  * Sanitize a single participant object for public API responses
@@ -30,7 +30,7 @@ export function sanitizeParticipant(participant: Participant): ParticipantPublic
     bib_number: participant.bib_number,
     has_completed: participant.has_completed,
     event_year: participant.event_year,
-  }
+  };
 }
 
 /**
@@ -43,7 +43,7 @@ export function sanitizeParticipant(participant: Participant): ParticipantPublic
  * const publicParticipants = sanitizeParticipants(allParticipants)
  */
 export function sanitizeParticipants(participants: Participant[]): ParticipantPublic[] {
-  return participants.map(sanitizeParticipant)
+  return participants.map(sanitizeParticipant);
 }
 
 /**
@@ -55,9 +55,9 @@ export function sanitizeParticipants(participants: Participant[]): ParticipantPu
  */
 export function containsPII(obj: unknown): boolean {
   if (typeof obj !== 'object' || obj === null) {
-    return false
+    return false;
   }
 
-  const piiFields = ['email', 'postal_address', 'phone_number', 'user_id']
-  return piiFields.some(field => field in obj)
+  const piiFields = ['email', 'postal_address', 'phone_number', 'user_id'];
+  return piiFields.some((field) => field in obj);
 }

@@ -4,7 +4,13 @@ import React, { useState } from 'react';
 import { Button } from '@/app/_shared/components/ui/button';
 import { Input } from '@/app/_shared/components/ui/input';
 import { Label } from '@/app/_shared/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/_shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/app/_shared/components/ui/card';
 import { createClient } from '@/app/_shared/lib/supabase/client';
 import { useSearchParams } from 'next/navigation';
 
@@ -24,7 +30,8 @@ export default function LoginPage() {
         auth_failed: 'Innlogging feilet. Vennligst prøv igjen.',
         verification_failed: messageParam || 'Kunne ikke verifisere innloggingslenken.',
         invalid_link: 'Innloggingslenken er ugyldig eller utløpt. Vennligst be om en ny.',
-        confirmation_failed: messageParam || 'Kunne ikke bekrefte e-postadressen. Vennligst prøv igjen.',
+        confirmation_failed:
+          messageParam || 'Kunne ikke bekrefte e-postadressen. Vennligst prøv igjen.',
         oauth_failed: messageParam || 'OAuth innlogging feilet. Vennligst prøv igjen.',
       };
       return errorMessages[errorParam] || 'En ukjent feil oppstod';
@@ -73,24 +80,18 @@ export default function LoginPage() {
 
   if (sent) {
     return (
-      <div className="container mx-auto px-4 py-16 max-w-md">
+      <div className="container mx-auto max-w-md px-4 py-16">
         <Card>
           <CardHeader className="text-center">
             <CardTitle>Sjekk e-posten din</CardTitle>
-            <CardDescription>
-              Vi har sendt en innloggingslenke til {email}
-            </CardDescription>
+            <CardDescription>Vi har sendt en innloggingslenke til {email}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4 text-center">
               <p className="text-sm text-muted-foreground">
                 Klikk på lenken i e-posten for å logge inn. Lenken er gyldig i 1 time.
               </p>
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => setSent(false)}
-              >
+              <Button variant="outline" className="w-full" onClick={() => setSent(false)}>
                 Send ny lenke
               </Button>
             </div>
@@ -101,18 +102,16 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-16 max-w-md">
+    <div className="container mx-auto max-w-md px-4 py-16">
       <Card>
         <CardHeader className="text-center">
           <CardTitle>Logg inn</CardTitle>
-          <CardDescription>
-            Velg hvordan du vil logge inn
-          </CardDescription>
+          <CardDescription>Velg hvordan du vil logge inn</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {error && (
-              <div className="bg-destructive/10 text-destructive px-4 py-3 rounded-lg text-sm">
+              <div className="rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">
                 {error}
               </div>
             )}
@@ -124,7 +123,7 @@ export default function LoginPage() {
               className="w-full"
               type="button"
             >
-              <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+              <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
                 <path
                   fill="#4285F4"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -151,46 +150,40 @@ export default function LoginPage() {
                 <span className="w-full border-t" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  Eller med e-post
-                </span>
+                <span className="bg-background px-2 text-muted-foreground">Eller med e-post</span>
               </div>
             </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="block text-center">
+                  E-postadresse
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="din@epost.no"
+                  required
+                  disabled={loading}
+                />
+                <p className="text-center text-xs text-muted-foreground">
+                  Bruk samme e-postadresse som du registrerte deg med
+                </p>
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email" className="block text-center">E-postadresse</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="din@epost.no"
-                required
-                disabled={loading}
-              />
-              <p className="text-xs text-muted-foreground text-center">
-                Bruk samme e-postadresse som du registrerte deg med
-              </p>
-            </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Sender...' : 'Send innloggingslenke'}
+              </Button>
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Sender...' : 'Send innloggingslenke'}
-            </Button>
-
-            <div className="text-center pt-2">
-              <p className="text-sm text-muted-foreground">
-                Ikke registrert ennå?
-              </p>
-              <a
-                href="/pamelding"
-                className="text-sm text-accent hover:underline font-semibold"
-              >
-                Meld deg på Barteløpet her →
-              </a>
-            </div>
-          </form>
+              <div className="pt-2 text-center">
+                <p className="text-sm text-muted-foreground">Ikke registrert ennå?</p>
+                <a href="/pamelding" className="text-sm font-semibold text-accent hover:underline">
+                  Meld deg på Barteløpet her →
+                </a>
+              </div>
+            </form>
           </div>
         </CardContent>
       </Card>

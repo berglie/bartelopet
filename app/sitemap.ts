@@ -1,8 +1,8 @@
-import { MetadataRoute } from 'next'
+import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://barteløpet.no'
-  const currentDate = new Date()
+  const baseUrl = 'https://barteløpet.no';
+  const currentDate = new Date();
 
   return [
     {
@@ -53,5 +53,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'yearly',
       priority: 0.4,
     },
-  ]
+  ];
 }

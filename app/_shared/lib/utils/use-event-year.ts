@@ -80,10 +80,7 @@ export function useEventYear() {
   const availableYears = useMemo(() => getAvailableEventYears(), []);
 
   // Check if viewing current year
-  const isCurrentYear = useMemo(
-    () => eventYear === getCurrentEventYear(),
-    [eventYear]
-  );
+  const isCurrentYear = useMemo(() => eventYear === getCurrentEventYear(), [eventYear]);
 
   // Check if year is editable (client-side check)
   const canEdit = useMemo(() => isYearEditableSync(eventYear), [eventYear]);
@@ -92,10 +89,7 @@ export function useEventYear() {
   const formattedYear = useMemo(() => formatEventYear(eventYear), [eventYear]);
 
   // Get edit window status message
-  const editStatus = useMemo(
-    () => getEditWindowStatus(eventYear),
-    [eventYear]
-  );
+  const editStatus = useMemo(() => getEditWindowStatus(eventYear), [eventYear]);
 
   return {
     eventYear,

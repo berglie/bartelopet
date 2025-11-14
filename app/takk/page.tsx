@@ -12,37 +12,35 @@ export default async function ThankYouPage({
   const bibNumber = params.bib;
 
   return (
-    <div className="container mx-auto px-4 py-16 max-w-2xl">
-      <Card className="bg-card/50 border-accent/20 backdrop-blur">
-        <CardContent className="p-12 text-center space-y-8">
+    <div className="container mx-auto max-w-2xl px-4 py-16">
+      <Card className="border-accent/20 bg-card/50 backdrop-blur">
+        <CardContent className="space-y-8 p-12 text-center">
           {/* Success Icon */}
-          <div className="w-20 h-20 bg-accent/20 rounded-full flex items-center justify-center mx-auto">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-accent/20">
             <Award className="h-10 w-10 text-accent" />
           </div>
 
           {/* Title */}
           <div className="space-y-2">
-            <h1 className="text-3xl md:text-4xl font-bold">Gratulerer!</h1>
-            <p className="text-lg text-muted-foreground">
-              Ditt løp er registrert
-            </p>
+            <h1 className="text-3xl font-bold md:text-4xl">Gratulerer!</h1>
+            <p className="text-lg text-muted-foreground">Ditt løp er registrert</p>
           </div>
 
           {/* Bib Number */}
           {bibNumber && (
-            <div className="bg-background/50 p-8 rounded-xl border border-accent/20 space-y-2">
+            <div className="space-y-2 rounded-xl border border-accent/20 bg-background/50 p-8">
               <p className="text-sm text-muted-foreground">Ditt startnummer</p>
               <p className="text-6xl font-bold text-accent">{bibNumber}</p>
             </div>
           )}
 
           {/* Next Steps */}
-          <div className="bg-muted/30 p-6 rounded-xl space-y-4 text-left">
-            <h2 className="font-semibold text-lg text-center">Neste steg</h2>
+          <div className="space-y-4 rounded-xl bg-muted/30 p-6 text-left">
+            <h2 className="text-center text-lg font-semibold">Neste steg</h2>
 
             <div className="space-y-3">
               <div className="flex items-start gap-3">
-                <Mail className="h-5 w-5 text-accent shrink-0 mt-0.5" />
+                <Mail className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
                 <div className="space-y-1">
                   <p className="text-sm font-medium">Sjekk e-posten din</p>
                   <p className="text-xs text-muted-foreground">
@@ -52,7 +50,7 @@ export default async function ThankYouPage({
               </div>
 
               <div className="flex items-start gap-3">
-                <Trophy className="h-5 w-5 text-accent shrink-0 mt-0.5" />
+                <Trophy className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
                 <div className="space-y-1">
                   <p className="text-sm font-medium">Se galleriet</p>
                   <p className="text-xs text-muted-foreground">
@@ -62,7 +60,7 @@ export default async function ThankYouPage({
               </div>
 
               <div className="flex items-start gap-3">
-                <Award className="h-5 w-5 text-accent shrink-0 mt-0.5" />
+                <Award className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
                 <div className="space-y-1">
                   <p className="text-sm font-medium">Pokal på vei</p>
                   <p className="text-xs text-muted-foreground">
@@ -74,8 +72,8 @@ export default async function ThankYouPage({
           </div>
 
           {/* Actions */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90 flex-1">
+          <div className="flex flex-col gap-4 sm:flex-row">
+            <Button asChild className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90">
               <Link href="/galleri">Se galleriet</Link>
             </Button>
             <Button asChild variant="outline" className="flex-1">

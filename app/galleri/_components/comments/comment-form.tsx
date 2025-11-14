@@ -1,62 +1,62 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Button } from '@/app/_shared/components/ui/button'
-import { Textarea } from '@/app/_shared/components/ui/textarea'
-import { Label } from '@/app/_shared/components/ui/label'
-import { addComment } from '@/app/actions/comments'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/app/_shared/components/ui/button';
+import { Textarea } from '@/app/_shared/components/ui/textarea';
+import { Label } from '@/app/_shared/components/ui/label';
+import { addComment } from '@/app/actions/comments';
 
 interface CommentFormProps {
-  completionId: string
-  onCommentAdded?: () => void
+  completionId: string;
+  onCommentAdded?: () => void;
 }
 
 export function CommentForm({ completionId, onCommentAdded }: CommentFormProps) {
-  const router = useRouter()
-  const [commentText, setCommentText] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const router = useRouter();
+  const [commentText, setCommentText] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const maxLength = 500
-  const remainingChars = maxLength - commentText.length
+  const maxLength = 500;
+  const remainingChars = maxLength - commentText.length;
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
+    e.preventDefault();
 
-    const trimmedText = commentText.trim()
+    const trimmedText = commentText.trim();
     if (!trimmedText) {
-      setError('Kommentaren kan ikke være tom')
-      return
+      setError('Kommentaren kan ikke være tom');
+      return;
     }
 
-    setLoading(true)
-    setError('')
+    setLoading(true);
+    setError('');
 
     try {
-      const result = await addComment(completionId, trimmedText)
+      const result = await addComment(completionId, trimmedText);
 
       if (!result.success) {
         // Check if authentication error
         if (result.error?.includes('innlogget')) {
-          router.push('/login')
-          return
+          router.push('/login');
+          return;
         }
 
-        setError(result.error || 'Kunne ikke legge til kommentar')
-        return
+        setError(result.error || 'Kunne ikke legge til kommentar');
+        return;
       }
 
       // Success - clear form and notify parent
-      setCommentText('')
+      setCommentText('');
       if (onCommentAdded) {
-        onCommentAdded()
+        onCommentAdded();
       }
     } catch (err) {
-      console.error('Error submitting comment:', err)
-      setError('En uventet feil oppstod. Prøv igjen.')
+      console.error('Error submitting comment:', err);
+      setError('En uventet feil oppstod. Prøv igjen.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -76,29 +76,25 @@ export function CommentForm({ completionId, onCommentAdded }: CommentFormProps) 
           aria-label="Kommentar"
         />
         <div className="flex items-center justify-between">
-          <span className={`text-sm ${
-            remainingChars < 50
-              ? 'text-destructive font-medium'
-              : 'text-muted-foreground'
-          }`}>
+          <span
+            className={`text-sm ${
+              remainingChars < 50 ? 'font-medium text-destructive' : 'text-muted-foreground'
+            }`}
+          >
             {commentText.length}/{maxLength}
           </span>
         </div>
       </div>
 
       {error && (
-        <div className="bg-destructive/10 text-destructive px-3 py-2 rounded-md text-sm">
+        <div className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
           {error}
         </div>
       )}
 
-      <Button
-        type="submit"
-        disabled={loading || !commentText.trim()}
-        className="w-full"
-      >
+      <Button type="submit" disabled={loading || !commentText.trim()} className="w-full">
         {loading ? 'Legger til...' : 'Legg til kommentar'}
       </Button>
     </form>
-  )
+  );
 }

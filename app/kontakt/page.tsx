@@ -2,7 +2,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/app/_shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/app/_shared/components/ui/card';
 import { Input } from '@/app/_shared/components/ui/input';
 import { Textarea } from '@/app/_shared/components/ui/textarea';
 import { Button } from '@/app/_shared/components/ui/button';
@@ -60,9 +66,7 @@ export default function KontaktPage() {
     }
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -81,20 +85,20 @@ export default function KontaktPage() {
       <section className="relative overflow-hidden border-b border-border/50">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/5" />
 
-        <div className="container mx-auto px-4 py-16 md:py-20 relative">
-          <div className="max-w-3xl mx-auto text-center space-y-4">
-            <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/30 px-4 py-2 rounded-full">
+        <div className="container relative mx-auto px-4 py-16 md:py-20">
+          <div className="mx-auto max-w-3xl space-y-4 text-center">
+            <div className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-4 py-2">
               <Mail className="h-4 w-4 text-accent" />
               <span className="text-sm font-medium text-accent">Kontakt oss</span>
             </div>
 
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+            <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
               Vi hører gjerne fra deg
             </h1>
 
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Har du spørsmål, tilbakemeldinger eller trenger hjelp? Send oss en melding,
-              så svarer vi så snart vi kan.
+            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+              Har du spørsmål, tilbakemeldinger eller trenger hjelp? Send oss en melding, så svarer
+              vi så snart vi kan.
             </p>
           </div>
         </div>
@@ -103,33 +107,31 @@ export default function KontaktPage() {
       {/* Form Section */}
       <section className="py-12 md:py-20">
         <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto">
+          <div className="mx-auto max-w-2xl">
             {submitStatus.type === 'success' ? (
-              <Card className="bg-card/50 border-border/50 backdrop-blur relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-accent/10 rounded-full blur-3xl" />
-                <CardContent className="p-8 md:p-16 text-center space-y-6 relative">
-                  <div className="w-20 h-20 bg-accent/20 rounded-full flex items-center justify-center mx-auto">
+              <Card className="relative overflow-hidden border-border/50 bg-card/50 backdrop-blur">
+                <div className="absolute right-0 top-0 h-64 w-64 rounded-full bg-accent/10 blur-3xl" />
+                <CardContent className="relative space-y-6 p-8 text-center md:p-16">
+                  <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-accent/20">
                     <CheckCircle2 className="h-10 w-10 text-accent" />
                   </div>
                   <div className="space-y-3">
-                    <h2 className="text-3xl md:text-4xl font-bold">
-                      Takk for din henvendelse!
-                    </h2>
-                    <p className="text-lg text-muted-foreground max-w-md mx-auto">
+                    <h2 className="text-3xl font-bold md:text-4xl">Takk for din henvendelse!</h2>
+                    <p className="mx-auto max-w-md text-lg text-muted-foreground">
                       {submitStatus.message}
                     </p>
                   </div>
                   <Button
                     onClick={() => router.push('/')}
                     size="lg"
-                    className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg shadow-accent/20"
+                    className="bg-accent text-accent-foreground shadow-lg shadow-accent/20 hover:bg-accent/90"
                   >
                     Tilbake til forsiden
                   </Button>
                 </CardContent>
               </Card>
             ) : (
-              <Card className="bg-card/50 border-border/50 backdrop-blur">
+              <Card className="border-border/50 bg-card/50 backdrop-blur">
                 <CardHeader className="space-y-1 pb-8">
                   <CardTitle className="text-2xl">Send oss en melding</CardTitle>
                   <CardDescription>
@@ -140,16 +142,14 @@ export default function KontaktPage() {
                 <CardContent>
                   <form onSubmit={handleSubmit} className="space-y-6">
                     {submitStatus.type === 'error' && (
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-destructive/10 border border-destructive/20">
-                        <AlertCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+                      <div className="flex items-start gap-3 rounded-lg border border-destructive/20 bg-destructive/10 p-4">
+                        <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
                         <p className="text-sm text-destructive">{submitStatus.message}</p>
                       </div>
                     )}
 
                     <div className="space-y-2">
-                      <Label htmlFor="name">
-                        Navn *
-                      </Label>
+                      <Label htmlFor="name">Navn *</Label>
                       <Input
                         type="text"
                         id="name"
@@ -162,9 +162,7 @@ export default function KontaktPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="email">
-                        E-post *
-                      </Label>
+                      <Label htmlFor="email">E-post *</Label>
                       <Input
                         type="email"
                         id="email"
@@ -178,18 +176,18 @@ export default function KontaktPage() {
 
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Label htmlFor="message">
-                          Melding *
-                        </Label>
-                        <span className={`text-xs ${
-                          formData.message.length < 10
-                            ? 'text-muted-foreground'
-                            : formData.message.length > 1000
-                              ? 'text-destructive font-medium'
-                              : formData.message.length > 900
-                                ? 'text-yellow-500 font-medium'
-                                : 'text-accent'
-                        }`}>
+                        <Label htmlFor="message">Melding *</Label>
+                        <span
+                          className={`text-xs ${
+                            formData.message.length < 10
+                              ? 'text-muted-foreground'
+                              : formData.message.length > 1000
+                                ? 'font-medium text-destructive'
+                                : formData.message.length > 900
+                                  ? 'font-medium text-yellow-500'
+                                  : 'text-accent'
+                          }`}
+                        >
                           {formData.message.length}/1000 tegn
                         </span>
                       </div>
@@ -210,7 +208,7 @@ export default function KontaktPage() {
                       type="submit"
                       disabled={isSubmitting || !isFormValid}
                       size="lg"
-                      className="w-full bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg shadow-accent/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full bg-accent text-accent-foreground shadow-lg shadow-accent/20 hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {isSubmitting ? (
                         <>

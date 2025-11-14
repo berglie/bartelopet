@@ -38,7 +38,10 @@ export async function loadGPXRoute(gpxPath: string): Promise<RouteData | null> {
         return feature as RouteData;
       } else if (feature.geometry.type === 'MultiLineString') {
         // Convert MultiLineString to single LineString by flattening
-        const coordinates = (feature.geometry.coordinates as number[][][]).flat() as [number, number][];
+        const coordinates = (feature.geometry.coordinates as number[][][]).flat() as [
+          number,
+          number,
+        ][];
         return {
           type: 'Feature',
           properties: feature.properties || {},
@@ -63,10 +66,10 @@ export async function loadGPXRoute(gpxPath: string): Promise<RouteData | null> {
  */
 export function getRouteCenter(route: RouteData): { longitude: number; latitude: number } {
   const coords = route.geometry.coordinates;
-  const sum = coords.reduce(
-    (acc, [lon, lat]) => ({ lon: acc.lon + lon, lat: acc.lat + lat }),
-    { lon: 0, lat: 0 }
-  );
+  const sum = coords.reduce((acc, [lon, lat]) => ({ lon: acc.lon + lon, lat: acc.lat + lat }), {
+    lon: 0,
+    lat: 0,
+  });
 
   return {
     longitude: sum.lon / coords.length,

@@ -4,9 +4,18 @@ import { checkRateLimit, getClientIp } from '@/app/_shared/lib/utils/rate-limit'
 import { securityLogger } from '@/app/_shared/lib/utils/security-logger';
 
 const contactSchema = z.object({
-  name: z.string().min(2, 'Navn må være minst 2 tegn').max(100, 'Navn kan ikke være lengre enn 100 tegn'),
-  email: z.string().email('Ugyldig e-postadresse').max(254, 'E-post kan ikke være lengre enn 254 tegn'), // RFC 5321 max length
-  message: z.string().min(10, 'Meldingen må være minst 10 tegn').max(1000, 'Meldingen kan ikke være lengre enn 1000 tegn'),
+  name: z
+    .string()
+    .min(2, 'Navn må være minst 2 tegn')
+    .max(100, 'Navn kan ikke være lengre enn 100 tegn'),
+  email: z
+    .string()
+    .email('Ugyldig e-postadresse')
+    .max(254, 'E-post kan ikke være lengre enn 254 tegn'), // RFC 5321 max length
+  message: z
+    .string()
+    .min(10, 'Meldingen må være minst 10 tegn')
+    .max(1000, 'Meldingen kan ikke være lengre enn 1000 tegn'),
 });
 
 // Escape HTML special characters to prevent XSS and ensure proper display
@@ -104,7 +113,7 @@ export async function POST(request: NextRequest) {
     // Remove any newlines or carriage returns that could be used for header injection
     const sanitizedEmail = validatedData.email.replace(/[\r\n]/g, '').trim();
     const sanitizedName = validatedData.name.replace(/[\r\n]/g, '').trim();
-    
+
     // Validate email format again after sanitization
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(sanitizedEmail)) {
       return NextResponse.json(
@@ -137,7 +146,10 @@ export async function POST(request: NextRequest) {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(adminEmail)) {
       console.error('Invalid admin email configuration:', adminEmail);
       return NextResponse.json(
-        { success: false, message: 'E-posttjenesten er ikke konfigurert korrekt. Kontakt administrator.' },
+        {
+          success: false,
+          message: 'E-posttjenesten er ikke konfigurert korrekt. Kontakt administrator.',
+        },
         { status: 500 }
       );
     }
@@ -147,7 +159,7 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${resendApiKey}`,
+        Authorization: `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
         from: 'Barteløpet Kontaktskjema <onboarding@resend.dev>',
@@ -170,7 +182,7 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${resendApiKey}`,
+        Authorization: `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
         from: 'Barteløpet <onboarding@resend.dev>',
@@ -229,7 +241,9 @@ export async function POST(request: NextRequest) {
     // Check if both emails were sent successfully
     if (!adminEmailResponse.ok || !confirmationEmailResponse.ok) {
       const adminError = !adminEmailResponse.ok ? await adminEmailResponse.json() : null;
-      const confirmError = !confirmationEmailResponse.ok ? await confirmationEmailResponse.json() : null;
+      const confirmError = !confirmationEmailResponse.ok
+        ? await confirmationEmailResponse.json()
+        : null;
 
       console.error('Resend API error:', { adminError, confirmError });
       console.error('Contact form submission (email failed):', validatedData);
@@ -237,7 +251,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: true,
-          message: 'Takk for din henvendelse! Vi har mottatt meldingen din.'
+          message: 'Takk for din henvendelse! Vi har mottatt meldingen din.',
         },
         { status: 200 }
       );
@@ -246,16 +260,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        message: 'Takk for din henvendelse! Du vil motta en bekreftelse på e-post.'
+        message: 'Takk for din henvendelse! Du vil motta en bekreftelse på e-post.',
       },
       { status: 200 }
     );
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { success: false, errors: error.issues },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, errors: error.issues }, { status: 400 });
     }
 
     console.error('Contact form error:', error);

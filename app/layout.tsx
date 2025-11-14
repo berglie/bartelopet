@@ -1,14 +1,14 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { Navigation } from "@/app/_components/navigation";
-import { StructuredData } from "@/app/_components/structured-data";
-import { YearProvider } from "@/contexts/year-context";
-import { createClient } from "@/app/_shared/lib/supabase/server";
-import Link from "next/link";
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import { Navigation } from '@/app/_components/navigation';
+import { StructuredData } from '@/app/_components/structured-data';
+import { YearProvider } from '@/contexts/year-context';
+import { createClient } from '@/app/_shared/lib/supabase/server';
+import Link from 'next/link';
 
 const inter = Inter({
-  subsets: ["latin"],
+  subsets: ['latin'],
   display: 'swap',
   preload: false,
 });
@@ -16,32 +16,31 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL('https://barteløpet.no'),
   title: {
-    default: "Barteløpet - Virtuelt løp for mental helse",
-    template: "%s | Barteløpet"
+    default: 'Barteløpet - Virtuelt løp for mental helse',
+    template: '%s | Barteløpet',
   },
-  description: "Delta i Barteløpet for Movember - løp for mental helse, del dine bilder og stem på andre deltakere",
-  keywords: ["barteløpet", "løp", "movember", "mental helse", "veldedighet", "Stavanger", "Norge"],
-  authors: [{ name: "Barteløpet" }],
-  creator: "ÅpenAid",
-  publisher: "ÅpenAid",
+  description:
+    'Delta i Barteløpet for Movember - løp for mental helse, del dine bilder og stem på andre deltakere',
+  keywords: ['barteløpet', 'løp', 'movember', 'mental helse', 'veldedighet', 'Stavanger', 'Norge'],
+  authors: [{ name: 'Barteløpet' }],
+  creator: 'ÅpenAid',
+  publisher: 'ÅpenAid',
   icons: {
     icon: [
       { url: '/favicon.ico' },
       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
       { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
     ],
-    apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
   },
   manifest: '/site.webmanifest',
   openGraph: {
-    type: "website",
-    locale: "nb_NO",
-    url: "https://barteløpet.no",
-    siteName: "Barteløpet",
-    title: "Barteløpet - Virtuelt løp for mental helse",
-    description: "Delta i Movember-kampanjen! Løp for mental helse forskning.",
+    type: 'website',
+    locale: 'nb_NO',
+    url: 'https://barteløpet.no',
+    siteName: 'Barteløpet',
+    title: 'Barteløpet - Virtuelt løp for mental helse',
+    description: 'Delta i Movember-kampanjen! Løp for mental helse forskning.',
     images: [
       {
         url: '/images/bartelopet.png',
@@ -52,9 +51,9 @@ export const metadata: Metadata = {
     ],
   },
   twitter: {
-    card: "summary_large_image",
-    title: "Barteløpet - Virtuelt løp for mental helse",
-    description: "Delta i Movember-kampanjen! Løp for mental helse forskning.",
+    card: 'summary_large_image',
+    title: 'Barteløpet - Virtuelt løp for mental helse',
+    description: 'Delta i Movember-kampanjen! Løp for mental helse forskning.',
     images: ['/images/bartelopet.png'],
   },
   robots: {
@@ -79,7 +78,9 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   return (
     <html lang="nb-NO">
@@ -89,23 +90,30 @@ export default async function RootLayout({
       <body className={inter.className}>
         <YearProvider>
           <Navigation isAuthenticated={!!user} />
-          <main>
-            {children}
-          </main>
-          <footer className="border-t mt-16">
+          <main>{children}</main>
+          <footer className="mt-16 border-t">
             <div className="container mx-auto px-4 py-8">
-              <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+              <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
                 <p className="text-sm text-muted-foreground">
                   © 2025 ÅpenAid - Støtter mental helse gjennom Movember
                 </p>
                 <div className="flex gap-4 text-sm">
-                  <Link href="/kontakt" className="text-muted-foreground hover:text-foreground transition-colors">
+                  <Link
+                    href="/kontakt"
+                    className="text-muted-foreground transition-colors hover:text-foreground"
+                  >
                     Kontakt
                   </Link>
-                  <Link href="/vilkar" className="text-muted-foreground hover:text-foreground transition-colors">
+                  <Link
+                    href="/vilkar"
+                    className="text-muted-foreground transition-colors hover:text-foreground"
+                  >
                     Vilkår for bruk
                   </Link>
-                  <Link href="/personvern" className="text-muted-foreground hover:text-foreground transition-colors">
+                  <Link
+                    href="/personvern"
+                    className="text-muted-foreground transition-colors hover:text-foreground"
+                  >
                     Personvern
                   </Link>
                 </div>

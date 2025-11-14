@@ -1,54 +1,74 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Share2, Check, Facebook, Twitter, Linkedin, Mail, MessageCircle as WhatsApp, Link as LinkIcon } from 'lucide-react'
-import { Button } from '@/app/_shared/components/ui/button'
+import { useState } from 'react';
+import {
+  Share2,
+  Check,
+  Facebook,
+  Twitter,
+  Linkedin,
+  Mail,
+  MessageCircle as WhatsApp,
+  Link as LinkIcon,
+} from 'lucide-react';
+import { Button } from '@/app/_shared/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/app/_shared/components/ui/dropdown-menu'
-import { shareNative, getShareUrls, openSharePopup, copyToClipboard, type ShareData } from '@/app/_shared/lib/utils/share'
+} from '@/app/_shared/components/ui/dropdown-menu';
+import {
+  shareNative,
+  getShareUrls,
+  openSharePopup,
+  copyToClipboard,
+  type ShareData,
+} from '@/app/_shared/lib/utils/share';
 
 interface ShareButtonProps {
-  shareData: ShareData
-  variant?: 'default' | 'outline' | 'ghost' | 'secondary'
-  size?: 'default' | 'sm' | 'lg' | 'icon'
-  showLabel?: boolean
+  shareData: ShareData;
+  variant?: 'default' | 'outline' | 'ghost' | 'secondary';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
+  showLabel?: boolean;
 }
 
-export function ShareButton({ shareData, variant = 'outline', size = 'default', showLabel = true }: ShareButtonProps) {
-  const [copied, setCopied] = useState(false)
-  const [isOpen, setIsOpen] = useState(false)
+export function ShareButton({
+  shareData,
+  variant = 'outline',
+  size = 'default',
+  showLabel = true,
+}: ShareButtonProps) {
+  const [copied, setCopied] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleNativeShare = async () => {
-    const success = await shareNative(shareData)
+    const success = await shareNative(shareData);
     if (success) {
-      setIsOpen(false)
+      setIsOpen(false);
     }
-  }
+  };
 
   const handleCopyLink = async () => {
-    const success = await copyToClipboard(shareData.url)
+    const success = await copyToClipboard(shareData.url);
     if (success) {
-      setCopied(true)
+      setCopied(true);
       setTimeout(() => {
-        setCopied(false)
-        setIsOpen(false)
-      }, 2000)
+        setCopied(false);
+        setIsOpen(false);
+      }, 2000);
     }
-  }
+  };
 
   const handleSocialShare = (platform: keyof ReturnType<typeof getShareUrls>) => {
-    const urls = getShareUrls(shareData)
-    openSharePopup(urls[platform])
-    setIsOpen(false)
-  }
+    const urls = getShareUrls(shareData);
+    openSharePopup(urls[platform]);
+    setIsOpen(false);
+  };
 
   // Check if native share is available
-  const hasNativeShare = typeof navigator !== 'undefined' && !!navigator.share
+  const hasNativeShare = typeof navigator !== 'undefined' && !!navigator.share;
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
@@ -111,5 +131,5 @@ export function ShareButton({ shareData, variant = 'outline', size = 'default', 
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

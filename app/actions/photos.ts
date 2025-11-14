@@ -1,19 +1,22 @@
-'use server'
+'use server';
 
-import { createClient } from '@/app/_shared/lib/supabase/server'
-import { revalidatePath } from 'next/cache'
-import type { CompletionImage, CompletionImageInsert } from '@/app/_shared/lib/types/database'
-import { IMAGE_CONSTRAINTS } from '@/app/_shared/lib/constants/images'
-import { validateAndSanitizeImage, generateSecureFilename } from '@/app/_shared/lib/utils/file-validation'
-import { sanitizeSupabaseError } from '@/app/_shared/lib/utils/error-handler'
-import { checkRateLimit } from '@/app/_shared/lib/utils/rate-limit'
-import { imageCaptionSchema, reorderImagesSchema } from '@/app/_shared/lib/validations/completion'
+import { createClient } from '@/app/_shared/lib/supabase/server';
+import { revalidatePath } from 'next/cache';
+import type { CompletionImage, CompletionImageInsert } from '@/app/_shared/lib/types/database';
+import { IMAGE_CONSTRAINTS } from '@/app/_shared/lib/constants/images';
+import {
+  validateAndSanitizeImage,
+  generateSecureFilename,
+} from '@/app/_shared/lib/utils/file-validation';
+import { sanitizeSupabaseError } from '@/app/_shared/lib/utils/error-handler';
+import { checkRateLimit } from '@/app/_shared/lib/utils/rate-limit';
+import { imageCaptionSchema, reorderImagesSchema } from '@/app/_shared/lib/validations/completion';
 
 export type ActionResponse<T = void> = {
-  success: boolean
-  error?: string
-  data?: T
-}
+  success: boolean;
+  error?: string;
+  data?: T;
+};
 
 /**
  * Upload multiple images for a completion
@@ -25,35 +28,35 @@ export type ActionResponse<T = void> = {
 export async function uploadCompletionImages(
   completionId: string,
   images: Array<{
-    fileData: string // Base64 data URL
-    fileName: string
-    fileType: string
-    caption?: string
+    fileData: string; // Base64 data URL
+    fileName: string;
+    fileType: string;
+    caption?: string;
   }>,
   starredIndex: number = 0
 ): Promise<ActionResponse<string[]>> {
-  const supabase = await createClient()
-  let userId: string | undefined
+  const supabase = await createClient();
+  let userId: string | undefined;
 
   try {
     // Get the current user
     const {
       data: { user },
-    } = await supabase.auth.getUser()
+    } = await supabase.auth.getUser();
     if (!user) {
-      return { success: false, error: 'Ikke autentisert' }
+      return { success: false, error: 'Ikke autentisert' };
     }
-    userId = user.id
+    userId = user.id;
 
     // Get participant data
     const { data: participant, error: participantError } = await supabase
       .from('participants')
       .select('id')
       .eq('user_id', user.id)
-      .single()
+      .single();
 
     if (participantError || !participant) {
-      return { success: false, error: 'Finner ikke deltaker' }
+      return { success: false, error: 'Finner ikke deltaker' };
     }
 
     // Get completion data (to get event_year)
@@ -61,15 +64,15 @@ export async function uploadCompletionImages(
       .from('completions')
       .select('event_year, participant_id')
       .eq('id', completionId)
-      .single()
+      .single();
 
     if (completionError || !completion) {
-      return { success: false, error: 'Finner ikke innsending' }
+      return { success: false, error: 'Finner ikke innsending' };
     }
 
     // Verify ownership
     if (completion.participant_id !== participant.id) {
-      return { success: false, error: 'Ikke autorisert' }
+      return { success: false, error: 'Ikke autorisert' };
     }
 
     // Validate image count
@@ -77,46 +80,46 @@ export async function uploadCompletionImages(
       return {
         success: false,
         error: `Maksimalt ${IMAGE_CONSTRAINTS.MAX_IMAGES_PER_COMPLETION} bilder tillatt`,
-      }
+      };
     }
 
     // Rate limiting check for uploads
-    const rateLimitResult = await checkRateLimit('upload', user.id)
+    const rateLimitResult = await checkRateLimit('upload', user.id);
     if (!rateLimitResult.success) {
       return {
         success: false,
         error: `For mange opplastinger. Prøv igjen om ${Math.ceil(
           (rateLimitResult.reset - Date.now()) / 60000
         )} minutter.`,
-      }
+      };
     }
 
-    const uploadedImageIds: string[] = []
+    const uploadedImageIds: string[] = [];
 
     // Upload each image
     for (let i = 0; i < images.length; i++) {
-      const image = images[i]
+      const image = images[i];
 
       // Validate and sanitize image (server-side security check)
-      const validationResult = await validateAndSanitizeImage(image.fileData)
+      const validationResult = await validateAndSanitizeImage(image.fileData);
 
       if (!validationResult.success || !validationResult.buffer) {
         // Cleanup previously uploaded images on failure
         for (const imageId of uploadedImageIds) {
-          await supabase.from('photos').delete().eq('id', imageId)
+          await supabase.from('photos').delete().eq('id', imageId);
         }
         return {
           success: false,
           error: validationResult.error || 'Ugyldig bildefil',
-        }
+        };
       }
 
       // Use validated and sanitized buffer
-      const buffer = validationResult.buffer
+      const buffer = validationResult.buffer;
 
       // Generate secure filename (no user-controlled characters)
-      const secureFileName = generateSecureFilename(buffer, participant.id, 'jpg')
-      const filePath = `multi/${completion.event_year}/${participant.id}/${secureFileName}`
+      const secureFileName = generateSecureFilename(buffer, participant.id, 'jpg');
+      const filePath = `multi/${completion.event_year}/${participant.id}/${secureFileName}`;
 
       // Upload to Supabase Storage with forced MIME type
       const { error: uploadError } = await supabase.storage
@@ -125,12 +128,12 @@ export async function uploadCompletionImages(
           contentType: 'image/jpeg', // Force JPEG (file was re-encoded)
           cacheControl: '31536000', // 1 year
           upsert: false,
-        })
+        });
 
       if (uploadError) {
         // Cleanup previously uploaded images on failure
         for (const imageId of uploadedImageIds) {
-          await supabase.from('photos').delete().eq('id', imageId)
+          await supabase.from('photos').delete().eq('id', imageId);
         }
         return {
           success: false,
@@ -138,13 +141,13 @@ export async function uploadCompletionImages(
             location: 'uploadCompletionImages',
             userId: user.id,
           }),
-        }
+        };
       }
 
       // Get public URL
       const {
         data: { publicUrl },
-      } = supabase.storage.from('completion-photos').getPublicUrl(filePath)
+      } = supabase.storage.from('completion-photos').getPublicUrl(filePath);
 
       // Insert into photos table
       const imageInsert: CompletionImageInsert = {
@@ -155,19 +158,19 @@ export async function uploadCompletionImages(
         is_starred: i === starredIndex,
         display_order: i,
         caption: image.caption || null,
-      }
+      };
 
       const { data: insertedImage, error: insertError } = await supabase
         .from('photos')
         .insert(imageInsert)
         .select('id')
-        .single()
+        .single();
 
       if (insertError || !insertedImage) {
         // Cleanup on failure
-        await supabase.storage.from('completion-photos').remove([filePath])
+        await supabase.storage.from('completion-photos').remove([filePath]);
         for (const imageId of uploadedImageIds) {
-          await supabase.from('photos').delete().eq('id', imageId)
+          await supabase.from('photos').delete().eq('id', imageId);
         }
         return {
           success: false,
@@ -175,17 +178,17 @@ export async function uploadCompletionImages(
             location: 'uploadCompletionImages:insert',
             userId: user.id,
           }),
-        }
+        };
       }
 
-      uploadedImageIds.push(insertedImage.id)
+      uploadedImageIds.push(insertedImage.id);
     }
 
     // Revalidate cache
-    revalidatePath('/galleri')
-    revalidatePath('/dashboard')
+    revalidatePath('/galleri');
+    revalidatePath('/dashboard');
 
-    return { success: true, data: uploadedImageIds }
+    return { success: true, data: uploadedImageIds };
   } catch (error) {
     return {
       success: false,
@@ -193,7 +196,7 @@ export async function uploadCompletionImages(
         location: 'uploadCompletionImages',
         userId: userId,
       }),
-    }
+    };
   }
 }
 
@@ -207,7 +210,7 @@ export async function addCompletionImage(
   fileType: string,
   caption?: string
 ): Promise<ActionResponse<string>> {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   try {
     // Verify completion exists
@@ -215,24 +218,24 @@ export async function addCompletionImage(
       .from('completions')
       .select('id')
       .eq('id', completionId)
-      .single()
+      .single();
 
     if (completionError || !completion) {
-      return { success: false, error: 'Finner ikke innsending' }
+      return { success: false, error: 'Finner ikke innsending' };
     }
 
     // Get current image count from photos table
     const { count: currentImageCount } = await supabase
       .from('photos')
       .select('*', { count: 'exact', head: true })
-      .eq('completion_id', completionId)
+      .eq('completion_id', completionId);
 
     // Check if adding this image would exceed the limit
     if ((currentImageCount || 0) >= IMAGE_CONSTRAINTS.MAX_IMAGES_PER_COMPLETION) {
       return {
         success: false,
         error: `Maksimalt ${IMAGE_CONSTRAINTS.MAX_IMAGES_PER_COMPLETION} bilder tillatt`,
-      }
+      };
     }
 
     // Use uploadCompletionImages for a single image
@@ -240,19 +243,19 @@ export async function addCompletionImage(
       completionId,
       [{ fileData, fileName, fileType, caption }],
       -1 // Don't star this image (keep existing starred)
-    )
+    );
 
     if (!result.success || !result.data) {
-      return { success: false, error: result.error }
+      return { success: false, error: result.error };
     }
 
-    return { success: true, data: result.data[0] }
+    return { success: true, data: result.data[0] };
   } catch (error) {
-    console.error('Add image error:', error)
+    console.error('Add image error:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Ukjent feil oppstod',
-    }
+    };
   }
 }
 
@@ -264,15 +267,15 @@ export async function updateStarredImage(
   imageId: string,
   resetVotes: boolean = true
 ): Promise<ActionResponse> {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   try {
     // Get the current user
     const {
       data: { user },
-    } = await supabase.auth.getUser()
+    } = await supabase.auth.getUser();
     if (!user) {
-      return { success: false, error: 'Ikke autentisert' }
+      return { success: false, error: 'Ikke autentisert' };
     }
 
     // Verify ownership
@@ -280,52 +283,52 @@ export async function updateStarredImage(
       .from('participants')
       .select('id')
       .eq('user_id', user.id)
-      .single()
+      .single();
 
     if (!participant) {
-      return { success: false, error: 'Finner ikke deltaker' }
+      return { success: false, error: 'Finner ikke deltaker' };
     }
 
     const { data: image } = await supabase
       .from('photos')
       .select('participant_id, completion_id')
       .eq('id', imageId)
-      .single()
+      .single();
 
     if (!image || image.participant_id !== participant.id || image.completion_id !== completionId) {
-      return { success: false, error: 'Ikke autorisert' }
+      return { success: false, error: 'Ikke autorisert' };
     }
 
     // Unstar all images for this completion
     const { error: unstarError } = await supabase
       .from('photos')
       .update({ is_starred: false })
-      .eq('completion_id', completionId)
+      .eq('completion_id', completionId);
 
     if (unstarError) {
       return {
         success: false,
         error: sanitizeSupabaseError(unstarError, {
           location: 'updateStarredImage:unstar',
-          userId: user.id
-        })
-      }
+          userId: user.id,
+        }),
+      };
     }
 
     // Star the selected image
     const { error: starError } = await supabase
       .from('photos')
       .update({ is_starred: true })
-      .eq('id', imageId)
+      .eq('id', imageId);
 
     if (starError) {
       return {
         success: false,
         error: sanitizeSupabaseError(starError, {
           location: 'updateStarredImage:star',
-          userId: user.id
-        })
-      }
+          userId: user.id,
+        }),
+      };
     }
 
     // Reset votes if requested
@@ -333,10 +336,10 @@ export async function updateStarredImage(
       const { error: deleteVotesError } = await supabase
         .from('photo_votes')
         .delete()
-        .eq('completion_id', completionId)
+        .eq('completion_id', completionId);
 
       if (deleteVotesError) {
-        console.error('Error deleting votes:', deleteVotesError)
+        console.error('Error deleting votes:', deleteVotesError);
         // Don't fail the entire operation if vote deletion fails
       }
 
@@ -344,16 +347,16 @@ export async function updateStarredImage(
     }
 
     // Revalidate cache
-    revalidatePath('/galleri')
-    revalidatePath('/dashboard')
+    revalidatePath('/galleri');
+    revalidatePath('/dashboard');
 
-    return { success: true }
+    return { success: true };
   } catch (error) {
-    console.error('Update starred image error:', error)
+    console.error('Update starred image error:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Ukjent feil oppstod',
-    }
+    };
   }
 }
 
@@ -364,15 +367,15 @@ export async function deleteCompletionImage(
   completionId: string,
   imageId: string
 ): Promise<ActionResponse> {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   try {
     // Get the current user
     const {
       data: { user },
-    } = await supabase.auth.getUser()
+    } = await supabase.auth.getUser();
     if (!user) {
-      return { success: false, error: 'Ikke autentisert' }
+      return { success: false, error: 'Ikke autentisert' };
     }
 
     // Verify ownership
@@ -380,105 +383,98 @@ export async function deleteCompletionImage(
       .from('participants')
       .select('id')
       .eq('user_id', user.id)
-      .single()
+      .single();
 
     if (!participant) {
-      return { success: false, error: 'Finner ikke deltaker' }
+      return { success: false, error: 'Finner ikke deltaker' };
     }
 
     const { data: image } = await supabase
       .from('photos')
       .select('participant_id, completion_id, image_url')
       .eq('id', imageId)
-      .single()
+      .single();
 
     if (!image || image.participant_id !== participant.id || image.completion_id !== completionId) {
-      return { success: false, error: 'Ikke autorisert' }
+      return { success: false, error: 'Ikke autorisert' };
     }
 
     // Check if this is the last image
     const { count: imageCount } = await supabase
       .from('photos')
       .select('*', { count: 'exact', head: true })
-      .eq('completion_id', completionId)
+      .eq('completion_id', completionId);
 
     if (!imageCount || imageCount <= 1) {
-      return { success: false, error: 'Kan ikke slette det siste bildet' }
+      return { success: false, error: 'Kan ikke slette det siste bildet' };
     }
 
     // Extract and validate file path from URL
-    const url = new URL(image.image_url)
-    const pathParts = url.pathname.split('/public/')
+    const url = new URL(image.image_url);
+    const pathParts = url.pathname.split('/public/');
 
     if (pathParts.length !== 2) {
       return {
         success: false,
-        error: 'Ugyldig bilde-URL'
-      }
+        error: 'Ugyldig bilde-URL',
+      };
     }
 
-    const filePath = pathParts[1]
+    const filePath = pathParts[1];
 
     // SECURITY: Validate path to prevent traversal attacks
-    if (
-      filePath.includes('..') ||
-      filePath.includes('//') ||
-      !filePath.startsWith('multi/')
-    ) {
-      console.error('[Security] Path traversal attempt detected:', filePath)
+    if (filePath.includes('..') || filePath.includes('//') || !filePath.startsWith('multi/')) {
+      console.error('[Security] Path traversal attempt detected:', filePath);
       return {
         success: false,
-        error: 'Ugyldig filsti'
-      }
+        error: 'Ugyldig filsti',
+      };
     }
 
     // Validate path matches expected pattern: multi/year/participantId/filename.jpg
-    const pathRegex = /^multi\/\d{4}\/[0-9a-f-]{36}\/[a-z0-9-]+\.jpg$/i
+    const pathRegex = /^multi\/\d{4}\/[0-9a-f-]{36}\/[a-z0-9-]+\.jpg$/i;
     if (!pathRegex.test(filePath)) {
-      console.error('[Security] Invalid file path format:', filePath)
+      console.error('[Security] Invalid file path format:', filePath);
       return {
         success: false,
-        error: 'Ugyldig filformat'
-      }
+        error: 'Ugyldig filformat',
+      };
     }
 
     // Delete from database (trigger will handle auto-starring next image if needed)
-    const { error: deleteError } = await supabase
-      .from('photos')
-      .delete()
-      .eq('id', imageId)
+    const { error: deleteError } = await supabase.from('photos').delete().eq('id', imageId);
 
     if (deleteError) {
       return {
         success: false,
         error: sanitizeSupabaseError(deleteError, {
           location: 'deleteCompletionImage:delete',
-          userId: user.id
-        })
-      }
+          userId: user.id,
+        }),
+      };
     }
 
     // Delete from storage
     const { error: storageError } = await supabase.storage
       .from('completion-photos')
-      .remove([filePath])
+      .remove([filePath]);
 
     if (storageError) {
-      console.error('Error deleting from storage:', storageError)
+      console.error('Error deleting from storage:', storageError);
       // Don't fail the entire operation if storage deletion fails
     }
 
     // Revalidate cache
-    revalidatePath('/galleri')
-    revalidatePath('/dashboard')
+    revalidatePath('/galleri');
+    revalidatePath('/dashboard');
 
-    return { success: true }
+    return { success: true };
   } catch (error) {
-    console.error('Delete image error:', error)
+    console.error('Delete image error:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Ukjent feil oppstod',
-    }
+    };
   }
 }
 
@@ -489,28 +485,28 @@ export async function reorderImages(
   completionId: string,
   imageIds: string[]
 ): Promise<ActionResponse> {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   try {
     // Validate input with Zod
     const validationResult = reorderImagesSchema.safeParse({
       completionId,
-      imageIds
-    })
+      imageIds,
+    });
 
     if (!validationResult.success) {
       return {
         success: false,
-        error: validationResult.error.issues[0]?.message || 'Ugyldig data'
-      }
+        error: validationResult.error.issues[0]?.message || 'Ugyldig data',
+      };
     }
 
     // Get the current user
     const {
       data: { user },
-    } = await supabase.auth.getUser()
+    } = await supabase.auth.getUser();
     if (!user) {
-      return { success: false, error: 'Ikke autentisert' }
+      return { success: false, error: 'Ikke autentisert' };
     }
 
     // Verify ownership
@@ -518,36 +514,35 @@ export async function reorderImages(
       .from('participants')
       .select('id')
       .eq('user_id', user.id)
-      .single()
+      .single();
 
     if (!participant) {
-      return { success: false, error: 'Finner ikke deltaker' }
+      return { success: false, error: 'Finner ikke deltaker' };
     }
 
     // Verify all imageIds belong to this completion AND this user
     const { data: images } = await supabase
       .from('photos')
       .select('id, completion_id, participant_id')
-      .in('id', imageIds)
+      .in('id', imageIds);
 
     if (!images || images.length !== imageIds.length) {
       return {
         success: false,
-        error: 'Noen bilder ble ikke funnet'
-      }
+        error: 'Noen bilder ble ikke funnet',
+      };
     }
 
     // Verify all images belong to same completion and user
-    const allValid = images.every(img =>
-      img.completion_id === completionId &&
-      img.participant_id === participant.id
-    )
+    const allValid = images.every(
+      (img) => img.completion_id === completionId && img.participant_id === participant.id
+    );
 
     if (!allValid) {
       return {
         success: false,
-        error: 'Ikke autorisert til å endre disse bildene'
-      }
+        error: 'Ikke autorisert til å endre disse bildene',
+      };
     }
 
     // Update display_order for each image
@@ -557,30 +552,30 @@ export async function reorderImages(
         .update({ display_order: i })
         .eq('id', imageIds[i])
         .eq('completion_id', completionId)
-        .eq('participant_id', participant.id)
+        .eq('participant_id', participant.id);
 
       if (error) {
         return {
           success: false,
           error: sanitizeSupabaseError(error, {
             location: 'reorderImages',
-            userId: user.id
-          })
-        }
+            userId: user.id,
+          }),
+        };
       }
     }
 
     // Revalidate cache
-    revalidatePath('/galleri')
-    revalidatePath('/dashboard')
+    revalidatePath('/galleri');
+    revalidatePath('/dashboard');
 
-    return { success: true }
+    return { success: true };
   } catch (error) {
-    console.error('Reorder images error:', error)
+    console.error('Reorder images error:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Ukjent feil oppstod',
-    }
+    };
   }
 }
 
@@ -591,35 +586,35 @@ export async function updateImageCaption(
   imageId: string,
   caption: string
 ): Promise<ActionResponse> {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   try {
     // Validate imageId is UUID
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(imageId)) {
       return {
         success: false,
-        error: 'Ugyldig bilde-ID'
-      }
+        error: 'Ugyldig bilde-ID',
+      };
     }
 
     // Validate caption with Zod (includes sanitization)
-    const validationResult = imageCaptionSchema.safeParse({ caption })
+    const validationResult = imageCaptionSchema.safeParse({ caption });
     if (!validationResult.success) {
       return {
         success: false,
-        error: validationResult.error.issues[0]?.message || 'Ugyldig bildetekst'
-      }
+        error: validationResult.error.issues[0]?.message || 'Ugyldig bildetekst',
+      };
     }
 
-    const validatedCaption = validationResult.data.caption
+    const validatedCaption = validationResult.data.caption;
 
     // Get the current user
     const {
       data: { user },
-    } = await supabase.auth.getUser()
+    } = await supabase.auth.getUser();
     if (!user) {
-      return { success: false, error: 'Ikke autentisert' }
+      return { success: false, error: 'Ikke autentisert' };
     }
 
     // Verify ownership
@@ -627,10 +622,10 @@ export async function updateImageCaption(
       .from('participants')
       .select('id')
       .eq('user_id', user.id)
-      .single()
+      .single();
 
     if (!participant) {
-      return { success: false, error: 'Finner ikke deltaker' }
+      return { success: false, error: 'Finner ikke deltaker' };
     }
 
     // Update caption with validated data
@@ -638,63 +633,61 @@ export async function updateImageCaption(
       .from('photos')
       .update({ caption: validatedCaption })
       .eq('id', imageId)
-      .eq('participant_id', participant.id)
+      .eq('participant_id', participant.id);
 
     if (error) {
       return {
         success: false,
         error: sanitizeSupabaseError(error, {
           location: 'updateImageCaption',
-          userId: user.id
-        })
-      }
+          userId: user.id,
+        }),
+      };
     }
 
     // Revalidate cache
-    revalidatePath('/galleri')
-    revalidatePath('/dashboard')
+    revalidatePath('/galleri');
+    revalidatePath('/dashboard');
 
-    return { success: true }
+    return { success: true };
   } catch (error) {
-    console.error('Update caption error:', error)
+    console.error('Update caption error:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Ukjent feil oppstod',
-    }
+    };
   }
 }
 
 /**
  * Get all images for a completion
  */
-export async function getPhotos(
-  completionId: string
-): Promise<ActionResponse<CompletionImage[]>> {
-  const supabase = await createClient()
+export async function getPhotos(completionId: string): Promise<ActionResponse<CompletionImage[]>> {
+  const supabase = await createClient();
 
   try {
     const { data, error } = await supabase
       .from('photos')
       .select('*')
       .eq('completion_id', completionId)
-      .order('display_order', { ascending: true })
+      .order('display_order', { ascending: true });
 
     if (error) {
       return {
         success: false,
         error: sanitizeSupabaseError(error, {
           location: 'getPhotos',
-          userId: undefined
-        })
-      }
+          userId: undefined,
+        }),
+      };
     }
 
-    return { success: true, data: data || [] }
+    return { success: true, data: data || [] };
   } catch (error) {
-    console.error('Get images error:', error)
+    console.error('Get images error:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Ukjent feil oppstod',
-    }
+    };
   }
 }

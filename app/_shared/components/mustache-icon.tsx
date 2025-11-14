@@ -21,7 +21,7 @@ export function MustacheIcon({ className = '', size = 40 }: MustacheIconProps) {
 // Image version using bart.png
 export function MustacheSVG({ className = '' }: { className?: string }) {
   return (
-    <div className={`${className} overflow-hidden flex items-center justify-center`}>
+    <div className={`${className} flex items-center justify-center overflow-hidden`}>
       <Image
         src="/images/bart.png"
         alt="Bart"
@@ -31,7 +31,7 @@ export function MustacheSVG({ className = '' }: { className?: string }) {
           width: '100%',
           height: '100%',
           objectFit: 'contain',
-          objectPosition: 'center'
+          objectPosition: 'center',
         }}
         quality={100}
         priority

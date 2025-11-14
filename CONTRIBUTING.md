@@ -60,27 +60,32 @@ Dokumentasjon er like viktig som kode! Du kan bidra ved å:
 ### Oppsett
 
 1. **Fork repositoryet**
+
    ```bash
    # Klikk på "Fork"-knappen på GitHub
    ```
 
 2. **Klon din fork**
+
    ```bash
    git clone https://github.com/ditt-brukernavn/bartelopet.git
    cd bartelopet
    ```
 
 3. **Legg til upstream remote**
+
    ```bash
    git remote add upstream https://github.com/berglie/bartelopet.git
    ```
 
 4. **Installer avhengigheter**
+
    ```bash
    pnpm install
    ```
 
 5. **Sett opp miljøvariabler**
+
    ```bash
    cp .env.example .env.local
    # Rediger .env.local med dine verdier
@@ -111,6 +116,7 @@ git merge upstream/main
 ### Best Practices
 
 #### TypeScript
+
 ```typescript
 // ✅ Bra: Bruk strict typing
 interface User {
@@ -130,6 +136,7 @@ function getUser(id: any): any {
 ```
 
 #### React-komponenter
+
 ```typescript
 // ✅ Bra: Bruk funksjonelle komponenter med TypeScript
 interface ButtonProps {
@@ -158,6 +165,7 @@ export function Counter() {
 ```
 
 #### Server Actions
+
 ```typescript
 // ✅ Bra: Bruk 'use server' og valider input
 'use server';
@@ -182,6 +190,7 @@ export async function createParticipant(formData: FormData) {
 ```
 
 #### Filstruktur
+
 ```
 app/
 ├── feature-navn/
@@ -334,4 +343,4 @@ Takk for at du bidrar til Barteløpet! Hver bidragsyter hjelper oss med å støt
 
 ---
 
-*Disse retningslinjene kan oppdateres over tid. Sist oppdatert: Januar 2025*
+_Disse retningslinjene kan oppdateres over tid. Sist oppdatert: Januar 2025_

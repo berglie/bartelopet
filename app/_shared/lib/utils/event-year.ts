@@ -66,7 +66,10 @@ export async function isSubmissionWindowOpen(supabase: SupabaseClient<Database>)
  * @param supabase Supabase client instance
  * @returns Promise<boolean> true if the year is editable
  */
-export async function isYearEditable(year: number, supabase: SupabaseClient<Database>): Promise<boolean> {
+export async function isYearEditable(
+  year: number,
+  supabase: SupabaseClient<Database>
+): Promise<boolean> {
   const currentYear = getCurrentEventYear();
   if (year !== currentYear) {
     return false;
@@ -163,7 +166,7 @@ export function validateCompletionDate(
   if (isNaN(completionDate.getTime())) {
     return {
       isValid: false,
-      error: 'Ugyldig dato format'
+      error: 'Ugyldig dato format',
     };
   }
 
@@ -173,7 +176,7 @@ export function validateCompletionDate(
   if (year !== eventYear) {
     return {
       isValid: false,
-      error: `Gjennomføringsdato må være i år ${eventYear}, ikke ${year}`
+      error: `Gjennomføringsdato må være i år ${eventYear}, ikke ${year}`,
     };
   }
 
@@ -181,7 +184,7 @@ export function validateCompletionDate(
   if (completionDate > new Date()) {
     return {
       isValid: false,
-      error: 'Gjennomføringsdato kan ikke være i fremtiden'
+      error: 'Gjennomføringsdato kan ikke være i fremtiden',
     };
   }
 
@@ -223,7 +226,7 @@ export function checkYearPermission(
     if (resourceYear !== currentYear) {
       return {
         canPerform: false,
-        reason: `Kan kun opprette oppføringer for inneværende år (${currentYear})`
+        reason: `Kan kun opprette oppføringer for inneværende år (${currentYear})`,
       };
     }
     return { canPerform: true };
@@ -234,14 +237,14 @@ export function checkYearPermission(
     if (resourceYear !== currentYear) {
       return {
         canPerform: false,
-        reason: `Kan ikke ${action === 'update' ? 'oppdatere' : 'slette'} arkiverte data fra ${resourceYear}`
+        reason: `Kan ikke ${action === 'update' ? 'oppdatere' : 'slette'} arkiverte data fra ${resourceYear}`,
       };
     }
 
     if (!windowOpen) {
       return {
         canPerform: false,
-        reason: `Redigeringsvinduet er stengt. Kontakt arrangør for å ${action === 'update' ? 'oppdatere' : 'slette'} oppføringer.`
+        reason: `Redigeringsvinduet er stengt. Kontakt arrangør for å ${action === 'update' ? 'oppdatere' : 'slette'} oppføringer.`,
       };
     }
 

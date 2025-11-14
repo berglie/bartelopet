@@ -3,10 +3,12 @@
 import dynamic from 'next/dynamic';
 
 // Dynamically import Mapbox map (client-side only)
-const MapboxMap = dynamic(
-  () => import('./route-map-mapbox'),
-  { ssr: false, loading: () => <div className="w-full h-[500px] md:h-[600px] bg-card animate-pulse rounded-2xl" /> }
-);
+const MapboxMap = dynamic(() => import('./route-map-mapbox'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[500px] w-full animate-pulse rounded-2xl bg-card md:h-[600px]" />
+  ),
+});
 
 export function RouteMap({ year }: { year?: number }) {
   // Always show Mapbox map now that token is configured

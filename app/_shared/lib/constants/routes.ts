@@ -5,23 +5,23 @@
 export const routes = {
   home: '/',
   about: '/om',
-  
+
   // Auth routes
   login: '/login',
   authCallback: '/auth-callback',
   logout: '/logout',
-  
+
   // Public routes
   gallery: '/galleri',
   galleryDetail: (id: string) => `/galleri/${id}`,
   participants: '/deltakere',
   participantDetail: (id: string) => `/deltakere/${id}`,
-  
+
   // Protected routes
   registration: '/registrering',
   dashboard: '/dashboard',
   profile: '/profil',
-  
+
   // API routes
   api: {
     participants: '/api/participants',

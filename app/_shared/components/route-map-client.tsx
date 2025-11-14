@@ -16,22 +16,22 @@ L.Icon.Default.mergeOptions({
 export default function RouteMapClient() {
   // Example route around Stavanger (replace with actual GPX data)
   const routeCoordinates: [number, number][] = [
-    [58.9700, 5.7331], // Start
-    [58.9720, 5.7350],
-    [58.9740, 5.7380],
-    [58.9750, 5.7420],
-    [58.9730, 5.7450],
-    [58.9700, 5.7470],
-    [58.9670, 5.7450],
-    [58.9650, 5.7400],
-    [58.9670, 5.7360],
-    [58.9700, 5.7331], // End (same as start)
+    [58.97, 5.7331], // Start
+    [58.972, 5.735],
+    [58.974, 5.738],
+    [58.975, 5.742],
+    [58.973, 5.745],
+    [58.97, 5.747],
+    [58.967, 5.745],
+    [58.965, 5.74],
+    [58.967, 5.736],
+    [58.97, 5.7331], // End (same as start)
   ];
 
   return (
-    <div className="relative w-full h-[500px] md:h-[600px] rounded-2xl overflow-hidden border-4 border-primary/20 shadow-2xl">
+    <div className="relative h-[500px] w-full overflow-hidden rounded-2xl border-4 border-primary/20 shadow-2xl md:h-[600px]">
       <MapContainer
-        center={[58.9700, 5.7331]}
+        center={[58.97, 5.7331]}
         zoom={14}
         style={{ height: '100%', width: '100%' }}
         className="z-0"
@@ -44,7 +44,7 @@ export default function RouteMapClient() {
           positions={routeCoordinates}
           pathOptions={{ color: 'hsl(38 70% 60%)', weight: 5, opacity: 0.8 }}
         />
-        <Marker position={[58.9700, 5.7331]}>
+        <Marker position={[58.97, 5.7331]}>
           <Popup>
             <div className="text-center">
               <p className="font-bold text-primary">Start/Mål</p>
