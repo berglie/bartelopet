@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/app/_shared/components/ui/button';
 import { Input } from '@/app/_shared/components/ui/input';
 import { Label } from '@/app/_shared/components/ui/label';
@@ -12,11 +12,10 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
-  const [error, setError] = useState('');
   const searchParams = useSearchParams();
 
-  // Display error from callback if present
-  useEffect(() => {
+  // Display error from callback if present - initialize state directly
+  const [error, setError] = useState(() => {
     const errorParam = searchParams.get('error');
     const messageParam = searchParams.get('message');
 
@@ -28,9 +27,10 @@ export default function LoginPage() {
         confirmation_failed: messageParam || 'Kunne ikke bekrefte e-postadressen. Vennligst prøv igjen.',
         oauth_failed: messageParam || 'OAuth innlogging feilet. Vennligst prøv igjen.',
       };
-      setError(errorMessages[errorParam] || 'En ukjent feil oppstod');
+      return errorMessages[errorParam] || 'En ukjent feil oppstod';
     }
-  }, [searchParams]);
+    return '';
+  });
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

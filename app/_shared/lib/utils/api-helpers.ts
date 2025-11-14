@@ -7,6 +7,8 @@
 
 import { NextResponse } from 'next/server';
 import { getCurrentEventYear, isValidEventYear, isYearEditable } from './event-year';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '@/app/_shared/lib/supabase/types';
 
 /**
  * Get the event year from query parameters or use current year.
@@ -57,7 +59,7 @@ export function validateYear(year: number): NextResponse | null {
  * @param supabase Supabase client instance
  * @returns Promise<NextResponse | null> NextResponse with error if not allowed, null if allowed
  */
-export async function checkEditPermission(year: number, supabase: any): Promise<NextResponse | null> {
+export async function checkEditPermission(year: number, supabase: SupabaseClient<Database>): Promise<NextResponse | null> {
   const currentYear = getCurrentEventYear();
 
   if (year !== currentYear) {
@@ -93,7 +95,7 @@ export async function checkEditPermission(year: number, supabase: any): Promise<
  */
 export function successResponse<T>(
   data: T,
-  meta?: Record<string, any>,
+  meta?: Record<string, unknown>,
   status: number = 200
 ): NextResponse {
   return NextResponse.json(
@@ -116,7 +118,7 @@ export function successResponse<T>(
  */
 export function errorResponse(
   error: string,
-  details?: Record<string, any>,
+  details?: Record<string, unknown>,
   status: number = 500
 ): NextResponse {
   return NextResponse.json(
@@ -192,6 +194,7 @@ export function getPaginationParams(searchParams: URLSearchParams): {
  */
 export function withYearFilter<T>(query: T, year: number): T {
   // Type assertion needed because we don't have full Supabase types here
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (query as any).eq('event_year', year) as T;
 }
 
@@ -228,7 +231,7 @@ export function getSortParams(
  * @returns NextResponse with error if validation fails, null if valid
  */
 export function validateRequiredFields(
-  body: Record<string, any>,
+  body: Record<string, unknown>,
   requiredFields: string[]
 ): NextResponse | null {
   const missingFields = requiredFields.filter((field) => !body[field]);
@@ -254,9 +257,9 @@ export function validateRequiredFields(
  * @returns true if error has a code property
  */
 export function isSupabaseError(
-  error: any
+  error: unknown
 ): error is { code: string; message: string; details?: string } {
-  return error && typeof error.code === 'string';
+  return typeof error === 'object' && error !== null && 'code' in error && typeof (error as { code: unknown }).code === 'string';
 }
 
 /**
@@ -265,7 +268,7 @@ export function isSupabaseError(
  * @param error Supabase error object
  * @returns NextResponse with appropriate error message
  */
-export function handleSupabaseError(error: any): NextResponse {
+export function handleSupabaseError(error: unknown): NextResponse {
   if (isSupabaseError(error)) {
     // Handle specific Supabase error codes
     switch (error.code) {

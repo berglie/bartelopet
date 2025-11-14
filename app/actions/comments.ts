@@ -37,7 +37,7 @@ export async function getCurrentParticipantId(): Promise<string | null> {
     }
 
     return participant.id
-  } catch (error) {
+  } catch {
     return null
   }
 }

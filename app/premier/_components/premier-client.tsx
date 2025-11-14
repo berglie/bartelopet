@@ -1,6 +1,5 @@
 'use client';
 
-import { SponsorSection } from './sponsor-section';
 import { SponsorCard } from './sponsor-card';
 import { Button } from '@/app/_shared/components/ui/button';
 import { Gift, Heart, Mail, Newspaper, Trophy } from 'lucide-react';

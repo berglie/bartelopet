@@ -4,7 +4,6 @@
  */
 
 import { createClient } from '@/app/_shared/lib/supabase/server'
-import type { SupabaseClient } from '@supabase/supabase-js'
 
 export type AuthorizationResult = {
   authorized: boolean

@@ -88,7 +88,7 @@ export async function GET(request: Request) {
     const supabase = await createClient();
 
     const { error } = await supabase.auth.verifyOtp({
-      type: type as any,
+      type: type as 'email' | 'signup' | 'recovery' | 'invite' | 'magiclink',
       token_hash,
     });
 

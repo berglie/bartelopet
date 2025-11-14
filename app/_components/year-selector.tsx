@@ -22,7 +22,7 @@ interface YearSelectorProps {
  * YearSelector component - dropdown for selecting event year
  */
 export function YearSelector({ variant = 'default', className = '' }: YearSelectorProps) {
-  const { selectedYear, setSelectedYear, isCurrentYear } = useYear();
+  const { selectedYear, setSelectedYear } = useYear();
   const availableYears = getAvailableYears();
   const currentEventYear = getCurrentEventYear();
 
@@ -79,7 +79,7 @@ export function YearSelector({ variant = 'default', className = '' }: YearSelect
  * Compact year tabs for mobile
  */
 export function YearTabs({ className = '' }: { className?: string }) {
-  const { selectedYear, setSelectedYear, isCurrentYear } = useYear();
+  const { selectedYear, setSelectedYear } = useYear();
   const availableYears = getAvailableYears();
 
   if (availableYears.length <= 1) {

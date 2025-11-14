@@ -148,7 +148,7 @@ export function useEventYearData() {
 
   // Helper to add year to fetch options
   const withYear = useCallback(
-    (data: Record<string, any>) => ({
+    (data: Record<string, unknown>) => ({
       ...data,
       event_year: yearInfo.eventYear,
     }),

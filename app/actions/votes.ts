@@ -53,7 +53,7 @@ export async function togglePhotoVote(completionId: string) {
   }
 
   // Check if user has already voted for this photo
-  const { data: existingVote, error: voteCheckError } = await supabase
+  const { data: existingVote } = await supabase
     .from('photo_votes')
     .select('id')
     .eq('voter_id', voter.id)

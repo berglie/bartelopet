@@ -48,7 +48,7 @@ export async function getParticipantDetailAction(
       }
 
       // All images are in the photos table only - no fallback
-      let finalImages = images || []
+      const finalImages = images || []
 
       return {
         ...participantData,

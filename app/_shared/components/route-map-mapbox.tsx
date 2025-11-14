@@ -97,7 +97,6 @@ function CustomZoomControl({ mapRef }: { mapRef: React.RefObject<MapRef | null> 
 export default function RouteMapMapbox({ year = 2025 }: { year?: number }) {
   const [routeData, setRouteData] = useState<RouteData>(FALLBACK_ROUTE);
   const [viewState, setViewState] = useState(DEFAULT_CENTER);
-  const [isLoading, setIsLoading] = useState(true);
   const [mapStyle, setMapStyle] = useState<MapStyleKey>('gater');
   const [isMobile, setIsMobile] = useState(false);
   const mapRef = useRef<MapRef | null>(null);
@@ -134,9 +133,6 @@ export default function RouteMapMapbox({ year = 2025 }: { year?: number }) {
       })
       .catch(() => {
         // Using fallback route if GPX loading fails
-      })
-      .finally(() => {
-        setIsLoading(false);
       });
   }, [year, isMobile]);
 

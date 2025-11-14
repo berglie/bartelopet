@@ -15,7 +15,7 @@ type ActionResponse<T = void> = {
  * Returns a comprehensive export of all user personal data
  */
 export async function exportUserData(): Promise<ActionResponse<{
-  export_data: Record<string, any>
+  export_data: Record<string, unknown>
   exported_at: string
 }>> {
   try {
