@@ -11,8 +11,7 @@
 <div align="center">
 
 🌐 **[www.barteløpet.no](https://www.barteløpet.no)** |
-💰 **[Støtt på Spleis](https://spleis.no/barteløpet2025)** |
-📧 **[Kontakt](mailto:kontakt@barteløpet.no)**
+💰 **[Støtt på Spleis](https://spleis.no/barteløpet2025)**
 
 </div>
 
