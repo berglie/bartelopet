@@ -6,6 +6,7 @@ import { YearSelector } from './year-selector';
 import { usePathname } from 'next/navigation';
 import { useYear } from '@/contexts/year-context';
 import { getCurrentEventYear } from '@/app/_shared/lib/utils/year';
+import { Home } from 'lucide-react';
 
 interface NavigationProps {
   isAuthenticated?: boolean;
@@ -64,32 +65,33 @@ export function Navigation({ isAuthenticated = false }: NavigationProps) {
             )}
           </div>
 
-          {/* Mobile menu - left side */}
-          <div className="md:hidden flex items-center gap-3">
-            <Link href={getUrlWithYear("/galleri")} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          {/* Mobile menu - home icon only on left */}
+          <Link href={getUrlWithYear("/")} className="md:hidden text-muted-foreground hover:text-foreground transition-colors">
+            <Home size={18} />
+          </Link>
+
+          {/* Mobile menu - all other links on right */}
+          <div className="md:hidden flex items-center gap-2">
+            <Link href={getUrlWithYear("/galleri")} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
               Galleri
             </Link>
-            <Link href={getUrlWithYear("/deltakere")} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <Link href={getUrlWithYear("/deltakere")} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
               Deltakere
             </Link>
-            <Link href="/premier" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <Link href="/premier" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
               Premier
             </Link>
             {showYearSelector && <YearSelector variant="compact" />}
-          </div>
-
-          {/* Mobile menu - right side buttons */}
-          <div className="md:hidden flex items-center gap-2">
             {isAuthenticated ? (
-              <Button asChild size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
+              <Button asChild size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 h-7 px-2 text-xs">
                 <Link href="/dashboard">Dashboard</Link>
               </Button>
             ) : (
               <>
-                <Button asChild size="sm" variant="ghost">
-                  <Link href="/login">Logg inn</Link>
-                </Button>
-                <Button asChild size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                <Link href="/login" className="text-xs text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">
+                  Logg inn
+                </Link>
+                <Button asChild size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 h-7 px-2 text-xs">
                   <Link href="/pamelding">Påmelding</Link>
                 </Button>
               </>
