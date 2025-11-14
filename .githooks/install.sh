@@ -1,6 +1,12 @@
 #!/bin/sh
 # Script to install git hooks
 
+# Skip in CI/deployment environments
+if [ "$CI" = "true" ] || [ "$VERCEL" = "1" ] || [ "$GITHUB_ACTIONS" = "true" ]; then
+    echo "⏭️  Skipping git hooks installation (CI environment detected)"
+    exit 0
+fi
+
 echo "🔧 Installing git hooks..."
 
 # Get the git hooks directory
@@ -9,8 +15,8 @@ PROJECT_HOOKS_DIR=".githooks"
 
 # Check if we're in a git repository
 if [ ! -d ".git" ]; then
-    echo "❌ This is not a git repository. Please run this script from the project root."
-    exit 1
+    echo "⚠️  Not in a git repository. Skipping hooks installation."
+    exit 0
 fi
 
 # Create hooks directory if it doesn't exist

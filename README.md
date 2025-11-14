@@ -232,7 +232,8 @@ pnpm type-check  # Kjør TypeScript-typekontroll
 Prosjektet bruker git hooks for å sikre kodekvalitet:
 
 - **Pre-commit**: Formaterer automatisk alle staged filer med Prettier
-- Hooks installeres automatisk når du kjører `pnpm install`
+- Hooks installeres automatisk når du kjører `pnpm install` (hoppes over i CI/Vercel)
+- Sikrer konsistent kodeformatering på tvers av teamet
 
 ```bash
 # Manuelt installer/reinstaller hooks
