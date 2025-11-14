@@ -68,13 +68,13 @@ jobs:
         run: |
           echo "Deploying to Vercel Production..."
           # Pull Vercel Environment Information
-          vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+          npx vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
 
           # Build Project Artifacts
-          vercel build --prod --token="$VERCEL_TOKEN"
+          npx vercel@latest build --prod --token="$VERCEL_TOKEN"
 
           # Deploy Project Artifacts to Production
-          url=$(vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN")
+          url=$(npx vercel@latest deploy --prebuilt --prod --token="$VERCEL_TOKEN")
           echo "url=$url" >> "$GITHUB_OUTPUT"
           echo "Deployed to production: $url"
 
