@@ -40,10 +40,13 @@ export async function POST(request: NextRequest) {
     const origin = request.headers.get('origin');
 
     // Hardcoded allowed origins - NEVER use request.headers.get('host')!
+    // Include both Unicode and punycode versions of the domain
     const allowedOrigins = [
       process.env.NEXT_PUBLIC_APP_URL,
       'https://barteløpet.no',
       'https://www.barteløpet.no',
+      'https://xn--bartelpet-q8a.no',
+      'https://www.xn--bartelpet-q8a.no',
       process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : null,
       process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : null,
     ].filter(Boolean) as string[];
