@@ -1,3 +1,13 @@
+## [1.1.0](https://github.com/berglie/bartelopet/compare/v1.0.0...v1.1.0) (2025-11-26)
+
+### ✨ Features
+
+* forbedre galleri i mobilvisning ([3118c3c](https://github.com/berglie/bartelopet/commit/3118c3c1ebd122a32f700fd93d39d3bd2b304ee4))
+
+### 📚 Documentation
+
+* fiks formatering ([79f50dc](https://github.com/berglie/bartelopet/commit/79f50dc4a53b950f2f160401822948722cc3bc03))
+
 ## 1.0.0 (2025-11-14)
 
 - ci: upgrade Node.js version in CI/CD workflows ([5d69066](https://github.com/berglie/bartelopet/commit/5d69066))
