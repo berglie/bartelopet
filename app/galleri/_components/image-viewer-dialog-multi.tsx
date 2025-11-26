@@ -398,23 +398,23 @@ export function ImageViewerDialogMulti({
           {/* Comments section - below metadata, always visible on desktop */}
           {(isDesktop || showComments) && (
             <div
-              className="mb-6 w-full max-w-5xl rounded-lg bg-background/95 p-4 shadow-2xl backdrop-blur-sm md:p-6"
+              className="mb-6 w-full max-w-5xl rounded-lg bg-background/95 p-3 shadow-2xl backdrop-blur-sm md:p-6"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-foreground">Kommentarer</h3>
+              <div className="mb-3 flex items-center justify-between md:mb-4">
+                <h3 className="text-base font-semibold text-foreground md:text-lg">Kommentarer</h3>
                 {/* Close button only on mobile */}
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={handleCloseComments}
-                  className="md:hidden"
+                  className="h-10 w-10 md:hidden"
                 >
                   <X className="h-5 w-5" />
                 </Button>
               </div>
               {commentsLoading ? (
-                <div className="flex items-center justify-center py-8">
+                <div className="flex items-center justify-center py-6 md:py-8">
                   <div className="h-8 w-8 animate-spin rounded-full border-4 border-muted border-t-accent" />
                 </div>
               ) : (
@@ -444,7 +444,6 @@ export function ImageViewerDialogMulti({
             {currentImage.caption}
           </div>
         )}
-        i gu
       </div>
     </div>
   );

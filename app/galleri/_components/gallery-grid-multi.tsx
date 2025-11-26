@@ -68,6 +68,10 @@ export function GalleryGridMulti({
   const [completionsWithImages, setCompletionsWithImages] = useState<CompletionWithImages[]>([]);
   const [loadingImages, setLoadingImages] = useState(true);
 
+  // Track filtered completions for viewer (same user only)
+  const [viewerCompletions, setViewerCompletions] = useState<CompletionWithImages[]>([]);
+  const [viewerIndex, setViewerIndex] = useState(0);
+
   // Track if we've already handled the initial completion ID
   const hasHandledInitialCompletion = useRef(false);
 
@@ -112,22 +116,40 @@ export function GalleryGridMulti({
       completionsWithImages.length > 0 &&
       !hasHandledInitialCompletion.current
     ) {
-      const index = completionsWithImages.findIndex((c) => c.id === initialCompletionId);
-      if (index !== -1) {
-        setCurrentImageIndex(index);
+      const completion = completionsWithImages.find((c) => c.id === initialCompletionId);
+      if (completion) {
+        // Filter to only this user's completions
+        const userCompletions = completionsWithImages.filter(
+          (c) => c.participant.id === completion.participant.id
+        );
+        const userIndex = userCompletions.findIndex((c) => c.id === initialCompletionId);
+
+        setViewerCompletions(userCompletions);
+        setViewerIndex(userIndex !== -1 ? userIndex : 0);
         setViewerOpen(true);
         hasHandledInitialCompletion.current = true;
       }
     }
   }, [initialCompletionId, completionsWithImages]);
 
-  const handleImageClick = useCallback((index: number, withComments = false) => {
-    // Update state immediately for instant UI response
-    setCurrentImageIndex(index);
-    setOpenWithComments(withComments);
-    setViewerOpen(true);
-    // URL update will happen in the useEffect below (line 163)
-  }, []);
+  const handleImageClick = useCallback(
+    (index: number, withComments = false) => {
+      const clickedCompletion = completionsWithImages[index];
+      if (!clickedCompletion) return;
+
+      // Filter to only this user's completions
+      const userCompletions = completionsWithImages.filter(
+        (c) => c.participant.id === clickedCompletion.participant.id
+      );
+      const userIndex = userCompletions.findIndex((c) => c.id === clickedCompletion.id);
+
+      setViewerCompletions(userCompletions);
+      setViewerIndex(userIndex !== -1 ? userIndex : 0);
+      setOpenWithComments(withComments);
+      setViewerOpen(true);
+    },
+    [completionsWithImages]
+  );
 
   const handleCommentClick = useCallback(
     (e: React.MouseEvent, index: number) => {
@@ -166,22 +188,22 @@ export function GalleryGridMulti({
 
   const handleNavigate = useCallback(
     (direction: 'prev' | 'next') => {
-      setCurrentImageIndex((prev) => {
+      setViewerIndex((prev) => {
         if (direction === 'prev') {
           return prev > 0 ? prev - 1 : prev;
         } else {
-          return prev < completionsWithImages.length - 1 ? prev + 1 : prev;
+          return prev < viewerCompletions.length - 1 ? prev + 1 : prev;
         }
       });
     },
-    [completionsWithImages]
+    [viewerCompletions]
   );
 
-  // Update URL when currentImageIndex changes (separate from state update)
+  // Update URL when viewerIndex changes (separate from state update)
   // Deferred to avoid blocking the main thread during navigation
   useEffect(() => {
-    if (viewerOpen && completionsWithImages[currentImageIndex]) {
-      const completionId = completionsWithImages[currentImageIndex].id;
+    if (viewerOpen && viewerCompletions[viewerIndex]) {
+      const completionId = viewerCompletions[viewerIndex].id;
       if (typeof window !== 'undefined') {
         const updateUrl = () => {
           const url = new URL(window.location.href);
@@ -197,7 +219,7 @@ export function GalleryGridMulti({
         }
       }
     }
-  }, [currentImageIndex, viewerOpen, completionsWithImages]);
+  }, [viewerIndex, viewerOpen, viewerCompletions]);
 
   const handleQuickVote = useCallback(
     async (completionId: string, participantId: string) => {
@@ -291,7 +313,7 @@ export function GalleryGridMulti({
     [completionsWithImages, handleQuickVote]
   );
 
-  const currentCompletion = completionsWithImages[currentImageIndex] as
+  const currentCompletion = viewerCompletions[viewerIndex] as
     | (CompletionWithParticipant & { images: CompletionImage[] })
     | undefined;
 
@@ -463,11 +485,11 @@ export function GalleryGridMulti({
           isOpen={viewerOpen}
           onClose={handleCloseViewer}
           completion={currentCompletion}
-          currentIndex={currentImageIndex}
+          currentIndex={viewerIndex}
           onNavigate={handleNavigate}
           onVote={handleVote}
           userVoteIds={votedIds}
-          totalImages={completionsWithImages.length}
+          totalImages={viewerCompletions.length}
           currentParticipantId={currentParticipantId}
           isLoggedIn={currentUserId !== null}
           openWithComments={openWithComments}
