@@ -52,14 +52,14 @@ export function AddCommentForm({ onSubmit, isSubmitting, isLoggedIn }: AddCommen
 
   if (!isLoggedIn) {
     return (
-      <div className="rounded-lg bg-muted/50 p-4 text-center text-sm text-muted-foreground">
+      <div className="rounded-lg bg-muted/50 p-3 text-center text-sm text-muted-foreground md:p-4">
         Du må være innlogget for å kommentere
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
+    <form onSubmit={handleSubmit} className="space-y-2 md:space-y-3">
       <div className="space-y-2">
         <Textarea
           placeholder="Legg til en kommentar..."
@@ -69,12 +69,12 @@ export function AddCommentForm({ onSubmit, isSubmitting, isLoggedIn }: AddCommen
             if (error) setError(null);
           }}
           maxLength={MAX_COMMENT_LENGTH + 50}
-          rows={3}
+          rows={2}
           disabled={isSubmitting}
-          className="resize-none"
+          className="min-h-[60px] resize-none text-base md:min-h-[80px] md:text-sm"
           aria-label="Kommentar"
         />
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <span
             className={`text-xs ${
               isOverLimit
@@ -90,18 +90,18 @@ export function AddCommentForm({ onSubmit, isSubmitting, isLoggedIn }: AddCommen
           <Button
             type="submit"
             disabled={isSubmitting || !commentText.trim() || isOverLimit}
-            size="sm"
-            className="flex items-center gap-2"
+            size="default"
+            className="flex min-h-[44px] min-w-[80px] items-center gap-2 md:min-h-[36px] md:min-w-0"
           >
             {isSubmitting ? (
               <>
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white" />
-                Sender...
+                <span className="hidden sm:inline">Sender...</span>
               </>
             ) : (
               <>
                 <Send className="h-4 w-4" />
-                Send
+                <span>Send</span>
               </>
             )}
           </Button>

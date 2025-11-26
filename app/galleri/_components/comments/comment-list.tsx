@@ -49,16 +49,16 @@ export function CommentList({
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3 md:gap-4">
       <div className="flex items-center gap-2">
         <MessageCircle className="h-5 w-5 text-muted-foreground" />
-        <h3 className="text-lg font-semibold">Kommentarer ({comments.length})</h3>
+        <h3 className="text-base font-semibold md:text-lg">Kommentarer ({comments.length})</h3>
       </div>
 
       {/* Comment list */}
-      <div className="max-h-[300px] space-y-3 overflow-y-auto pr-2">
+      <div className="max-h-[200px] space-y-2 overflow-y-auto pr-1 md:max-h-[300px] md:space-y-3 md:pr-2">
         {comments.length === 0 ? (
-          <p className="py-4 text-center text-sm text-muted-foreground">
+          <p className="py-3 text-center text-sm text-muted-foreground md:py-4">
             Ingen kommentarer ennå. Vær den første til å kommentere!
           </p>
         ) : (
