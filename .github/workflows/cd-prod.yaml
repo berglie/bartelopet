@@ -114,8 +114,7 @@ jobs:
       - name: Install semantic-release dependencies
         if: success()
         run: |
-          pnpm add -D @semantic-release/changelog \
-            @semantic-release/commit-analyzer \
+          pnpm add -D @semantic-release/commit-analyzer \
             @semantic-release/git \
             @semantic-release/github \
             @semantic-release/npm \
