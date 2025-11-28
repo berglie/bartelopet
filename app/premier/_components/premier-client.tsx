@@ -17,9 +17,18 @@ interface MediaMention {
   url: string;
   logo_url?: string;
   screenshot_url?: string;
+  website_url?: string;
 }
 
 const MEDIA_MENTIONS: MediaMention[] = [
+  {
+    id: '4',
+    title: '#211 – Kostnaden ved løping, økonomiske råd og barnevogn – med SpareBank 1',
+    source: 'Lavterskel',
+    url: 'https://open.spotify.com/episode/41kLezZi8hJtdvli7xhLal',
+    logo_url: '/images/sponsors/lavterskel.png',
+    website_url: 'https://www.lavterskel.run/',
+  },
   {
     id: '1',
     title: 'Hvis du ikke vil gro ut barten, kan du nå løpe den',
@@ -356,16 +365,16 @@ export function PremierClient() {
 
             {/* Media Mention Cards - 2 columns */}
             <div className="mx-auto grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-2">
-              {MEDIA_MENTIONS.map((mention) => (
-                <a
-                  key={mention.id}
-                  href={mention.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block"
-                >
-                  <div className="h-full overflow-hidden rounded-lg border border-border/50 bg-card/50 text-card-foreground shadow-sm backdrop-blur transition-all hover:border-accent/50">
-                    {mention.screenshot_url ? (
+              {MEDIA_MENTIONS.map((mention) =>
+                mention.screenshot_url ? (
+                  <a
+                    key={mention.id}
+                    href={mention.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
+                    <div className="h-full overflow-hidden rounded-lg border border-border/50 bg-card/50 text-card-foreground shadow-sm backdrop-blur transition-all hover:border-accent/50">
                       <div className="flex h-full flex-col">
                         {/* Screenshot */}
                         <div className="relative aspect-[16/9] w-full bg-muted">
@@ -406,49 +415,40 @@ export function PremierClient() {
                           </div>
                         </div>
                       </div>
-                    ) : (
-                      <div className="space-y-3 p-4 text-center md:p-6">
-                        {mention.logo_url && (
-                          <div className="relative mb-2 h-12 w-full">
-                            <NextImage
-                              src={mention.logo_url}
-                              alt={`${mention.source} logo`}
-                              fill
-                              sizes="(max-width: 768px) 100vw, 50vw"
-                              className="object-contain"
-                            />
-                          </div>
-                        )}
-                        <h3 className="text-lg font-semibold text-foreground md:text-xl">
-                          {mention.title}
-                        </h3>
+                    </div>
+                  </a>
+                ) : (
+                  <div
+                    key={mention.id}
+                    className="h-full overflow-hidden rounded-lg border border-border/50 bg-card/50 text-card-foreground shadow-sm backdrop-blur"
+                  >
+                    <div className="space-y-4 p-4 text-center md:p-6">
+                      <iframe
+                        className="border-0"
+                        style={{ borderRadius: '12px' }}
+                        src="https://open.spotify.com/embed/episode/41kLezZi8hJtdvli7xhLal?utm_source=generator&theme=0"
+                        width="100%"
+                        height="352"
+                        allowFullScreen
+                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                        loading="lazy"
+                      />
+                      {mention.website_url && (
                         <p className="text-sm text-muted-foreground md:text-base">
-                          {mention.source}
-                        </p>
-                        <div className="flex items-center justify-center gap-2 text-accent transition-colors hover:text-accent/80">
-                          <span className="text-sm">Les mer</span>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="h-3 w-3"
+                          <a
+                            href={mention.website_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-accent hover:underline"
                           >
-                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                            <polyline points="15 3 21 3 21 9"></polyline>
-                            <line x1="10" x2="21" y1="14" y2="3"></line>
-                          </svg>
-                        </div>
-                      </div>
-                    )}
+                            Besøk nettside
+                          </a>
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </a>
-              ))}
+                )
+              )}
             </div>
           </div>
         </div>
