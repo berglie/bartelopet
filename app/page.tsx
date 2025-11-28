@@ -88,7 +88,7 @@ export default async function HomePage({
                 </div>
                 <div>
                   <p className="font-semibold text-foreground">Premietrekning</p>
-                  <p className="text-sm text-muted-foreground">Tilfeldig trekning på startnummer</p>
+                  <p className="text-sm text-muted-foreground">Tilfeldig trekning på startnummer som har fullført</p>
                 </div>
               </div>
 
