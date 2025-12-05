@@ -138,18 +138,6 @@ Barteløpet implementerer flere sikkerhetslag:
 
 ## 🔍 Kjente problemer og begrensninger
 
-### Avhengighetssårbarheter
-
-Vi er klar over følgende sårbarheter i tredjepartsavhengigheter:
-
-#### gpxparser (v3.0.8)
-
-- **Status**: Overvåket
-- **Sårbarhet**: Avhenger av utdaterte pakker (`jsdom`, `request`)
-- **Påvirkning**: Lav - Brukes kun server-side for parsing av GPX-filer
-- **Mitigering**: Server-side prosessering med validert input
-- **Handling**: Venter på oppdatering fra pakkevedlikeholder
-
 ### Utenfor omfang
 
 Følgende anses IKKE som sikkerhetssårbarheter:
