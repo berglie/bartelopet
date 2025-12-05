@@ -322,12 +322,6 @@ Vi setter pris på bidrag! Se [`CONTRIBUTING.md`](CONTRIBUTING.md) for retningsl
 4. Push til branchen (`git push origin feature/fantastisk-funksjon`)
 5. Åpne en Pull Request
 
-## 📝 Kjente problemer
-
-### Avhengighetssårbarheter
-
-Det er kjente sårbarheter i `gpxparser`-pakken (v3.0.8) som kommer fra utdaterte avhengigheter (`jsdom`, `request`). Disse brukes kun server-side for parsing av GPX-filer og utgjør ingen direkte sikkerhetsrisiko for brukere. Vi overvåker situasjonen og vil oppdatere når en ny versjon er tilgjengelig.
-
 ## 📄 Lisens
 
 Dette prosjektet er open source under MIT License. Se [LICENSE](LICENSE) for detaljer.
