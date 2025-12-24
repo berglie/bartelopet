@@ -61,22 +61,10 @@ export function Navigation({ isAuthenticated = false }: NavigationProps) {
 
             {showYearSelector && <YearSelector variant="compact" />}
 
-            {isAuthenticated ? (
+            {isAuthenticated && (
               <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
                 <Link href="/dashboard">Dashboard</Link>
               </Button>
-            ) : (
-              <>
-                <Link
-                  href="/login"
-                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  Logg inn
-                </Link>
-                <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
-                  <Link href="/pamelding">Påmelding</Link>
-                </Button>
-              </>
             )}
           </div>
 
@@ -109,7 +97,7 @@ export function Navigation({ isAuthenticated = false }: NavigationProps) {
               Premier
             </Link>
             {showYearSelector && <YearSelector variant="compact" />}
-            {isAuthenticated ? (
+            {isAuthenticated && (
               <Button
                 asChild
                 size="sm"
@@ -117,22 +105,6 @@ export function Navigation({ isAuthenticated = false }: NavigationProps) {
               >
                 <Link href="/dashboard">Dashboard</Link>
               </Button>
-            ) : (
-              <>
-                <Link
-                  href="/login"
-                  className="whitespace-nowrap text-xs text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  Logg inn
-                </Link>
-                <Button
-                  asChild
-                  size="sm"
-                  className="h-7 bg-accent px-2 text-xs text-accent-foreground hover:bg-accent/90"
-                >
-                  <Link href="/pamelding">Påmelding</Link>
-                </Button>
-              </>
             )}
           </div>
         </div>
