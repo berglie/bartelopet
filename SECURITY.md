@@ -260,7 +260,7 @@ const { data } = await supabase
 Eller bruk den offentlige viewen:
 
 ```typescript
-const { data } = await supabase.from('participants_public').select('*');
+const { data } = await supabase.from('participants_safe').select('*');
 ```
 
 #### 2. Server Actions - Returner kun trygge data
@@ -305,12 +305,12 @@ Tilgjengelige funksjoner:
 
 ### Database-views
 
-#### `participants_public`
+#### `participants_safe`
 
 Trygg view for offentlige spørringer:
 
 ```sql
-SELECT id, full_name, bib_number, has_completed, event_year, created_at
+SELECT id, full_name, bib_number, has_completed, event_year, created_at, updated_at
 FROM participants
 ```
 

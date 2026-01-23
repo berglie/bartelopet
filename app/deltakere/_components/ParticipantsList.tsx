@@ -14,9 +14,10 @@ import { ParticipantDetailModal } from './ParticipantDetailModal';
 
 interface ParticipantsListProps {
   participants: ParticipantListItem[];
+  submissionWindowOpen: boolean;
 }
 
-export function ParticipantsList({ participants }: ParticipantsListProps) {
+export function ParticipantsList({ participants, submissionWindowOpen }: ParticipantsListProps) {
   const [selectedParticipant, setSelectedParticipant] = useState<ParticipantListItem | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -63,7 +64,9 @@ export function ParticipantsList({ participants }: ParticipantsListProps) {
           </div>
 
           {participants.length === 0 && (
-            <div className="py-12 text-center text-muted-foreground">Ingen deltakere ennå</div>
+            <div className="py-12 text-center text-muted-foreground">
+              {!submissionWindowOpen ? 'Påmelding er ikke startet enda' : 'Ingen deltakere ennå'}
+            </div>
           )}
         </CardContent>
       </Card>
