@@ -1,6 +1,11 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: '13.0.5';
+  };
   graphql_public: {
     Tables: {
       [_ in never]: never;
@@ -65,13 +70,6 @@ export type Database = {
             columns: ['participant_id'];
             isOneToOne: false;
             referencedRelation: 'participants';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'completions_participant_id_fkey';
-            columns: ['participant_id'];
-            isOneToOne: false;
-            referencedRelation: 'participants_public';
             referencedColumns: ['id'];
           },
           {
@@ -189,13 +187,6 @@ export type Database = {
             foreignKeyName: 'photo_comments_participant_id_fkey';
             columns: ['participant_id'];
             isOneToOne: false;
-            referencedRelation: 'participants_public';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'photo_comments_participant_id_fkey';
-            columns: ['participant_id'];
-            isOneToOne: false;
             referencedRelation: 'participants_safe';
             referencedColumns: ['id'];
           },
@@ -250,13 +241,6 @@ export type Database = {
             columns: ['voter_id'];
             isOneToOne: false;
             referencedRelation: 'participants';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'votes_voter_id_fkey';
-            columns: ['voter_id'];
-            isOneToOne: false;
-            referencedRelation: 'participants_public';
             referencedColumns: ['id'];
           },
           {
@@ -335,13 +319,6 @@ export type Database = {
             foreignKeyName: 'completion_images_participant_id_fkey';
             columns: ['participant_id'];
             isOneToOne: false;
-            referencedRelation: 'participants_public';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'completion_images_participant_id_fkey';
-            columns: ['participant_id'];
-            isOneToOne: false;
             referencedRelation: 'participants_safe';
             referencedColumns: ['id'];
           },
@@ -399,13 +376,6 @@ export type Database = {
             foreignKeyName: 'completions_participant_id_fkey';
             columns: ['participant_id'];
             isOneToOne: false;
-            referencedRelation: 'participants_public';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'completions_participant_id_fkey';
-            columns: ['participant_id'];
-            isOneToOne: false;
             referencedRelation: 'participants_safe';
             referencedColumns: ['id'];
           },
@@ -439,44 +409,10 @@ export type Database = {
             foreignKeyName: 'completions_participant_id_fkey';
             columns: ['participant_id'];
             isOneToOne: false;
-            referencedRelation: 'participants_public';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'completions_participant_id_fkey';
-            columns: ['participant_id'];
-            isOneToOne: false;
             referencedRelation: 'participants_safe';
             referencedColumns: ['id'];
           },
         ];
-      };
-      participants_public: {
-        Row: {
-          bib_number: number | null;
-          created_at: string | null;
-          event_year: number | null;
-          full_name: string | null;
-          has_completed: boolean | null;
-          id: string | null;
-        };
-        Insert: {
-          bib_number?: number | null;
-          created_at?: string | null;
-          event_year?: number | null;
-          full_name?: string | null;
-          has_completed?: boolean | null;
-          id?: string | null;
-        };
-        Update: {
-          bib_number?: number | null;
-          created_at?: string | null;
-          event_year?: number | null;
-          full_name?: string | null;
-          has_completed?: boolean | null;
-          id?: string | null;
-        };
-        Relationships: [];
       };
       participants_safe: {
         Row: {

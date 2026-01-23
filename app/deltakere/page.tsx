@@ -3,6 +3,8 @@ import { getParticipants, getParticipantsStats } from './_utils/queries';
 import { ParticipantsStatsCards } from './_components/ParticipantsStats';
 import { ParticipantsList } from './_components/ParticipantsList';
 import { getCurrentEventYear } from '@/app/_shared/lib/utils/year';
+import { isSubmissionWindowOpen } from '@/app/_shared/lib/utils/event-year';
+import { createClient } from '@/app/_shared/lib/supabase/server';
 
 export const metadata: Metadata = {
   title: 'Deltakere',
@@ -32,9 +34,12 @@ export default async function DeltakerePage({
   const yearParam = params.year;
   const year = yearParam ? parseInt(yearParam, 10) : getCurrentEventYear();
 
-  const [participants, stats] = await Promise.all([
+  const supabase = await createClient();
+
+  const [participants, stats, submissionWindowOpen] = await Promise.all([
     getParticipants(year),
     getParticipantsStats(year),
+    isSubmissionWindowOpen(supabase),
   ]);
 
   return (
@@ -42,7 +47,7 @@ export default async function DeltakerePage({
       <ParticipantsStatsCards stats={stats} year={year} />
 
       <div className="mx-auto max-w-4xl">
-        <ParticipantsList participants={participants} />
+        <ParticipantsList participants={participants} submissionWindowOpen={submissionWindowOpen} />
       </div>
     </div>
   );
