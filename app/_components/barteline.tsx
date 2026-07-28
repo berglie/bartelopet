@@ -1,5 +1,7 @@
 'use client';
 
+import { useMemo, useState } from 'react';
+import { RunDetailDialog, type RunnerSummary } from '@/app/_components/run-detail-dialog';
 import type { PublicRun, TicketTotals } from '@/app/_shared/types/event-2026';
 import { qualifyingCategories } from '@/app/_shared/types/event-2026';
 
@@ -16,11 +18,38 @@ const bands = [
     label: '30+ km',
     start: 30,
     end: null,
-    color: 'bg-[hsl(150_28%_82%)]',
+    color: 'bg-[#ebe5d8]',
   },
 ];
 
+const ticketLabels = {
+  short: '0–10 km',
+  medium: '10–30 km',
+  long: '30+ km',
+};
+
 export function Barteline({ runs, tickets }: BartelineProps) {
+  const [selectedRun, setSelectedRun] = useState<PublicRun | null>(null);
+  const runnerSummaries = useMemo(() => {
+    const summaries = new Map<string, RunnerSummary>();
+
+    for (const run of runs) {
+      const summary = summaries.get(run.participant_id) || {
+        runs: 0,
+        kilometers: 0,
+        tickets: { short: 0, medium: 0, long: 0 },
+      };
+
+      summary.runs++;
+      summary.kilometers += run.distance_km;
+      for (const category of qualifyingCategories(run.distance_km)) {
+        if (run.interest_categories.includes(category)) summary.tickets[category]++;
+      }
+      summaries.set(run.participant_id, summary);
+    }
+
+    return summaries;
+  }, [runs]);
   const maximum = Math.max(
     50,
     Math.ceil(Math.max(0, ...runs.map((run) => run.distance_km)) / 10) * 10
@@ -85,11 +114,12 @@ export function Barteline({ runs, tickets }: BartelineProps) {
               <button
                 key={run.id}
                 type="button"
-                className="group absolute z-10 h-4 w-4 -translate-x-1/2 rounded-full hover:z-20 focus:z-20 focus:outline-none focus:ring-2 focus:ring-accent"
+                className="group absolute z-10 h-6 w-6 -translate-x-1/2 rounded-full hover:z-20 focus:z-20 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2"
                 style={{ left: `${left}%`, bottom: `${52 + lane * 24}px` }}
-                aria-label={`${run.full_name}, ${run.distance_km} kilometer`}
+                aria-label={`Se turen til ${run.full_name}, ${run.distance_km} kilometer`}
+                onClick={() => setSelectedRun(run)}
               >
-                <span className="pointer-events-none absolute inset-0 rounded-full border-2 border-foreground bg-secondary shadow-md transition-transform group-hover:scale-150 group-focus:scale-150" />
+                <span className="pointer-events-none absolute inset-1 rounded-full border-2 border-foreground bg-secondary shadow-md transition-transform group-hover:scale-150 group-focus:scale-150" />
                 <span
                   className={`pointer-events-none absolute hidden w-56 rounded-lg border bg-popover p-3 text-left text-xs text-popover-foreground shadow-xl group-hover:block group-focus:block ${tooltipHorizontalPosition} ${
                     showTooltipBelow ? 'top-6' : 'bottom-6'
@@ -101,7 +131,13 @@ export function Barteline({ runs, tickets }: BartelineProps) {
                     {run.run_date} · {run.distance_km.toLocaleString('nb-NO')} km
                   </span>
                   <span className="block text-muted-foreground">
-                    Kvalifiserer: {categories.join(', ')}
+                    Lodd:{' '}
+                    {categories.length > 0
+                      ? categories.map((category) => ticketLabels[category]).join(', ')
+                      : 'ingen'}
+                  </span>
+                  <span className="mt-1 block font-semibold text-secondary">
+                    Trykk for å se turen
                   </span>
                 </span>
               </button>
@@ -115,6 +151,18 @@ export function Barteline({ runs, tickets }: BartelineProps) {
           )}
         </div>
       </div>
+
+      <p className="text-center text-xs font-semibold text-muted-foreground">
+        Trykk på en løper for å se turen, bilder og opptjente lodd.
+      </p>
+
+      <RunDetailDialog
+        run={selectedRun}
+        summary={selectedRun ? runnerSummaries.get(selectedRun.participant_id) || null : null}
+        onOpenChange={(open) => {
+          if (!open) setSelectedRun(null);
+        }}
+      />
     </div>
   );
 }
