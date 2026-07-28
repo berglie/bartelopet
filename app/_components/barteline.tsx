@@ -11,7 +11,13 @@ interface BartelineProps {
 const bands = [
   { key: 'short' as const, label: '0–10 km', start: 0, end: 10, color: 'bg-accent/40' },
   { key: 'medium' as const, label: '10–30 km', start: 10, end: 30, color: 'bg-secondary/35' },
-  { key: 'long' as const, label: '30+ km', start: 30, end: null, color: 'bg-foreground/10' },
+  {
+    key: 'long' as const,
+    label: '30+ km',
+    start: 30,
+    end: null,
+    color: 'bg-[hsl(150_28%_82%)]',
+  },
 ];
 
 export function Barteline({ runs, tickets }: BartelineProps) {
@@ -69,6 +75,9 @@ export function Barteline({ runs, tickets }: BartelineProps) {
           {runs.map((run, index) => {
             const left = Math.min(99, (run.distance_km / maximum) * 100);
             const lane = index % 7;
+            const showTooltipBelow = lane >= 4;
+            const tooltipHorizontalPosition =
+              left < 16 ? 'left-1/2' : left > 84 ? 'right-1/2' : 'left-1/2 -translate-x-1/2';
             const categories = qualifyingCategories(run.distance_km).filter((category) =>
               run.interest_categories.includes(category)
             );
@@ -76,11 +85,16 @@ export function Barteline({ runs, tickets }: BartelineProps) {
               <button
                 key={run.id}
                 type="button"
-                className="group absolute z-10 h-4 w-4 -translate-x-1/2 rounded-full border-2 border-foreground bg-secondary shadow-md transition-transform hover:scale-150 focus:scale-150 focus:outline-none focus:ring-2 focus:ring-accent"
+                className="group absolute z-10 h-4 w-4 -translate-x-1/2 rounded-full hover:z-20 focus:z-20 focus:outline-none focus:ring-2 focus:ring-accent"
                 style={{ left: `${left}%`, bottom: `${52 + lane * 24}px` }}
                 aria-label={`${run.full_name}, ${run.distance_km} kilometer`}
               >
-                <span className="pointer-events-none absolute bottom-6 left-1/2 hidden w-56 -translate-x-1/2 rounded-lg border bg-popover p-3 text-left text-xs text-popover-foreground shadow-xl group-hover:block group-focus:block">
+                <span className="pointer-events-none absolute inset-0 rounded-full border-2 border-foreground bg-secondary shadow-md transition-transform group-hover:scale-150 group-focus:scale-150" />
+                <span
+                  className={`pointer-events-none absolute hidden w-56 rounded-lg border bg-popover p-3 text-left text-xs text-popover-foreground shadow-xl group-hover:block group-focus:block ${tooltipHorizontalPosition} ${
+                    showTooltipBelow ? 'top-6' : 'bottom-6'
+                  }`}
+                >
                   <strong className="block text-sm">{run.full_name}</strong>
                   {run.title && <span className="block">{run.title}</span>}
                   <span className="block">
