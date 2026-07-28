@@ -41,7 +41,7 @@ const steps = [
 ];
 
 export async function Home2026() {
-  const { runs, tickets, stats, edition, prizes } = await get2026Overview();
+  const { runs, tickets, stats, edition, prizes, isMockData } = await get2026Overview();
   const donationUrl = edition?.donation_url;
 
   return (
@@ -198,6 +198,12 @@ export async function Home2026() {
         </div>
       </section>
 
+      {isMockData && (
+        <div className="border-b-2 border-foreground bg-accent px-4 py-3 text-center text-xs font-black uppercase tracking-[0.16em] text-accent-foreground">
+          Forhåndsvisning med demodata · Supabase-data overtar automatisk når turer er registrert
+        </div>
+      )}
+
       <section className="border-b-2 border-foreground bg-secondary py-8">
         <div className="mx-auto grid max-w-[1500px] grid-cols-2 gap-px px-4 md:grid-cols-4 md:px-8">
           {[
@@ -260,7 +266,7 @@ export async function Home2026() {
           <div className="mb-12 grid gap-6 md:grid-cols-[1fr_0.7fr] md:items-end">
             <div>
               <p className="inline-flex border border-accent bg-accent px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-accent-foreground">
-                Live fra feltet
+                {isMockData ? 'Forhåndsvisning · demodata' : 'Live fra feltet'}
               </p>
               <h2 className="font-display mt-5 text-6xl font-black uppercase leading-[0.85] md:text-8xl">
                 Hele feltet.
