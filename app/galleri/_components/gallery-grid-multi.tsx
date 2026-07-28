@@ -61,7 +61,6 @@ export function GalleryGridMulti({
   const [votedIds, setVotedIds] = useState(userVoteIds);
   const [loading, setLoading] = useState<string | null>(null);
   const [viewerOpen, setViewerOpen] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [currentParticipantId, setCurrentParticipantId] = useState<string | null>(null);
   const [openWithComments, setOpenWithComments] = useState(false);

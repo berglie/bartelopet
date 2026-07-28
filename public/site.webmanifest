@@ -1,5 +1,5 @@
 {
-  "name": "Barteløpet - Virtuelt løp for mental helse",
+  "name": "Barteløpet 2026 - For Prosjekt SUT",
   "short_name": "Barteløpet",
   "icons": [
     {
@@ -13,9 +13,9 @@
       "type": "image/png"
     }
   ],
-  "theme_color": "#d97706",
-  "background_color": "#ffffff",
+  "theme_color": "#13231b",
+  "background_color": "#f2f0e8",
   "display": "standalone",
   "start_url": "/",
-  "description": "Delta i Barteløpet for Movember - løp for mental helse"
+  "description": "Løp hvor du vil i november og støtt Prosjekt SUT"
 }

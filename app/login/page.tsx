@@ -80,10 +80,12 @@ export default function LoginPage() {
 
   if (sent) {
     return (
-      <div className="container mx-auto max-w-md px-4 py-16">
-        <Card>
-          <CardHeader className="text-center">
-            <CardTitle>Sjekk e-posten din</CardTitle>
+      <div className="mx-auto min-h-[calc(100svh-4.5rem)] max-w-md px-4 py-16">
+        <Card className="border-2 border-foreground shadow-[7px_7px_0_hsl(var(--foreground))]">
+          <CardHeader className="border-b-2 border-foreground bg-accent text-center">
+            <CardTitle className="font-display text-3xl font-black uppercase">
+              Sjekk e-posten din
+            </CardTitle>
             <CardDescription>Vi har sendt en innloggingslenke til {email}</CardDescription>
           </CardHeader>
           <CardContent>
@@ -102,10 +104,14 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="container mx-auto max-w-md px-4 py-16">
-      <Card>
-        <CardHeader className="text-center">
-          <CardTitle>Logg inn</CardTitle>
+    <div className="mx-auto min-h-[calc(100svh-4.5rem)] max-w-md px-4 py-16">
+      <div className="mb-7 text-center">
+        <p className="text-xs font-black uppercase tracking-[0.18em] text-secondary">Min side</p>
+        <h1 className="font-display text-5xl font-black uppercase">Tilbake til feltet.</h1>
+      </div>
+      <Card className="border-2 border-foreground shadow-[7px_7px_0_hsl(var(--foreground))]">
+        <CardHeader className="border-b-2 border-foreground bg-accent text-center">
+          <CardTitle className="font-display text-3xl font-black uppercase">Logg inn</CardTitle>
           <CardDescription>Velg hvordan du vil logge inn</CardDescription>
         </CardHeader>
         <CardContent>

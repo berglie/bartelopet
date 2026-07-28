@@ -1,16 +1,25 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Barlow_Condensed, Inter } from 'next/font/google';
 import './globals.css';
 import { Navigation } from '@/app/_components/navigation';
 import { StructuredData } from '@/app/_components/structured-data';
 import { YearProvider } from '@/contexts/year-context';
 import { createClient } from '@/app/_shared/lib/supabase/server';
-import Link from 'next/link';
+import { Footer } from '@/app/_components/footer';
 
 const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
   preload: false,
+  variable: '--font-sans',
+});
+
+const barlowCondensed = Barlow_Condensed({
+  subsets: ['latin'],
+  display: 'swap',
+  preload: false,
+  variable: '--font-display',
+  weight: ['600', '700', '800', '900'],
 });
 
 export const metadata: Metadata = {
@@ -19,9 +28,16 @@ export const metadata: Metadata = {
     default: 'Barteløpet - Virtuelt løp for mental helse',
     template: '%s | Barteløpet',
   },
-  description:
-    'Delta i Barteløpet for Movember - løp for mental helse, del dine bilder og stem på andre deltakere',
-  keywords: ['barteløpet', 'løp', 'movember', 'mental helse', 'veldedighet', 'Stavanger', 'Norge'],
+  description: 'Løp hvor du vil i november, doner fem kroner per kilometer og støtt Prosjekt SUT.',
+  keywords: [
+    'barteløpet',
+    'Prosjekt SUT',
+    'løp',
+    'mental helse',
+    'veldedighet',
+    'Stavanger',
+    'Sandnes',
+  ],
   authors: [{ name: 'Barteløpet' }],
   creator: 'ÅpenAid',
   publisher: 'ÅpenAid',
@@ -39,22 +55,15 @@ export const metadata: Metadata = {
     locale: 'nb_NO',
     url: 'https://barteløpet.no',
     siteName: 'Barteløpet',
-    title: 'Barteløpet - Virtuelt løp for mental helse',
-    description: 'Delta i Movember-kampanjen! Løp for mental helse forskning.',
-    images: [
-      {
-        url: '/images/bartelopet.png',
-        width: 1200,
-        height: 630,
-        alt: 'Barteløpet - Virtuelt løp for mental helse',
-      },
-    ],
+    title: 'Barteløpet 2026 – Hver kilometer teller',
+    description: 'Løp hvor du vil i november og støtt Prosjekt SUT med fem kroner per kilometer.',
+    images: ['/opengraph-image'],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Barteløpet - Virtuelt løp for mental helse',
-    description: 'Delta i Movember-kampanjen! Løp for mental helse forskning.',
-    images: ['/images/bartelopet.png'],
+    title: 'Barteløpet 2026 – Hver kilometer teller',
+    description: 'Løp hvor du vil i november og støtt Prosjekt SUT med fem kroner per kilometer.',
+    images: ['/opengraph-image'],
   },
   robots: {
     index: true,
@@ -81,45 +90,24 @@ export default async function RootLayout({
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  const { data: isAdmin } = user ? await supabase.rpc('is_event_admin') : { data: false };
 
   return (
-    <html lang="nb-NO">
+    <html lang="nb-NO" data-event-year="2026" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "document.documentElement.dataset.eventYear=new URLSearchParams(location.search).get('year')==='2025'?'2025':'2026'",
+          }}
+        />
         <StructuredData />
       </head>
-      <body className={inter.className}>
+      <body className={`${inter.variable} ${barlowCondensed.variable} font-sans`}>
         <YearProvider>
-          <Navigation isAuthenticated={!!user} />
+          <Navigation isAuthenticated={!!user} isAdmin={Boolean(isAdmin)} />
           <main>{children}</main>
-          <footer className="mt-16 border-t">
-            <div className="container mx-auto px-4 py-8">
-              <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-                <p className="text-sm text-muted-foreground">
-                  © 2025 ÅpenAid - Støtter mental helse gjennom Movember
-                </p>
-                <div className="flex gap-4 text-sm">
-                  <Link
-                    href="/kontakt"
-                    className="text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    Kontakt
-                  </Link>
-                  <Link
-                    href="/vilkar"
-                    className="text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    Vilkår for bruk
-                  </Link>
-                  <Link
-                    href="/personvern"
-                    className="text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    Personvern
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </footer>
+          <Footer />
         </YearProvider>
       </body>
     </html>

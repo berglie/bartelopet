@@ -1,5 +1,40 @@
 import { createClient } from '@/app/_shared/lib/supabase/server';
 import { NextResponse } from 'next/server';
+import { getCurrentEventYear } from '@/app/_shared/lib/utils/year';
+import type { User } from '@supabase/supabase-js';
+
+async function syncDistanceInterests(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  user: User
+) {
+  const raw = user.user_metadata?.distance_interests;
+  const categories = Array.isArray(raw)
+    ? raw.filter((value): value is string => ['short', 'medium', 'long'].includes(value))
+    : [];
+  if (categories.length === 0) return;
+
+  const year = getCurrentEventYear();
+  const { data: participant } = await supabase
+    .from('participants')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('event_year', year)
+    .maybeSingle();
+  if (!participant) return;
+
+  await supabase
+    .from('participant_distance_interests')
+    .delete()
+    .eq('participant_id', participant.id)
+    .eq('event_year', year);
+  await supabase.from('participant_distance_interests').insert(
+    categories.map((category) => ({
+      participant_id: participant.id,
+      event_year: year,
+      category_slug: category,
+    }))
+  );
+}
 
 /**
  * Validates redirect path to prevent open redirect attacks
@@ -70,11 +105,13 @@ export async function GET(request: Request) {
         .from('participants')
         .select('id')
         .eq('user_id', user.id)
+        .eq('event_year', getCurrentEventYear())
         .maybeSingle();
 
       if (!participant) {
         return NextResponse.redirect(new URL('/pamelding', origin));
       }
+      await syncDistanceInterests(supabase, user);
     }
 
     return NextResponse.redirect(new URL(next, origin));
@@ -101,6 +138,7 @@ export async function GET(request: Request) {
             .from('participants')
             .select('id, user_id')
             .eq('email', user.email)
+            .eq('event_year', getCurrentEventYear())
             .maybeSingle();
 
           if (participant && !participant.user_id) {
@@ -108,7 +146,8 @@ export async function GET(request: Request) {
             await supabase
               .from('participants')
               .update({ user_id: user.id })
-              .eq('email', user.email);
+              .eq('email', user.email)
+              .eq('event_year', getCurrentEventYear());
           }
         }
 
@@ -117,12 +156,14 @@ export async function GET(request: Request) {
           .from('participants')
           .select('id')
           .eq('user_id', user.id)
+          .eq('event_year', getCurrentEventYear())
           .maybeSingle();
 
         // If no participant record, redirect to registration
         if (!linkedParticipant) {
           return NextResponse.redirect(new URL('/pamelding', origin));
         }
+        await syncDistanceInterests(supabase, user);
       }
 
       return NextResponse.redirect(new URL(next, origin));
@@ -213,10 +254,15 @@ export async function GET(request: Request) {
         .from('participants')
         .select('id, user_id')
         .eq('email', user.email)
+        .eq('event_year', getCurrentEventYear())
         .maybeSingle();
 
       if (participant && !participant.user_id) {
-        await supabase.from('participants').update({ user_id: user.id }).eq('email', user.email);
+        await supabase
+          .from('participants')
+          .update({ user_id: user.id })
+          .eq('email', user.email)
+          .eq('event_year', getCurrentEventYear());
       }
     }
 
@@ -225,11 +271,13 @@ export async function GET(request: Request) {
       .from('participants')
       .select('id')
       .eq('user_id', user.id)
+      .eq('event_year', getCurrentEventYear())
       .maybeSingle();
 
     if (!linkedParticipant) {
       return NextResponse.redirect(new URL('/pamelding', origin));
     }
+    await syncDistanceInterests(supabase, user);
 
     return NextResponse.redirect(new URL(next, origin));
   }

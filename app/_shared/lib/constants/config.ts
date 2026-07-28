@@ -23,3 +23,5 @@ export const config = {
     maxPageSize: 100,
   },
 } as const;
+
+export const PROJECT_SUT_URL = 'https://www.sandnesultratrail.com/prosjekt-sut';

@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 import { MustacheSVG } from '@/app/_shared/components/mustache-icon';
 import { getCurrentEventYear, getYearDateRange } from '@/app/_shared/lib/utils/year';
+import { Home2026 } from '@/app/_components/home-2026';
+import type { Metadata } from 'next';
 
 const DONATION_GOAL = 20000;
 const SPLEIS_URL = 'https://spleis.no/barteløpet2025';
@@ -47,6 +49,38 @@ async function getStats(year: number) {
   };
 }
 
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ year?: string }>;
+}): Promise<Metadata> {
+  const { year } = await searchParams;
+
+  if (year === '2025') {
+    return {
+      title: 'Barteløpet 2025',
+      description:
+        'Se tilbake på Barteløpet 2025, det virtuelle veldedighetsløpet til støtte for Mental Helse Ungdom.',
+      openGraph: {
+        title: 'Barteløpet 2025',
+        description: 'Takk til alle som løp og samlet inn penger til Mental Helse Ungdom.',
+        images: ['/images/bartelopet.png'],
+      },
+    };
+  }
+
+  return {
+    title: 'Barteløpet 2026 – Hver kilometer teller',
+    description:
+      'Løp hvor du vil i november, doner fem kroner per kilometer og støtt Prosjekt SUT.',
+    openGraph: {
+      title: 'Barteløpet 2026 – Hver kilometer teller',
+      description: 'Løp hvor du vil i november og støtt Prosjekt SUT.',
+      images: ['/opengraph-image'],
+    },
+  };
+}
+
 export default async function HomePage({
   searchParams,
 }: {
@@ -55,6 +89,11 @@ export default async function HomePage({
   const params = await searchParams;
   const yearParam = params.year;
   const year = yearParam ? parseInt(yearParam, 10) : getCurrentEventYear();
+
+  if (year !== 2025) {
+    return <Home2026 />;
+  }
+
   const stats = await getStats(year);
 
   return (

@@ -15,7 +15,7 @@ export function PrivacyPolicy() {
       <article className="prose prose-zinc max-w-none dark:prose-invert prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-li:text-foreground">
         <h1 className="text-foreground">Personvernerklæring</h1>
         <p className="text-sm text-muted-foreground">
-          <em>Sist oppdatert: 30. oktober 2025</em>
+          <em>Sist oppdatert: 25. juli 2026</em>
         </p>
 
         <h2>1. Innledning</h2>
@@ -39,7 +39,7 @@ export function PrivacyPolicy() {
             <strong>E-postadresse</strong> - for innlogging og kommunikasjon
           </li>
           <li>
-            <strong>Postadresse</strong> - for levering av pokal og eventuelle premier
+            <strong>Postadresse</strong> - for eventuell levering av premier
           </li>
         </ul>
 
@@ -53,7 +53,7 @@ export function PrivacyPolicy() {
         <h3>Informasjon du deler frivillig:</h3>
         <ul>
           <li>
-            <strong>Løpsbilder</strong> - bilder du laster opp som bevis på gjennomføring
+            <strong>Løpsbilder eller aktivitetslenker</strong> - valgfritt innhold du deler
           </li>
           <li>
             <strong>Kommentar</strong> - din beskrivelse av gjennomføringen
@@ -64,6 +64,10 @@ export function PrivacyPolicy() {
           <li>
             <strong>Varighet</strong> - hvor lang tid løpet tok (valgfritt)
           </li>
+          <li>
+            <strong>Distanse, donasjonsbekreftelse og premieinteresser</strong> - for beregning av
+            donasjonsbeløp og kvalifiserte lodd
+          </li>
         </ul>
 
         <h3>Teknisk informasjon:</h3>
@@ -72,7 +76,7 @@ export function PrivacyPolicy() {
             <strong>Innloggingsdata</strong> - tidspunkt for innlogging og aktivitet
           </li>
           <li>
-            <strong>Stemmedata</strong> - hvem du har stemt på (anonymisert i visninger)
+            <strong>Trekningsdata</strong> - kvalifiserte lodd og eventuell premiegevinst
           </li>
         </ul>
 
@@ -83,7 +87,7 @@ export function PrivacyPolicy() {
             <strong>Kontoadministrasjon</strong> - for å opprette og administrere din brukerkonto
           </li>
           <li>
-            <strong>Premielevering</strong> - for å sende pokal og eventuelle premier til deg
+            <strong>Premielevering</strong> - for å kontakte vinnere og levere premier
           </li>
           <li>
             <strong>Kommunikasjon</strong> - for å kontakte deg ved behov angående premielevering
@@ -91,7 +95,7 @@ export function PrivacyPolicy() {
           </li>
           <li>
             <strong>Gjennomføring av arrangement</strong> - for å administrere deltakelse,
-            avstemning og resultater
+            loddtrekning og resultater
           </li>
           <li>
             <strong>Historikk</strong> - for å oppbevare arrangementets historie
@@ -184,8 +188,9 @@ export function PrivacyPolicy() {
           <li>Ditt fulle navn (eller visningsnavn hvis oppgitt)</li>
           <li>Bilder du laster opp</li>
           <li>Kommentarer du skriver</li>
-          <li>Dato og varighet for gjennomføring</li>
-          <li>Antall stemmer du har mottatt</li>
+          <li>Dato, distanse, varighet og bekreftet donasjonsbeløp</li>
+          <li>Valgte premiekategorier og antall kvalifiserte lodd</li>
+          <li>Navn på publiserte vinnere</li>
         </ul>
         <p className="font-semibold">
           OBS: Ikke del sensitive eller private opplysninger i kommentarfeltet eller bilder, da

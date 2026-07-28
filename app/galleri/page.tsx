@@ -1,8 +1,9 @@
 import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import { createClient } from '@/app/_shared/lib/supabase/server';
 import { GalleryClient } from './_components/GalleryClient';
-import { getCurrentEventYear, getYearDateRange } from '@/app/_shared/lib/utils/year';
+import { getYearDateRange } from '@/app/_shared/lib/utils/year';
 import type { CompletionImage } from '@/app/_shared/lib/types/database';
 
 export const revalidate = 60; // Revalidate every 60 seconds
@@ -134,10 +135,9 @@ type CompletionData = {
   images: CompletionImage[];
 };
 
-async function getCompletions(): Promise<CompletionData[]> {
+async function getCompletions(year: number): Promise<CompletionData[]> {
   const supabase = await createClient();
-  const currentYear = getCurrentEventYear();
-  const { start, end } = getYearDateRange(currentYear);
+  const { start, end } = getYearDateRange(year);
 
   const { data: completions, error } = await supabase
     .from('completions_with_counts')
@@ -158,7 +158,7 @@ async function getCompletions(): Promise<CompletionData[]> {
       )
     `
     )
-    .eq('event_year', currentYear)
+    .eq('event_year', year)
     .gte('completed_date', start.toISOString())
     .lte('completed_date', end.toISOString())
     .order('created_at', { ascending: false });
@@ -206,7 +206,7 @@ async function getCompletions(): Promise<CompletionData[]> {
   return validCompletions;
 }
 
-async function getUserVotes() {
+async function getUserVotes(year: number) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -214,14 +214,12 @@ async function getUserVotes() {
 
   if (!user) return [];
 
-  const currentYear = getCurrentEventYear();
-
   // Get participant ID from user for current year (authenticated context - OK to use participants)
   const { data: participant } = await supabase
     .from('participants')
     .select('id')
     .eq('user_id', user.id)
-    .eq('event_year', currentYear)
+    .eq('event_year', year)
     .single();
 
   if (!participant) return [];
@@ -231,13 +229,22 @@ async function getUserVotes() {
     .from('photo_votes')
     .select('completion_id')
     .eq('voter_id', participant.id)
-    .eq('event_year', currentYear);
+    .eq('event_year', year);
 
   return votes?.map((vote) => vote.completion_id) || [];
 }
 
-export default async function GalleryPage() {
-  const [completions, userVoteIds] = await Promise.all([getCompletions(), getUserVotes()]);
+export default async function GalleryPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ year?: string }>;
+}) {
+  const params = await searchParams;
+  if (params.year !== '2025') {
+    redirect('/galleri?year=2025');
+  }
+  const year = 2025;
+  const [completions, userVoteIds] = await Promise.all([getCompletions(year), getUserVotes(year)]);
 
   return (
     <div className="container mx-auto px-4 py-16">
