@@ -81,6 +81,138 @@ export type Database = {
           },
         ];
       };
+      distance_categories: {
+        Row: {
+          color: string;
+          display_order: number;
+          event_year: number;
+          label: string;
+          maximum_km: number | null;
+          minimum_km: number;
+          slug: string;
+        };
+        Insert: {
+          color: string;
+          display_order: number;
+          event_year: number;
+          label: string;
+          maximum_km?: number | null;
+          minimum_km: number;
+          slug: string;
+        };
+        Update: {
+          color?: string;
+          display_order?: number;
+          event_year?: number;
+          label?: string;
+          maximum_km?: number | null;
+          minimum_km?: number;
+          slug?: string;
+        };
+        Relationships: [];
+      };
+      draw_results: {
+        Row: {
+          annulled_at: string | null;
+          annulled_by: string | null;
+          candidate_count: number;
+          drawn_at: string;
+          drawn_by: string;
+          event_year: number;
+          id: string;
+          participant_id: string;
+          prize_id: string;
+          published_at: string | null;
+          winning_run_id: string;
+        };
+        Insert: {
+          annulled_at?: string | null;
+          annulled_by?: string | null;
+          candidate_count: number;
+          drawn_at?: string;
+          drawn_by: string;
+          event_year: number;
+          id?: string;
+          participant_id: string;
+          prize_id: string;
+          published_at?: string | null;
+          winning_run_id: string;
+        };
+        Update: {
+          annulled_at?: string | null;
+          annulled_by?: string | null;
+          candidate_count?: number;
+          drawn_at?: string;
+          drawn_by?: string;
+          event_year?: number;
+          id?: string;
+          participant_id?: string;
+          prize_id?: string;
+          published_at?: string | null;
+          winning_run_id?: string;
+        };
+        Relationships: [];
+      };
+      event_editions: {
+        Row: {
+          created_at: string;
+          donation_rate_nok: number;
+          donation_url: string | null;
+          event_year: number;
+          registration_open: boolean;
+          submissions_end: string;
+          submissions_open: boolean;
+          submissions_start: string;
+          updated_at: string;
+          winners_published: boolean;
+        };
+        Insert: {
+          created_at?: string;
+          donation_rate_nok: number;
+          donation_url?: string | null;
+          event_year: number;
+          registration_open?: boolean;
+          submissions_end: string;
+          submissions_open?: boolean;
+          submissions_start: string;
+          updated_at?: string;
+          winners_published?: boolean;
+        };
+        Update: {
+          created_at?: string;
+          donation_rate_nok?: number;
+          donation_url?: string | null;
+          event_year?: number;
+          registration_open?: boolean;
+          submissions_end?: string;
+          submissions_open?: boolean;
+          submissions_start?: string;
+          updated_at?: string;
+          winners_published?: boolean;
+        };
+        Relationships: [];
+      };
+      participant_distance_interests: {
+        Row: {
+          category_slug: string;
+          created_at: string;
+          event_year: number;
+          participant_id: string;
+        };
+        Insert: {
+          category_slug: string;
+          created_at?: string;
+          event_year: number;
+          participant_id: string;
+        };
+        Update: {
+          category_slug?: string;
+          created_at?: string;
+          event_year?: number;
+          participant_id?: string;
+        };
+        Relationships: [];
+      };
       participants: {
         Row: {
           auth_provider: string;
@@ -123,6 +255,99 @@ export type Database = {
           postal_address?: string;
           updated_at?: string;
           user_id?: string | null;
+        };
+        Relationships: [];
+      };
+      race_prizes: {
+        Row: {
+          category_slug: string;
+          created_at: string;
+          distance_km: number;
+          donor_name: string | null;
+          event_year: number;
+          id: string;
+          notes: string | null;
+          race_date: string | null;
+          race_name: string;
+          status: string;
+          updated_at: string;
+          website_url: string | null;
+        };
+        Insert: {
+          category_slug: string;
+          created_at?: string;
+          distance_km: number;
+          donor_name?: string | null;
+          event_year: number;
+          id?: string;
+          notes?: string | null;
+          race_date?: string | null;
+          race_name: string;
+          status?: string;
+          updated_at?: string;
+          website_url?: string | null;
+        };
+        Update: {
+          category_slug?: string;
+          created_at?: string;
+          distance_km?: number;
+          donor_name?: string | null;
+          event_year?: number;
+          id?: string;
+          notes?: string | null;
+          race_date?: string | null;
+          race_name?: string;
+          status?: string;
+          updated_at?: string;
+          website_url?: string | null;
+        };
+        Relationships: [];
+      };
+      runs: {
+        Row: {
+          comment: string | null;
+          created_at: string;
+          distance_km: number;
+          donation_amount_nok: number;
+          donation_confirmed_at: string;
+          duration_text: string | null;
+          event_year: number;
+          evidence_url: string | null;
+          id: string;
+          participant_id: string;
+          run_date: string;
+          title: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          comment?: string | null;
+          created_at?: string;
+          distance_km: number;
+          donation_amount_nok: number;
+          donation_confirmed_at?: string;
+          duration_text?: string | null;
+          event_year: number;
+          evidence_url?: string | null;
+          id?: string;
+          participant_id: string;
+          run_date: string;
+          title?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          comment?: string | null;
+          created_at?: string;
+          distance_km?: number;
+          donation_amount_nok?: number;
+          donation_confirmed_at?: string;
+          duration_text?: string | null;
+          event_year?: number;
+          evidence_url?: string | null;
+          id?: string;
+          participant_id?: string;
+          run_date?: string;
+          title?: string | null;
+          updated_at?: string;
         };
         Relationships: [];
       };
@@ -350,6 +575,34 @@ export type Database = {
       };
     };
     Views: {
+      eligible_entries: {
+        Row: {
+          category_slug: string | null;
+          event_year: number | null;
+          participant_id: string | null;
+          run_id: string | null;
+        };
+        Relationships: [];
+      };
+      runs_public: {
+        Row: {
+          bib_number: number | null;
+          comment: string | null;
+          created_at: string | null;
+          distance_km: number | null;
+          donation_amount_nok: number | null;
+          duration_text: string | null;
+          event_year: number | null;
+          evidence_url: string | null;
+          full_name: string | null;
+          id: string | null;
+          interest_categories: string[] | null;
+          participant_id: string | null;
+          run_date: string | null;
+          title: string | null;
+        };
+        Relationships: [];
+      };
       completions_with_counts: {
         Row: {
           comment: string | null;
@@ -447,6 +700,10 @@ export type Database = {
     };
     Functions: {
       close_submission_window: { Args: never; Returns: undefined };
+      draw_race_prize: {
+        Args: { p_prize_id: string };
+        Returns: Database['public']['Tables']['draw_results']['Row'];
+      };
       get_current_event_year: { Args: never; Returns: number };
       get_participant_history: {
         Args: { p_user_id: string };
@@ -463,6 +720,7 @@ export type Database = {
         }[];
       };
       is_november_edit_window: { Args: never; Returns: boolean };
+      is_event_admin: { Args: never; Returns: boolean };
       is_submission_window_open: { Args: never; Returns: boolean };
       is_year_editable: { Args: { year_to_check: number }; Returns: boolean };
       open_submission_window: { Args: never; Returns: undefined };

@@ -30,6 +30,26 @@ export function RegistrationForm() {
   } | null>(null);
   const [consentAccepted, setConsentAccepted] = useState(false);
   const [needsCompletion, setNeedsCompletion] = useState(false);
+  const [interests, setInterests] = useState<string[]>(['short', 'medium', 'long']);
+
+  async function saveInterests(participantId: string, eventYear: number) {
+    const supabase = createClient();
+    const { error: deleteError } = await supabase
+      .from('participant_distance_interests')
+      .delete()
+      .eq('participant_id', participantId)
+      .eq('event_year', eventYear);
+    if (deleteError) throw deleteError;
+
+    const { error: interestError } = await supabase.from('participant_distance_interests').insert(
+      interests.map((category) => ({
+        participant_id: participantId,
+        event_year: eventYear,
+        category_slug: category,
+      }))
+    );
+    if (interestError) throw interestError;
+  }
 
   // Load OAuth user data if logged in
   useEffect(() => {
@@ -45,6 +65,7 @@ export function RegistrationForm() {
           .from('participants')
           .select('id')
           .eq('user_id', user.id)
+          .eq('event_year', getCurrentEventYear())
           .maybeSingle();
 
         if (!participant) {
@@ -153,15 +174,19 @@ export function RegistrationForm() {
       if (user) {
         // User is already authenticated (came from magic link or confirmation)
         // Insert participant and link to existing auth user
-        const { error: insertError } = await supabase.from('participants').insert({
-          user_id: user.id, // Link to existing auth user
-          full_name: data.full_name,
-          email: data.email,
-          postal_address: data.postal_address,
-          phone_number: data.phone_number,
-          bib_number: nextBibNumber,
-          event_year: currentEventYear,
-        });
+        const { data: newParticipant, error: insertError } = await supabase
+          .from('participants')
+          .insert({
+            user_id: user.id,
+            full_name: data.full_name,
+            email: data.email,
+            postal_address: data.postal_address,
+            phone_number: data.phone_number,
+            bib_number: nextBibNumber,
+            event_year: currentEventYear,
+          })
+          .select('id')
+          .single();
 
         if (insertError) {
           if (insertError.code === '23505') {
@@ -172,6 +197,7 @@ export function RegistrationForm() {
           }
           return;
         }
+        await saveInterests(newParticipant.id, currentEventYear);
 
         // User is already logged in, redirect to dashboard immediately
         setBibNumber(nextBibNumber);
@@ -192,6 +218,7 @@ export function RegistrationForm() {
             emailRedirectTo: `${window.location.origin}/auth/callback`,
             data: {
               full_name: data.full_name,
+              distance_interests: interests,
             },
           },
         });
@@ -212,15 +239,19 @@ export function RegistrationForm() {
         }
 
         // Insert participant record linked to the new user
-        const { error: insertError } = await supabase.from('participants').insert({
-          user_id: signUpData.user.id, // Link to newly created auth user
-          full_name: data.full_name,
-          email: data.email,
-          postal_address: data.postal_address,
-          phone_number: data.phone_number,
-          bib_number: nextBibNumber,
-          event_year: currentEventYear,
-        });
+        const { data: newParticipant, error: insertError } = await supabase
+          .from('participants')
+          .insert({
+            user_id: signUpData.user.id,
+            full_name: data.full_name,
+            email: data.email,
+            postal_address: data.postal_address,
+            phone_number: data.phone_number,
+            bib_number: nextBibNumber,
+            event_year: currentEventYear,
+          })
+          .select('id')
+          .single();
 
         if (insertError) {
           console.error('Insert error:', insertError);
@@ -237,6 +268,9 @@ export function RegistrationForm() {
           }
           return;
         }
+        if (signUpData.session) {
+          await saveInterests(newParticipant.id, currentEventYear);
+        }
 
         setBibNumber(nextBibNumber);
       }
@@ -252,10 +286,10 @@ export function RegistrationForm() {
     const isOAuthUser = prefillData !== null;
 
     return (
-      <Card>
+      <Card className="border-2 border-foreground shadow-[7px_7px_0_hsl(var(--foreground))]">
         <CardHeader>
           <CardTitle>Registrering vellykket! 🎉</CardTitle>
-          <CardDescription>Du er nå påmeldt Barteløpet 2025</CardDescription>
+          <CardDescription>Du er nå påmeldt Barteløpet 2026</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="py-8 text-center">
@@ -286,9 +320,9 @@ export function RegistrationForm() {
             <ol className="list-inside list-decimal space-y-1 text-sm text-muted-foreground">
               {!isOAuthUser && <li>Sjekk e-posten din og klikk på bekreftelseslenken</li>}
               {!isOAuthUser && <li>Du vil bli automatisk innlogget</li>}
-              <li>Løp løypen i november</li>
-              <li>Last opp bilde og historien din</li>
-              <li>Stem på andre deltakere</li>
+              <li>Løp en valgfri tur i november</li>
+              <li>Doner minst 5 kroner per kilometer</li>
+              <li>Registrer turen og samle lodd til valgte startnummer</li>
             </ol>
           </div>
 
@@ -303,9 +337,11 @@ export function RegistrationForm() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Registreringsskjema</CardTitle>
+    <Card className="border-2 border-foreground shadow-[7px_7px_0_hsl(var(--foreground))]">
+      <CardHeader className="border-b-2 border-foreground bg-secondary">
+        <CardTitle className="font-display text-3xl font-black uppercase">
+          Registreringsskjema
+        </CardTitle>
         <CardDescription>
           {needsCompletion
             ? 'E-posten din er bekreftet! Fullfør registreringen ved å fylle ut informasjonen under'
@@ -464,7 +500,9 @@ export function RegistrationForm() {
               placeholder="Gateveien 1, 4000 Stavanger"
               disabled={loading}
             />
-            <p className="text-sm text-muted-foreground">Pokalen sendes til denne adressen</p>
+            <p className="text-sm text-muted-foreground">
+              Brukes kun dersom en eventuell premie må sendes
+            </p>
           </div>
 
           <div className="space-y-2">
@@ -477,6 +515,40 @@ export function RegistrationForm() {
               disabled={loading}
             />
           </div>
+
+          <fieldset className="space-y-3 rounded-lg border p-4">
+            <legend className="px-1 text-sm font-semibold">
+              Hvilke startnummer er du interessert i? *
+            </legend>
+            {[
+              ['short', '0–10 km', '3 km, 5 km og 10 km'],
+              ['medium', '10–30 km', '10 miles og halvmaraton'],
+              ['long', '30+ km', 'Maraton og ultraløp'],
+            ].map(([slug, label, help]) => (
+              <label key={slug} className="flex cursor-pointer items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={interests.includes(slug)}
+                  onChange={() =>
+                    setInterests((current) =>
+                      current.includes(slug)
+                        ? current.filter((item) => item !== slug)
+                        : [...current, slug]
+                    )
+                  }
+                  className="h-4 w-4"
+                  disabled={loading}
+                />
+                <span className="text-sm">
+                  <strong>{label}</strong>
+                  <span className="ml-2 text-muted-foreground">{help}</span>
+                </span>
+              </label>
+            ))}
+            <p className="text-xs text-muted-foreground">
+              Du kan endre valgene på Min side frem til registreringen stenger.
+            </p>
+          </fieldset>
 
           <div className="space-y-3 pt-2">
             <div className="flex items-start space-x-3 rounded-lg border bg-muted/50 p-4">
@@ -519,7 +591,11 @@ export function RegistrationForm() {
             </div>
           </div>
 
-          <Button type="submit" className="w-full" disabled={loading || !consentAccepted}>
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={loading || !consentAccepted || interests.length === 0}
+          >
             {loading ? 'Registrerer...' : 'Meld meg på'}
           </Button>
         </form>

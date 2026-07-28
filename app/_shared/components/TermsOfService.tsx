@@ -15,7 +15,7 @@ export function TermsOfService() {
       <article className="prose prose-zinc max-w-none dark:prose-invert prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-li:text-foreground">
         <h1 className="text-foreground">Vilkår for bruk</h1>
         <p className="text-sm text-muted-foreground">
-          <em>Sist oppdatert: 30. oktober 2025</em>
+          <em>Sist oppdatert: 25. juli 2026</em>
         </p>
 
         <h2>1. Aksept av vilkår</h2>
@@ -26,9 +26,9 @@ export function TermsOfService() {
 
         <h2>2. Beskrivelse av tjenesten</h2>
         <p>
-          Barteløpet er en veldedighetsløpsarrangement i november. Deltakere gjennomfører en løype i
-          Stavanger sentrum, laster opp bevis på gjennomføring, og kan stemme på andre deltakeres
-          bidrag.
+          Barteløpet er et virtuelt veldedighetsløp i november. Deltakere velger egne løpeturer,
+          donerer minst fem kroner per registrerte kilometer og samler lodd i valgte
+          startnummer-kategorier. Donasjonen bekreftes av deltakeren selv.
         </p>
 
         <h2>3. Påmelding og brukerinformasjon</h2>
@@ -47,29 +47,30 @@ export function TermsOfService() {
         <h2>4. Deltakerforpliktelser</h2>
         <p>Som deltaker forplikter du deg til å:</p>
         <ul>
-          <li>Gjennomføre løpet i november måned</li>
+          <li>Kun registrere turer som faktisk er gjennomført i november</li>
+          <li>Donere minst beløpet som vises før hver tur registreres</li>
           <li>Laste opp ærlige og korrekte opplysninger om gjennomføringen</li>
           <li>Ikke laste opp støtende, ulovlig eller upassende innhold</li>
-          <li>Ikke stemme på egen gjennomføring</li>
           <li>Respektere andre deltakere</li>
         </ul>
 
-        <h2>5. Innhold og bilder</h2>
-        <p>Ved opplasting av bilder gir du Barteløpet rett til å:</p>
+        <h2>5. Innhold, aktivitetslenker og bilder</h2>
+        <p>Ved deling av aktivitetslenker eller bilder gir du Barteløpet rett til å:</p>
         <ul>
-          <li>Vise bildene i galleriet på nettsiden</li>
+          <li>Vise innholdet i den offentlige aktivitetsoversikten</li>
           <li>Bruke bildene i markedsføring av arrangementet</li>
           <li>Lagre bildene for historiske formål</li>
         </ul>
         <p>
-          Du beholder opphavsretten til dine bilder. Du bekrefter at du har rett til å laste opp
-          bildene og at de ikke krenker andres rettigheter.
+          Du beholder opphavsretten til egne bilder. Du bekrefter at innholdet kan deles offentlig
+          og ikke krenker andres rettigheter eller personvern.
         </p>
 
         <h2>6. Premier og levering</h2>
         <p>
-          Alle som fullfører løpet mottar en pokal. Pokalen sendes til oppgitt postadresse etter
-          arrangementet. Ekstra premier kan tildeles etter avstemning eller loddtrekning.
+          Donerte startnummer trekkes tilfeldig blant kvalifiserte lodd etter at perioden er
+          avsluttet. Hver deltaker kan maksimalt vinne ett startnummer. Arrangøren kan annullere og
+          gjennomføre en ny trekning dersom en vinner ikke kan motta premien.
         </p>
         <p>Vi er ikke ansvarlige for forsinkelser i leveransen som skyldes:</p>
         <ul>

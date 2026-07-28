@@ -7,38 +7,50 @@
 
 @layer base {
   :root {
-    /* Mustache Bar Theme - Dark vintage barbershop vibes */
-    --background: 25 30% 8%; /* Deep espresso brown */
-    --foreground: 35 25% 95%; /* Warm cream */
+    /* Barteløpet 2026 — raw trail, lichen and clay */
+    --background: 48 28% 93%;
+    --foreground: 150 30% 11%;
+    --card: 48 35% 97%;
+    --card-foreground: 150 30% 11%;
+    --popover: 48 35% 97%;
+    --popover-foreground: 150 30% 11%;
+    --primary: 150 30% 11%;
+    --primary-foreground: 48 28% 93%;
+    --accent: 74 83% 65%;
+    --accent-foreground: 150 30% 11%;
+    --secondary: 14 78% 57%;
+    --secondary-foreground: 150 30% 11%;
+    --muted: 47 18% 86%;
+    --muted-foreground: 150 10% 35%;
+    --destructive: 0 68% 46%;
+    --destructive-foreground: 48 35% 97%;
+    --border: 150 20% 20%;
+    --input: 48 20% 90%;
+    --ring: 74 83% 45%;
+    --radius: 0.35rem;
+  }
 
-    --card: 25 28% 12%; /* Rich dark chocolate */
+  [data-event-year='2025'] {
+    /* The original 2025 vintage barbershop theme */
+    --background: 25 30% 8%;
+    --foreground: 35 25% 95%;
+    --card: 25 28% 12%;
     --card-foreground: 35 25% 95%;
-
     --popover: 25 28% 12%;
     --popover-foreground: 35 25% 95%;
-
-    /* Rich chocolate brown - vintage feel */
     --primary: 30 35% 20%;
     --primary-foreground: 35 25% 95%;
-
-    /* Amber/honey mustache gold - the star of the show! */
     --accent: 35 85% 55%;
     --accent-foreground: 25 30% 8%;
-
-    /* Warm tan/caramel */
     --secondary: 30 25% 45%;
     --secondary-foreground: 35 25% 95%;
-
     --muted: 30 20% 25%;
     --muted-foreground: 35 15% 60%;
-
     --destructive: 0 62.8% 50.6%;
     --destructive-foreground: 35 25% 95%;
-
     --border: 30 25% 18%;
     --input: 30 25% 15%;
     --ring: 35 85% 55%;
-
     --radius: 0.75rem;
   }
 }
@@ -49,15 +61,70 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans), sans-serif;
     font-feature-settings:
       'rlig' 1,
       'calt' 1;
+  }
+
+  [data-event-year='2026'] h1,
+  [data-event-year='2026'] h2,
+  [data-event-year='2026'] h3,
+  [data-event-year='2026'] .font-display {
+    font-family: var(--font-display), sans-serif;
+  }
+
+  [data-event-year='2026'] h1,
+  [data-event-year='2026'] h2 {
+    text-wrap: balance;
+  }
+
+  [data-event-year='2026'] ::selection {
+    background: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
   }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .trail-label {
+    @apply inline-flex items-center gap-2 border border-foreground/30 bg-background/80 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em];
+  }
+
+  .trail-card {
+    @apply border-2 border-foreground/80 bg-card shadow-[5px_5px_0_hsl(var(--foreground))];
+  }
+
+  .trail-rule {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      hsl(var(--foreground)),
+      hsl(var(--foreground)) 5px,
+      transparent 5px,
+      transparent 10px
+    );
+  }
+
+  [data-event-year='2026'] .button-default {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+  }
+
+  [data-event-year='2026'] .button-secondary {
+    @apply bg-accent text-accent-foreground hover:bg-accent/90;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 

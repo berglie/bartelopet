@@ -1,6 +1,13 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+} from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { getCurrentEventYear, isValidEventYear } from '@/app/_shared/lib/utils/year';
 
@@ -40,6 +47,10 @@ export function YearProvider({ children, initialYear }: YearProviderProps) {
   const currentEventYear = getCurrentEventYear();
   const isCurrentYear = selectedYear === currentEventYear;
 
+  useLayoutEffect(() => {
+    document.documentElement.dataset.eventYear = selectedYear.toString();
+  }, [selectedYear]);
+
   // Update URL when year changes
   const setSelectedYear = useCallback(
     (year: number) => {
@@ -49,6 +60,11 @@ export function YearProvider({ children, initialYear }: YearProviderProps) {
       }
 
       setSelectedYearState(year);
+
+      if (pathname === '/galleri' && year !== 2025) {
+        router.replace('/', { scroll: false });
+        return;
+      }
 
       // Update URL with new year parameter
       const params = new URLSearchParams(searchParams?.toString() || '');

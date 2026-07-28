@@ -1,41 +1,60 @@
 import { redirect } from 'next/navigation';
-import { createClient } from '@/app/_shared/lib/supabase/server';
-import { Card, CardDescription, CardHeader, CardTitle } from '@/app/_shared/components/ui/card';
-import { Button } from '@/app/_shared/components/ui/button';
-import { CompletionForm } from '@/app/pamelding/_components/completion-form';
-import { CompletionDisplayMulti } from './_components/completion-display-multi';
 import Link from 'next/link';
+import { createClient } from '@/app/_shared/lib/supabase/server';
+import { Button } from '@/app/_shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/app/_shared/components/ui/card';
+import { EVENT_YEAR_2026 } from '@/app/_shared/types/event-2026';
+import { RunForm2026 } from './_components/run-form-2026';
+import { Interests2026 } from './_components/interests-2026';
+import { RunCard2026 } from './_components/run-card-2026';
+import { TerrainLines } from '@/app/_shared/components/terrain-lines';
 
 export default async function DashboardPage() {
   const supabase = await createClient();
-
-  // Check if user is authenticated
   const {
     data: { user },
-    error: authError,
   } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
 
-  if (authError || !user) {
-    redirect('/login');
-  }
-
-  // Get participant data - only select fields needed (no PII)
   const { data: participant } = await supabase
     .from('participants')
-    .select('id, full_name, bib_number, has_completed, event_year')
+    .select('id, full_name, bib_number')
     .eq('user_id', user.id)
-    .single();
+    .eq('event_year', EVENT_YEAR_2026)
+    .maybeSingle();
+  if (!participant) redirect('/pamelding');
 
-  if (!participant) {
-    redirect('/pamelding');
-  }
+  const [runsResult, interestsResult, entriesResult, editionResult] = await Promise.all([
+    supabase
+      .from('runs')
+      .select('*')
+      .eq('participant_id', participant.id)
+      .eq('event_year', EVENT_YEAR_2026)
+      .order('run_date', { ascending: false }),
+    supabase
+      .from('participant_distance_interests')
+      .select('category_slug')
+      .eq('participant_id', participant.id)
+      .eq('event_year', EVENT_YEAR_2026),
+    supabase
+      .from('eligible_entries')
+      .select('category_slug')
+      .eq('participant_id', participant.id)
+      .eq('event_year', EVENT_YEAR_2026),
+    supabase.from('event_editions').select('*').eq('event_year', EVENT_YEAR_2026).single(),
+  ]);
 
-  // Get completion if exists (using view to get counts)
-  const { data: completion } = await supabase
-    .from('completions_with_counts')
-    .select('*')
-    .eq('participant_id', participant.id)
-    .single();
+  const runs = runsResult.data || [];
+  const interests = (interestsResult.data || []).map((item) => item.category_slug);
+  const entries = entriesResult.data || [];
+  const canEdit = Boolean(editionResult.data?.submissions_open);
+  const canEditInterests = Boolean(
+    editionResult.data?.registration_open || editionResult.data?.submissions_open
+  );
+  const totalKm = runs.reduce((sum, run) => sum + run.distance_km, 0);
+  const totalDonation = runs.reduce((sum, run) => sum + run.donation_amount_nok, 0);
+  const ticketCount = (slug: string) =>
+    entries.filter((entry) => entry.category_slug === slug).length;
 
   async function signOut() {
     'use server';
@@ -45,118 +64,122 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-16">
-      {/* Header */}
-      <div className="mb-8 flex items-start justify-between">
-        <div>
-          <h1 className="mb-2 text-4xl font-bold">
-            <span className="md:hidden">Dashboard</span>
-            <span className="hidden md:inline">Min Side</span>
-          </h1>
-          <p className="text-lg text-muted-foreground">Velkommen, {participant.full_name}!</p>
-        </div>
-        <form action={signOut}>
-          <Button type="submit" variant="outline">
-            Logg ut
-          </Button>
-        </form>
-      </div>
-
-      {/* Participant Info - Single card on mobile, three cards on desktop */}
-      <div className="mb-8">
-        {/* Mobile view - single card */}
-        <Card className="md:hidden">
-          <CardHeader className="p-4">
-            <div className="flex items-start justify-between">
-              <div className="flex-1 text-center">
-                <CardDescription className="mb-1 text-xs">Startnummer</CardDescription>
-                <CardTitle className="text-2xl text-accent">#{participant.bib_number}</CardTitle>
-              </div>
-              <div className="flex-1 text-center">
-                <CardDescription className="mb-1 text-xs">Status</CardDescription>
-                <CardTitle
-                  className={`text-2xl ${participant.has_completed ? 'text-accent' : 'text-muted-foreground'}`}
-                >
-                  {participant.has_completed ? '✓' : '✗'}
-                </CardTitle>
-              </div>
-              <div className="flex-1 text-center">
-                <CardDescription className="mb-1 text-xs">Stemmer</CardDescription>
-                <CardTitle className="text-2xl text-accent">
-                  {completion?.vote_count || 0}
-                </CardTitle>
-              </div>
-            </div>
-          </CardHeader>
-        </Card>
-
-        {/* Desktop view - three separate cards */}
-        <div className="hidden gap-6 md:grid md:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <CardDescription>Startnummer</CardDescription>
-              <CardTitle className="text-4xl text-accent">{participant.bib_number}</CardTitle>
-            </CardHeader>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardDescription>Status</CardDescription>
-              <CardTitle
-                className={`text-4xl ${participant.has_completed ? 'text-accent' : 'text-muted-foreground'}`}
-              >
-                {participant.has_completed ? '✓' : '✗'}
-              </CardTitle>
-            </CardHeader>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardDescription>Stemmer</CardDescription>
-              <CardTitle className="text-4xl text-accent">{completion?.vote_count || 0}</CardTitle>
-            </CardHeader>
-          </Card>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      {completion && completion.id && completion.participant_id ? (
-        <div className="space-y-6">
-          <CompletionDisplayMulti
-            completion={{
-              id: completion.id,
-              participant_id: completion.participant_id,
-              completed_date: completion.completed_date || completion.created_at || '',
-              duration_text: completion.duration_text,
-              comment: completion.comment,
-              vote_count: completion.vote_count || 0,
-              image_count: completion.image_count || 0,
-            }}
-          />
-
-          <div className="flex gap-4">
-            <Button asChild className="flex-1">
-              <Link href="/galleri">Se galleri og stem</Link>
+    <div>
+      <header className="relative overflow-hidden border-b-2 border-foreground bg-foreground py-12 text-background md:py-16">
+        <TerrainLines className="text-accent/20" />
+        <div className="relative mx-auto flex max-w-[1200px] items-end justify-between gap-6 px-4 md:px-8">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-accent">
+              Min side · Startnummer #{participant.bib_number}
+            </p>
+            <h1 className="font-display mt-2 text-5xl font-black uppercase leading-none md:text-7xl">
+              Hei, {participant.full_name}
+            </h1>
+          </div>
+          <form action={signOut}>
+            <Button
+              variant="outline"
+              className="border-2 border-background bg-transparent font-bold uppercase text-background hover:bg-background hover:text-foreground"
+            >
+              Logg ut
             </Button>
-            <Button asChild variant="outline" className="flex-1">
-              <Link href="/deltakere">Se alle deltakere</Link>
+          </form>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-[1200px] px-4 py-10 md:px-8 md:py-16">
+        <div className="mb-10 grid grid-cols-2 gap-3 md:grid-cols-4">
+          {[
+            ['Turer', runs.length, 'bg-accent'],
+            [
+              'Kilometer',
+              totalKm.toLocaleString('nb-NO', { maximumFractionDigits: 1 }),
+              'bg-secondary',
+            ],
+            ['Donert', `${totalDonation.toLocaleString('nb-NO')} kr`, 'bg-card'],
+            ['Lodd', entries.length, 'bg-foreground text-background'],
+          ].map(([label, value, color]) => (
+            <Card key={String(label)} className={`border-2 border-foreground shadow-none ${color}`}>
+              <CardContent className="p-4 text-center md:p-5">
+                <div className="font-display text-3xl font-black md:text-4xl">{value}</div>
+                <div className="text-[10px] font-black uppercase tracking-[0.16em]">{label}</div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        <div className="grid gap-7 lg:grid-cols-[1fr_1.5fr]">
+          <div className="space-y-6">
+            <Card className="border-2 border-foreground shadow-[5px_5px_0_hsl(var(--foreground))]">
+              <CardHeader className="border-b-2 border-foreground bg-accent">
+                <CardTitle className="font-display text-2xl font-black uppercase">
+                  Mine premiekategorier
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <Interests2026 initial={interests} disabled={!canEditInterests} />
+                <div className="mt-5 grid grid-cols-3 gap-2 border-t-2 border-foreground pt-4 text-center text-xs">
+                  <div>
+                    <strong className="font-display block text-2xl">{ticketCount('short')}</strong>
+                    0–10
+                  </div>
+                  <div>
+                    <strong className="font-display block text-2xl">{ticketCount('medium')}</strong>
+                    10–30
+                  </div>
+                  <div>
+                    <strong className="font-display block text-2xl">{ticketCount('long')}</strong>
+                    30+
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Button
+              asChild
+              variant="outline"
+              className="w-full border-2 border-foreground bg-background font-bold uppercase"
+            >
+              <Link href="/premier">Se tilgjengelige startnumre</Link>
             </Button>
           </div>
-        </div>
-      ) : (
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Registrer fullført løp</CardTitle>
-              <CardDescription>
-                Har du fullført løypen? Fyll ut skjemaet under for å registrere løpet ditt
-              </CardDescription>
-            </CardHeader>
-          </Card>
 
-          <CompletionForm />
+          <div className="space-y-8">
+            <Card className="border-2 border-foreground shadow-[5px_5px_0_hsl(var(--foreground))]">
+              <CardHeader className="border-b-2 border-foreground bg-secondary">
+                <CardTitle className="font-display text-2xl font-black uppercase">
+                  Registrer løpetur
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                {canEdit ? (
+                  <RunForm2026 donationUrl={editionResult.data?.donation_url} />
+                ) : (
+                  <p className="border-2 border-foreground bg-muted p-4 text-sm text-muted-foreground">
+                    Turregistreringen er stengt. Den åpner for novemberløp når arrangøren åpner
+                    perioden.
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+            <div className="space-y-3">
+              <h2 className="font-display text-4xl font-black uppercase">Mine turer</h2>
+              {runs.map((run) => (
+                <RunCard2026
+                  key={run.id}
+                  run={run}
+                  canEdit={canEdit}
+                  donationUrl={editionResult.data?.donation_url}
+                />
+              ))}
+              {runs.length === 0 && (
+                <p className="border-2 border-dashed border-foreground p-6 text-muted-foreground">
+                  Ingen turer registrert ennå.
+                </p>
+              )}
+            </div>
+          </div>
         </div>
-      )}
+      </main>
     </div>
   );
 }

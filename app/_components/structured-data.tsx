@@ -5,7 +5,7 @@ export function StructuredData() {
     name: 'ÅpenAid',
     url: 'https://barteløpet.no',
     logo: 'https://barteløpet.no/favicon.png',
-    description: 'Støtter mental helse gjennom Movember',
+    description: 'Arrangør av Barteløpet, et virtuelt veldedighetsløp for Prosjekt SUT',
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'Customer Service',
@@ -17,8 +17,9 @@ export function StructuredData() {
   const eventSchema = {
     '@context': 'https://schema.org',
     '@type': 'SportsEvent',
-    name: 'Barteløpet 2025',
-    description: 'Virtuelt løp for mental helse i forbindelse med Movember-kampanjen',
+    name: 'Barteløpet 2026',
+    description:
+      'Løp hvor du vil i november, doner fem kroner per kilometer til Prosjekt SUT og samle premielodd',
     eventStatus: 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/OnlineEventAttendanceMode',
     location: {
@@ -30,8 +31,8 @@ export function StructuredData() {
       name: 'ÅpenAid',
       url: 'https://barteløpet.no',
     },
-    startDate: '2025-01-01',
-    endDate: '2025-12-31',
+    startDate: '2026-11-01',
+    endDate: '2026-11-30',
     offers: {
       '@type': 'Offer',
       price: '0',
@@ -47,7 +48,7 @@ export function StructuredData() {
     name: 'Barteløpet',
     url: 'https://barteløpet.no',
     description:
-      'Delta i Barteløpet for Movember - løp for mental helse, del dine bilder og stem på andre deltakere',
+      'Delta i Barteløpet 2026 – løp hvor du vil, støtt Prosjekt SUT og samle premielodd',
     potentialAction: {
       '@type': 'SearchAction',
       target: 'https://barteløpet.no/deltakere?search={search_term_string}',
