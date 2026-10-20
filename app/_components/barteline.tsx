@@ -2,33 +2,29 @@
 
 import { useMemo, useState } from 'react';
 import { RunDetailDialog, type RunnerSummary } from '@/app/_components/run-detail-dialog';
-import type { PublicRun, TicketTotals } from '@/app/_shared/types/event-2026';
-import { qualifyingCategories } from '@/app/_shared/types/event-2026';
+import type { PublicRun } from '@/app/_shared/types/event-2026';
+import {
+  CATEGORY_META,
+  CATEGORY_ORDER,
+  qualifyingCategories,
+} from '@/app/_shared/types/event-2026';
+import { formatDate } from '@/app/_shared/lib/utils/format';
 
 interface BartelineProps {
   runs: PublicRun[];
-  tickets: TicketTotals;
 }
 
-const bands = [
-  { key: 'short' as const, label: '0–10 km', start: 0, end: 10, color: 'bg-accent/40' },
-  { key: 'medium' as const, label: '10–30 km', start: 10, end: 30, color: 'bg-secondary/35' },
-  {
-    key: 'long' as const,
-    label: '30+ km',
-    start: 30,
-    end: null,
-    color: 'bg-[#ebe5d8]',
-  },
-];
+const bandStart = { short: 0, medium: 10, long: 30 } as const;
+const bandEnd = { short: 10, medium: 30, long: null } as const;
 
-const ticketLabels = {
-  short: '0–10 km',
-  medium: '10–30 km',
-  long: '30+ km',
-};
+const LANE_HEIGHT = 24;
+const MAX_LANES = 10;
+const AXIS_HEIGHT = 32;
+const LABEL_SPACE = 40;
+// Minimum horizontal gap (as a share of the axis) before two dots may share a lane.
+const DOT_SPACING = 0.035;
 
-export function Barteline({ runs, tickets }: BartelineProps) {
+export function Barteline({ runs }: BartelineProps) {
   const [selectedRun, setSelectedRun] = useState<PublicRun | null>(null);
   const runnerSummaries = useMemo(() => {
     const summaries = new Map<string, RunnerSummary>();
@@ -56,105 +52,145 @@ export function Barteline({ runs, tickets }: BartelineProps) {
   );
   const ticks = Array.from({ length: Math.floor(maximum / 10) + 1 }, (_, index) => index * 10);
 
+  // Stack dots bottom-up so runs of similar distance pile into columns instead of overlapping.
+  const { placed, laneCount } = useMemo(() => {
+    const minimumGap = maximum * DOT_SPACING;
+    const laneEnds: number[] = [];
+    const placed = [...runs]
+      .sort((a, b) => a.distance_km - b.distance_km)
+      .map((run) => {
+        let lane = laneEnds.findIndex((end) => run.distance_km - end >= minimumGap);
+        if (lane === -1) {
+          lane = laneEnds.length;
+          laneEnds.push(run.distance_km);
+        } else {
+          laneEnds[lane] = run.distance_km;
+        }
+        return { run, lane: lane % MAX_LANES };
+      });
+    return { placed, laneCount: Math.min(Math.max(laneEnds.length, 1), MAX_LANES) };
+  }, [runs, maximum]);
+
+  const chartHeight = AXIS_HEIGHT + LABEL_SPACE + 16 + Math.max(laneCount, 5) * LANE_HEIGHT;
+  const plotHeight = chartHeight - AXIS_HEIGHT;
+
   return (
-    <div className="space-y-5">
-      <div className="grid grid-cols-3 gap-2">
-        {bands.map((band) => (
+    <div className="space-y-4">
+      <div className="relative">
+        <div className="overflow-x-auto border-2 border-foreground bg-card p-4 text-foreground [scrollbar-width:thin]">
           <div
-            key={band.key}
-            className={`border-2 border-foreground p-3 text-center ${band.color}`}
+            className="relative min-w-[600px] md:min-w-0"
+            style={{ height: chartHeight }}
+            role="group"
+            aria-label="Registrerte turer etter distanse"
           >
-            <div className="text-[10px] font-bold uppercase tracking-wider">{band.label}</div>
-            <div className="font-display text-3xl font-black">{tickets[band.key]}</div>
-            <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-              lodd
-            </div>
-          </div>
-        ))}
-      </div>
+            {CATEGORY_ORDER.map((slug) => {
+              const start = bandStart[slug];
+              const end = bandEnd[slug];
+              const left = (start / maximum) * 100;
+              const right = end === null ? 100 : Math.min(100, (end / maximum) * 100);
+              return (
+                <div
+                  key={slug}
+                  className={`absolute top-0 border-r border-foreground/40 ${CATEGORY_META[slug].soft}`}
+                  style={{ left: `${left}%`, width: `${right - left}%`, bottom: AXIS_HEIGHT }}
+                >
+                  <span className="absolute left-2 top-2 text-[11px] font-black uppercase tracking-[0.12em]">
+                    {CATEGORY_META[slug].range}
+                  </span>
+                </div>
+              );
+            })}
 
-      <div className="overflow-x-auto border-2 border-foreground bg-card p-4">
-        <div className="relative h-72 min-w-[720px]" aria-label="Registrerte turer etter distanse">
-          {bands.map((band) => {
-            const left = (band.start / maximum) * 100;
-            const right = band.end === null ? 100 : Math.min(100, (band.end / maximum) * 100);
-            return (
+            {ticks.map((tick, index) => (
               <div
-                key={band.key}
-                className={`absolute bottom-8 top-0 border-r ${band.color}`}
-                style={{ left: `${left}%`, width: `${right - left}%` }}
+                key={tick}
+                className="absolute top-0 border-l border-dashed border-foreground/25"
+                style={{ left: `${(tick / maximum) * 100}%`, bottom: AXIS_HEIGHT - 6 }}
               >
-                <span className="absolute left-2 top-2 text-xs font-semibold">{band.label}</span>
-              </div>
-            );
-          })}
-
-          {ticks.map((tick) => (
-            <div
-              key={tick}
-              className="absolute bottom-0 top-0 border-l border-dashed border-border/70"
-              style={{ left: `${(tick / maximum) * 100}%` }}
-            >
-              <span className="absolute bottom-0 -translate-x-1/2 text-xs text-muted-foreground">
-                {tick} km
-              </span>
-            </div>
-          ))}
-
-          {runs.map((run, index) => {
-            const left = Math.min(99, (run.distance_km / maximum) * 100);
-            const lane = index % 7;
-            const showTooltipBelow = lane >= 4;
-            const tooltipHorizontalPosition =
-              left < 16 ? 'left-1/2' : left > 84 ? 'right-1/2' : 'left-1/2 -translate-x-1/2';
-            const categories = qualifyingCategories(run.distance_km).filter((category) =>
-              run.interest_categories.includes(category)
-            );
-            return (
-              <button
-                key={run.id}
-                type="button"
-                className="group absolute z-10 h-6 w-6 -translate-x-1/2 rounded-full hover:z-20 focus:z-20 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2"
-                style={{ left: `${left}%`, bottom: `${52 + lane * 24}px` }}
-                aria-label={`Se turen til ${run.full_name}, ${run.distance_km} kilometer`}
-                onClick={() => setSelectedRun(run)}
-              >
-                <span className="pointer-events-none absolute inset-1 rounded-full border-2 border-foreground bg-secondary shadow-md transition-transform group-hover:scale-150 group-focus:scale-150" />
                 <span
-                  className={`pointer-events-none absolute hidden w-56 rounded-lg border bg-popover p-3 text-left text-xs text-popover-foreground shadow-xl group-hover:block group-focus:block ${tooltipHorizontalPosition} ${
-                    showTooltipBelow ? 'top-6' : 'bottom-6'
+                  className={`absolute top-full whitespace-nowrap pt-1 text-xs tabular-nums text-muted-foreground ${
+                    index === 0
+                      ? 'left-0'
+                      : index === ticks.length - 1
+                        ? 'right-0'
+                        : '-translate-x-1/2'
                   }`}
                 >
-                  <strong className="block text-sm">{run.full_name}</strong>
-                  {run.title && <span className="block">{run.title}</span>}
-                  <span className="block">
-                    {run.run_date} · {run.distance_km.toLocaleString('nb-NO')} km
-                  </span>
-                  <span className="block text-muted-foreground">
-                    Lodd:{' '}
-                    {categories.length > 0
-                      ? categories.map((category) => ticketLabels[category]).join(', ')
-                      : 'ingen'}
-                  </span>
-                  <span className="mt-1 block font-semibold text-secondary">
-                    Trykk for å se turen
-                  </span>
+                  {tick} km
                 </span>
-              </button>
-            );
-          })}
+              </div>
+            ))}
 
-          {runs.length === 0 && (
-            <div className="absolute inset-0 flex items-center justify-center text-sm text-muted-foreground">
-              De første prikkene dukker opp når novemberløpene registreres.
-            </div>
-          )}
+            {placed.map(({ run, lane }) => {
+              const left = Math.min(99, (run.distance_km / maximum) * 100);
+              const bottom = AXIS_HEIGHT + 8 + lane * LANE_HEIGHT;
+              const showTooltipBelow = bottom > plotHeight / 2;
+              const tooltipHorizontalPosition =
+                left < 20 ? 'left-1/2' : left > 80 ? 'right-1/2' : 'left-1/2 -translate-x-1/2';
+              const categories = qualifyingCategories(run.distance_km).filter((category) =>
+                run.interest_categories.includes(category)
+              );
+              return (
+                <button
+                  key={run.id}
+                  type="button"
+                  className="group absolute z-10 h-6 w-6 -translate-x-1/2 rounded-full hover:z-20 focus:z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2"
+                  style={{ left: `${left}%`, bottom }}
+                  aria-label={`Se turen til ${run.full_name}, ${run.distance_km.toLocaleString('nb-NO')} kilometer`}
+                  onClick={() => setSelectedRun(run)}
+                >
+                  <span className="pointer-events-none absolute inset-1 rounded-full border-2 border-foreground bg-secondary transition-transform group-hover:scale-150 group-focus-visible:scale-150" />
+                  <span
+                    className={`pointer-events-none absolute hidden w-56 border-2 border-foreground bg-popover p-3 text-left text-xs text-popover-foreground shadow-[4px_4px_0_hsl(var(--foreground))] group-hover:block group-focus-visible:block ${tooltipHorizontalPosition} ${
+                      showTooltipBelow ? 'top-7' : 'bottom-7'
+                    }`}
+                  >
+                    <strong className="block text-sm">{run.full_name}</strong>
+                    {run.title && <span className="block">{run.title}</span>}
+                    <span className="block tabular-nums">
+                      {formatDate(run.run_date, { year: undefined })} ·{' '}
+                      {run.distance_km.toLocaleString('nb-NO')} km
+                    </span>
+                    <span className="block text-muted-foreground">
+                      Lodd:{' '}
+                      {categories.length > 0
+                        ? categories.map((category) => CATEGORY_META[category].range).join(', ')
+                        : 'ingen'}
+                    </span>
+                    <span className="mt-1 block font-bold underline decoration-secondary decoration-2 underline-offset-2">
+                      Trykk for å se turen
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+
+            {runs.length === 0 && (
+              <div
+                className="absolute inset-x-0 top-0 flex items-center justify-center px-6 text-center text-sm font-semibold"
+                style={{ bottom: AXIS_HEIGHT }}
+              >
+                <span className="border-2 border-foreground bg-card px-4 py-2">
+                  De første prikkene dukker opp når novemberløpene registreres.
+                </span>
+              </div>
+            )}
+          </div>
         </div>
+        {/* Scroll affordance for narrow screens where the axis is wider than the card */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-[2px] right-[2px] w-10 bg-gradient-to-l from-card to-transparent md:hidden"
+        />
       </div>
 
-      <p className="text-center text-xs font-semibold text-muted-foreground">
-        Trykk på en løper for å se turen, bilder og opptjente lodd.
-      </p>
+      {runs.length > 0 && (
+        <p className="text-center text-xs font-semibold text-background/70">
+          <span className="md:hidden">Sveip for å se hele linjen. </span>
+          Trykk på en prikk for å se turen, bilder og opptjente lodd.
+        </p>
+      )}
 
       <RunDetailDialog
         run={selectedRun}

@@ -23,11 +23,13 @@ import {
   DialogTitle,
 } from '@/app/_shared/components/ui/dialog';
 import {
+  CATEGORY_META,
+  CATEGORY_ORDER,
   qualifyingCategories,
-  type DistanceCategorySlug,
   type PublicRun,
   type TicketTotals,
 } from '@/app/_shared/types/event-2026';
+import { cn } from '@/app/_shared/lib/utils/cn';
 
 export interface RunnerSummary {
   runs: number;
@@ -40,12 +42,6 @@ interface RunDetailDialogProps {
   summary: RunnerSummary | null;
   onOpenChange: (open: boolean) => void;
 }
-
-const ticketLabels: Record<DistanceCategorySlug, string> = {
-  short: '0–10 km',
-  medium: '10–30 km',
-  long: '30+ km',
-};
 
 function getSafeEvidenceUrl(url: string | null) {
   if (!url) return null;
@@ -90,7 +86,7 @@ export function RunDetailDialog({ run, summary, onOpenChange }: RunDetailDialogP
           <DialogTitle className="font-display mt-3 text-4xl font-black uppercase leading-none sm:text-5xl">
             {run.full_name}
           </DialogTitle>
-          <DialogDescription className="text-sm text-background/65">
+          <DialogDescription className="text-sm text-background/75">
             Løperens totalsummer og den valgte turen fra bartelinjen.
           </DialogDescription>
         </DialogHeader>
@@ -99,7 +95,7 @@ export function RunDetailDialog({ run, summary, onOpenChange }: RunDetailDialogP
           <div className="border-r border-foreground p-3 sm:p-4">
             <Route className="mb-2 h-4 w-4 text-secondary" />
             <p className="font-display text-2xl font-black sm:text-3xl">{summary.runs}</p>
-            <p className="text-[9px] font-black uppercase tracking-[0.12em] text-muted-foreground">
+            <p className="text-[10px] font-black uppercase tracking-[0.12em] text-muted-foreground">
               Turer
             </p>
           </div>
@@ -108,23 +104,30 @@ export function RunDetailDialog({ run, summary, onOpenChange }: RunDetailDialogP
             <p className="font-display text-2xl font-black sm:text-3xl">
               {summary.kilometers.toLocaleString('nb-NO', { maximumFractionDigits: 1 })}
             </p>
-            <p className="text-[9px] font-black uppercase tracking-[0.12em] text-muted-foreground">
+            <p className="text-[10px] font-black uppercase tracking-[0.12em] text-muted-foreground">
               Kilometer
             </p>
           </div>
           <div className="bg-accent p-3 sm:p-4">
             <TicketCheck className="mb-2 h-4 w-4" />
             <p className="font-display text-2xl font-black sm:text-3xl">{totalTickets}</p>
-            <p className="text-[9px] font-black uppercase tracking-[0.12em]">Lodd totalt</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.12em]">Lodd totalt</p>
           </div>
         </div>
 
         <div className="border-b-2 border-foreground bg-muted/40 px-5 py-3 sm:px-7">
           <div className="flex flex-wrap gap-x-5 gap-y-2">
-            {(Object.keys(ticketLabels) as DistanceCategorySlug[]).map((category) => (
-              <div key={category} className="flex items-baseline gap-1.5 text-xs">
-                <span className="font-black">{summary.tickets[category]}</span>
-                <span className="text-muted-foreground">{ticketLabels[category]}</span>
+            {CATEGORY_ORDER.map((category) => (
+              <div key={category} className="flex items-center gap-1.5 text-xs">
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    'h-2.5 w-2.5 border border-foreground',
+                    CATEGORY_META[category].solid
+                  )}
+                />
+                <span className="font-black tabular-nums">{summary.tickets[category]}</span>
+                <span className="text-muted-foreground">{CATEGORY_META[category].range}</span>
               </div>
             ))}
           </div>
@@ -132,9 +135,7 @@ export function RunDetailDialog({ run, summary, onOpenChange }: RunDetailDialogP
 
         <article className="space-y-5 p-5 sm:p-7">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-secondary">
-              Valgt fra bartelinjen
-            </p>
+            <p className="eyebrow text-[11px]">Valgt fra bartelinjen</p>
             <h3 className="font-display mt-2 text-3xl font-black uppercase leading-none sm:text-4xl">
               {run.title || 'Løpetur'}
             </h3>
@@ -190,10 +191,13 @@ export function RunDetailDialog({ run, summary, onOpenChange }: RunDetailDialogP
                 earnedCategories.map((category) => (
                   <span
                     key={category}
-                    className="inline-flex items-center gap-1.5 border-2 border-foreground bg-accent px-2.5 py-1 text-xs font-black"
+                    className={cn(
+                      'inline-flex items-center gap-1.5 border-2 border-foreground px-2.5 py-1 text-xs font-black',
+                      CATEGORY_META[category].solid
+                    )}
                   >
                     <TicketCheck className="h-3.5 w-3.5" />
-                    {ticketLabels[category]}
+                    {CATEGORY_META[category].range}
                   </span>
                 ))
               ) : (
@@ -219,7 +223,7 @@ export function RunDetailDialog({ run, summary, onOpenChange }: RunDetailDialogP
               href={evidenceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 border-b-2 border-foreground pb-1 text-sm font-black uppercase tracking-[0.12em] hover:border-secondary hover:text-secondary"
+              className="inline-flex items-center gap-2 border-b-2 border-foreground pb-1 text-sm font-black uppercase tracking-[0.12em] hover:border-secondary hover:text-secondary-ink"
             >
               Se aktivitet
               <ArrowUpRight className="h-4 w-4" />
@@ -244,7 +248,7 @@ function RunFact({
     <div className="min-w-0 bg-card p-3">
       <Icon className="mb-2 h-4 w-4 text-secondary" />
       <p className="truncate text-sm font-black">{value}</p>
-      <p className="mt-0.5 text-[9px] font-black uppercase tracking-[0.12em] text-muted-foreground">
+      <p className="mt-0.5 text-[10px] font-black uppercase tracking-[0.12em] text-muted-foreground">
         {label}
       </p>
     </div>

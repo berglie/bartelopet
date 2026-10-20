@@ -7,6 +7,7 @@ import { Button } from '@/app/_shared/components/ui/button';
 import { Card, CardContent } from '@/app/_shared/components/ui/card';
 import { RunForm2026 } from './run-form-2026';
 import type { Database } from '@/app/_shared/lib/supabase/types';
+import { formatDate } from '@/app/_shared/lib/utils/format';
 
 type Run = Database['public']['Tables']['runs']['Row'];
 
@@ -39,14 +40,21 @@ export function RunCard2026({
             <div className="font-display text-2xl font-black uppercase">
               {run.title || 'Løpetur'}
             </div>
-            <div className="text-sm text-muted-foreground">
-              {run.run_date} · {run.distance_km.toLocaleString('nb-NO')} km ·{' '}
-              {run.donation_amount_nok} kr
+            <div className="text-sm tabular-nums text-muted-foreground">
+              {formatDate(run.run_date, { weekday: 'short', year: undefined })} ·{' '}
+              {run.distance_km.toLocaleString('nb-NO')} km ·{' '}
+              {run.donation_amount_nok.toLocaleString('nb-NO')} kr
             </div>
           </div>
           {canEdit && (
-            <Button variant="outline" size="sm" onClick={remove} disabled={deleting}>
-              Slett
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={remove}
+              disabled={deleting}
+              className="border-2 border-foreground hover:border-destructive hover:bg-destructive hover:text-destructive-foreground"
+            >
+              {deleting ? 'Sletter…' : 'Slett'}
             </Button>
           )}
         </div>
@@ -56,14 +64,16 @@ export function RunCard2026({
             href={run.evidence_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2 inline-block text-sm text-accent underline"
+            className="mt-2 inline-block text-sm font-semibold underline decoration-secondary decoration-2 underline-offset-2 hover:decoration-foreground"
           >
             Se aktivitet
           </a>
         )}
         {canEdit && (
-          <details className="mt-4 border-t pt-4">
-            <summary className="cursor-pointer text-sm font-semibold">Rediger tur</summary>
+          <details className="mt-4 border-t-2 border-foreground/15 pt-4">
+            <summary className="cursor-pointer text-sm font-black uppercase tracking-wide">
+              Rediger tur
+            </summary>
             <div className="mt-4">
               <RunForm2026 run={run} donationUrl={donationUrl} />
             </div>

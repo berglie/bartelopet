@@ -3,7 +3,8 @@ import Link from 'next/link';
 import { createClient } from '@/app/_shared/lib/supabase/server';
 import { Button } from '@/app/_shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/_shared/components/ui/card';
-import { EVENT_YEAR_2026 } from '@/app/_shared/types/event-2026';
+import { CATEGORY_META, CATEGORY_ORDER, EVENT_YEAR_2026 } from '@/app/_shared/types/event-2026';
+import { cn } from '@/app/_shared/lib/utils/cn';
 import { RunForm2026 } from './_components/run-form-2026';
 import { Interests2026 } from './_components/interests-2026';
 import { RunCard2026 } from './_components/run-card-2026';
@@ -67,22 +68,17 @@ export default async function DashboardPage() {
     <div>
       <header className="relative overflow-hidden border-b-2 border-foreground bg-foreground py-12 text-background md:py-16">
         <TerrainLines className="text-accent/20" />
-        <div className="relative mx-auto flex max-w-[1200px] items-end justify-between gap-6 px-4 md:px-8">
-          <div>
+        <div className="relative mx-auto flex max-w-[1200px] flex-col justify-between gap-6 px-4 sm:flex-row sm:items-end md:px-8">
+          <div className="min-w-0">
             <p className="text-xs font-black uppercase tracking-[0.18em] text-accent">
               Min side · Startnummer #{participant.bib_number}
             </p>
-            <h1 className="font-display mt-2 text-5xl font-black uppercase leading-none md:text-7xl">
+            <h1 className="font-display mt-2 break-words text-5xl font-black uppercase leading-[0.9] md:text-7xl">
               Hei, {participant.full_name}
             </h1>
           </div>
           <form action={signOut}>
-            <Button
-              variant="outline"
-              className="border-2 border-background bg-transparent font-bold uppercase text-background hover:bg-background hover:text-foreground"
-            >
-              Logg ut
-            </Button>
+            <Button variant="line-dark">Logg ut</Button>
           </form>
         </div>
       </header>
@@ -99,10 +95,15 @@ export default async function DashboardPage() {
             ['Donert', `${totalDonation.toLocaleString('nb-NO')} kr`, 'bg-card'],
             ['Lodd', entries.length, 'bg-foreground text-background'],
           ].map(([label, value, color]) => (
-            <Card key={String(label)} className={`border-2 border-foreground shadow-none ${color}`}>
+            <Card
+              key={String(label)}
+              className={cn('rounded-none border-2 border-foreground shadow-none', String(color))}
+            >
               <CardContent className="p-4 text-center md:p-5">
-                <div className="font-display text-3xl font-black md:text-4xl">{value}</div>
-                <div className="text-[10px] font-black uppercase tracking-[0.16em]">{label}</div>
+                <div className="font-display text-3xl font-black tabular-nums md:text-4xl">
+                  {value}
+                </div>
+                <div className="text-[11px] font-black uppercase tracking-[0.16em]">{label}</div>
               </CardContent>
             </Card>
           ))}
@@ -118,27 +119,25 @@ export default async function DashboardPage() {
               </CardHeader>
               <CardContent className="pt-6">
                 <Interests2026 initial={interests} disabled={!canEditInterests} />
-                <div className="mt-5 grid grid-cols-3 gap-2 border-t-2 border-foreground pt-4 text-center text-xs">
-                  <div>
-                    <strong className="font-display block text-2xl">{ticketCount('short')}</strong>
-                    0–10
-                  </div>
-                  <div>
-                    <strong className="font-display block text-2xl">{ticketCount('medium')}</strong>
-                    10–30
-                  </div>
-                  <div>
-                    <strong className="font-display block text-2xl">{ticketCount('long')}</strong>
-                    30+
-                  </div>
+                <p className="mt-6 border-t-2 border-foreground pt-4 text-[11px] font-black uppercase tracking-[0.16em]">
+                  Mine lodd
+                </p>
+                <div className="mt-2 grid grid-cols-3 gap-2 text-center text-xs">
+                  {CATEGORY_ORDER.map((slug) => (
+                    <div
+                      key={slug}
+                      className={cn('border-2 border-foreground p-2', CATEGORY_META[slug].solid)}
+                    >
+                      <strong className="font-display block text-3xl tabular-nums">
+                        {ticketCount(slug)}
+                      </strong>
+                      {CATEGORY_META[slug].range}
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
-            <Button
-              asChild
-              variant="outline"
-              className="w-full border-2 border-foreground bg-background font-bold uppercase"
-            >
+            <Button asChild variant="line" className="w-full">
               <Link href="/premier">Se tilgjengelige startnumre</Link>
             </Button>
           </div>
@@ -154,7 +153,7 @@ export default async function DashboardPage() {
                 {canEdit ? (
                   <RunForm2026 donationUrl={editionResult.data?.donation_url} />
                 ) : (
-                  <p className="border-2 border-foreground bg-muted p-4 text-sm text-muted-foreground">
+                  <p className="border-2 border-dashed border-foreground p-4 text-sm">
                     Turregistreringen er stengt. Den åpner for novemberløp når arrangøren åpner
                     perioden.
                   </p>
@@ -173,7 +172,7 @@ export default async function DashboardPage() {
               ))}
               {runs.length === 0 && (
                 <p className="border-2 border-dashed border-foreground p-6 text-muted-foreground">
-                  Ingen turer registrert ennå.
+                  Ingen turer registrert ennå. Hver tur du registrerer blir en prikk på bartelinjen.
                 </p>
               )}
             </div>

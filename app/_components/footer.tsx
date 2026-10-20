@@ -45,7 +45,7 @@ export function Footer() {
   }
 
   return (
-    <footer className="mt-20 border-t-2 border-foreground bg-foreground text-background">
+    <footer className="border-t-2 border-foreground bg-foreground text-background">
       <div className="mx-auto max-w-[1500px] px-4 py-12 md:px-8 md:py-16">
         <div className="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr]">
           <div>
@@ -60,6 +60,12 @@ export function Footer() {
               Utforsk
             </p>
             <div className="grid gap-2 text-sm">
+              <Link href="/pamelding" className="hover:text-accent">
+                Meld deg på
+              </Link>
+              <Link href="/#bartelinjen" className="hover:text-accent">
+                Bartelinjen
+              </Link>
               <Link href="/deltakere" className="hover:text-accent">
                 Løpere
               </Link>
@@ -95,7 +101,9 @@ export function Footer() {
         </div>
         <div className="mt-12 flex flex-col justify-between gap-3 border-t border-background/25 pt-5 text-xs uppercase tracking-[0.12em] text-background/60 sm:flex-row">
           <p>© {selectedYear} ÅpenAid</p>
-          <p>Barteløpet · For Prosjekt SUT</p>
+          <Link href={archiveHref('/')} className="hover:text-accent">
+            Se Barteløpet 2025 →
+          </Link>
         </div>
       </div>
     </footer>

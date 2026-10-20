@@ -47,7 +47,7 @@ export function YearSelector({ variant = 'default', className = '' }: YearSelect
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>Velg år</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {availableYears.reverse().map((year) => {
+        {[...availableYears].reverse().map((year) => {
           const isCurrent = year === currentEventYear;
           const isSelected = year === selectedYear;
 
@@ -60,7 +60,7 @@ export function YearSelector({ variant = 'default', className = '' }: YearSelect
               <div className="flex w-full items-center justify-between">
                 <span className={isSelected ? 'font-semibold' : ''}>{year}</span>
                 {isCurrent && (
-                  <span className="rounded-full bg-accent/20 px-2 py-0.5 text-xs text-accent">
+                  <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-accent-foreground">
                     Nåværende
                   </span>
                 )}
@@ -86,7 +86,7 @@ export function YearTabs({ className = '' }: { className?: string }) {
 
   return (
     <div className={`flex gap-2 overflow-x-auto ${className}`}>
-      {availableYears.reverse().map((year) => {
+      {[...availableYears].reverse().map((year) => {
         const isSelected = year === selectedYear;
 
         return (

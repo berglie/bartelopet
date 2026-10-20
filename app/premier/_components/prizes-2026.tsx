@@ -3,14 +3,15 @@ import { Calendar, ExternalLink, Gift } from 'lucide-react';
 import { createClient } from '@/app/_shared/lib/supabase/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/_shared/components/ui/card';
 import { Button } from '@/app/_shared/components/ui/button';
-import { EVENT_YEAR_2026 } from '@/app/_shared/types/event-2026';
+import {
+  CATEGORY_META,
+  EVENT_YEAR_2026,
+  categoryForPrize,
+  isCategorySlug,
+} from '@/app/_shared/types/event-2026';
 import { TerrainLines } from '@/app/_shared/components/terrain-lines';
-
-const categoryLabels: Record<string, string> = {
-  short: '0–10 km',
-  medium: '10–30 km',
-  long: '30+ km',
-};
+import { cn } from '@/app/_shared/lib/utils/cn';
+import { formatDate } from '@/app/_shared/lib/utils/format';
 
 export async function Prizes2026() {
   const supabase = await createClient();
@@ -28,6 +29,7 @@ export async function Prizes2026() {
       .is('annulled_at', null)
       .not('published_at', 'is', null),
   ]);
+  const prizeList = prizes || [];
   const winnerIds = (draws || []).map((draw) => draw.participant_id);
   const { data: winners } = winnerIds.length
     ? await supabase.from('participants_safe').select('id, full_name').in('id', winnerIds)
@@ -39,7 +41,7 @@ export async function Prizes2026() {
         <TerrainLines className="text-foreground/15" />
         <div className="relative mx-auto max-w-[1500px] px-4 md:px-8">
           <p className="trail-label bg-accent">Premielodd · 2026</p>
-          <h1 className="font-display mt-5 text-7xl font-black uppercase leading-[0.82] md:text-9xl">
+          <h1 className="font-display mt-5 text-7xl font-black uppercase leading-[0.88] md:text-9xl">
             Løp deg
             <span className="block text-secondary">til start.</span>
           </h1>
@@ -53,36 +55,34 @@ export async function Prizes2026() {
       <div className="mx-auto max-w-[1500px] px-4 py-14 md:px-8 md:py-20">
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-secondary">
-              Premiebordet
-            </p>
-            <h2 className="font-display text-4xl font-black uppercase md:text-5xl">
-              {(prizes || []).length} startnummer
+            <p className="eyebrow">Premiebordet</p>
+            <h2 className="font-display mt-2 text-4xl font-black uppercase md:text-5xl">
+              {prizeList.length > 0 ? `${prizeList.length} startnummer` : 'Startnumrene kommer'}
             </h2>
           </div>
           <Gift className="hidden h-12 w-12 md:block" strokeWidth={1.5} />
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {(prizes || []).map((prize, index) => {
+          {prizeList.map((prize, index) => {
             const draw = (draws || []).find((item) => item.prize_id === prize.id);
             const winner = winners?.find((item) => item.id === draw?.participant_id);
+            const slug = isCategorySlug(prize.category_slug)
+              ? prize.category_slug
+              : categoryForPrize(prize.distance_km);
             return (
               <Card
                 key={prize.id}
                 className="overflow-hidden border-2 border-foreground shadow-[6px_6px_0_hsl(var(--foreground))]"
               >
                 <div
-                  className={`flex items-center justify-between border-b-2 border-foreground p-4 ${
-                    index % 3 === 0
-                      ? 'bg-accent'
-                      : index % 3 === 1
-                        ? 'bg-secondary'
-                        : 'bg-foreground text-background'
-                  }`}
+                  className={cn(
+                    'flex items-center justify-between border-b-2 border-foreground p-4',
+                    CATEGORY_META[slug].solid
+                  )}
                 >
                   <span className="text-xs font-black uppercase tracking-[0.16em]">
-                    {categoryLabels[prize.category_slug]}
+                    {CATEGORY_META[slug].name} · {CATEGORY_META[slug].range}
                   </span>
                   <span className="font-mono text-xs">#{String(index + 1).padStart(2, '0')}</span>
                 </div>
@@ -103,7 +103,7 @@ export async function Prizes2026() {
                   )}
                   {prize.race_date && (
                     <p className="flex items-center gap-2 text-muted-foreground">
-                      <Calendar className="h-4 w-4" /> {prize.race_date}
+                      <Calendar className="h-4 w-4" /> {formatDate(prize.race_date)}
                     </p>
                   )}
                   {prize.website_url && (
@@ -111,13 +111,13 @@ export async function Prizes2026() {
                       href={prize.website_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 border-b-2 border-foreground pb-0.5 font-bold uppercase tracking-wider hover:text-secondary"
+                      className="inline-flex items-center gap-1 border-b-2 border-foreground pb-0.5 font-bold uppercase tracking-wider hover:border-secondary hover:text-secondary-ink"
                     >
                       Les om løpet <ExternalLink className="h-3 w-3" />
                     </a>
                   )}
                   {prize.status === 'drawn' && (
-                    <div className="border-2 border-foreground bg-muted p-3 text-center font-bold">
+                    <div className="border-2 border-foreground bg-accent p-3 text-center font-black uppercase tracking-wide">
                       {winner?.full_name ? `Vinner: ${winner.full_name}` : 'Trukket'}
                     </div>
                   )}
@@ -127,23 +127,27 @@ export async function Prizes2026() {
           })}
         </div>
 
-        {(prizes || []).length === 0 && (
-          <div className="border-2 border-dashed border-foreground p-12 text-center text-muted-foreground">
-            De første startnumrene publiseres snart.
+        {prizeList.length === 0 && (
+          <div className="border-2 border-dashed border-foreground p-10 text-center md:p-14">
+            <Gift className="mx-auto h-10 w-10" strokeWidth={1.5} aria-hidden="true" />
+            <p className="font-display mt-4 text-3xl font-black uppercase">
+              Premiebordet dekkes nå
+            </p>
+            <p className="mx-auto mt-2 max-w-md text-muted-foreground">
+              Løpeklubber og arrangører melder inn startnummer fortløpende. Meld deg på nå, så er
+              loddene dine klare når premiene publiseres.
+            </p>
           </div>
         )}
 
-        <div className="mt-14 border-2 border-foreground bg-foreground p-7 text-background md:flex md:items-center md:justify-between">
+        <div className="mt-14 border-2 border-foreground bg-foreground p-7 text-background md:flex md:items-center md:justify-between md:gap-6">
           <div>
             <p className="font-display text-3xl font-black uppercase">Vil du ha lodd i potten?</p>
             <p className="mt-1 text-sm text-background/65">
               Velg kategorier ved påmelding og registrer novemberturene dine.
             </p>
           </div>
-          <Button
-            asChild
-            className="mt-5 border-2 border-accent bg-accent font-black uppercase text-accent-foreground md:mt-0"
-          >
+          <Button asChild variant="cta-dark" size="lg" className="mt-5 shrink-0 md:mt-0">
             <Link href="/pamelding">Bli med og samle lodd</Link>
           </Button>
         </div>

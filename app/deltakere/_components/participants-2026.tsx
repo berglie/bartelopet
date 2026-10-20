@@ -1,6 +1,7 @@
 import { createClient } from '@/app/_shared/lib/supabase/server';
 import { Card, CardContent } from '@/app/_shared/components/ui/card';
-import { EVENT_YEAR_2026 } from '@/app/_shared/types/event-2026';
+import { CATEGORY_META, CATEGORY_ORDER, EVENT_YEAR_2026 } from '@/app/_shared/types/event-2026';
+import { cn } from '@/app/_shared/lib/utils/cn';
 import { TerrainLines } from '@/app/_shared/components/terrain-lines';
 
 export async function Participants2026() {
@@ -39,11 +40,11 @@ export async function Participants2026() {
           <p className="inline-flex border border-accent bg-accent px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-accent-foreground">
             Feltet · 2026
           </p>
-          <h1 className="font-display mt-5 text-7xl font-black uppercase leading-[0.82] md:text-9xl">
+          <h1 className="font-display mt-5 text-7xl font-black uppercase leading-[0.88] md:text-9xl">
             Løpere
             <span className="block text-accent">og lodd.</span>
           </h1>
-          <p className="mt-6 max-w-xl text-lg text-background/65">
+          <p className="mt-6 max-w-xl text-lg text-background/75">
             En levende oversikt over kilometer, bidrag og kvalifiseringer gjennom november.
           </p>
         </div>
@@ -52,11 +53,9 @@ export async function Participants2026() {
       <div className="mx-auto max-w-[1500px] px-4 py-12 md:px-8 md:py-20">
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-secondary">
-              Startfeltet
-            </p>
-            <h2 className="font-display text-4xl font-black uppercase md:text-5xl">
-              {rows.length} påmeldte
+            <p className="eyebrow">Startfeltet</p>
+            <h2 className="font-display mt-2 text-4xl font-black uppercase md:text-5xl">
+              {rows.length > 0 ? `${rows.length} påmeldte` : 'Startfeltet fylles'}
             </h2>
           </div>
           <p className="hidden max-w-sm text-right text-sm text-muted-foreground sm:block">
@@ -67,38 +66,71 @@ export async function Participants2026() {
         <Card className="overflow-hidden border-2 border-foreground shadow-[7px_7px_0_hsl(var(--foreground))]">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[780px] text-left text-sm">
-                <thead className="border-b-2 border-foreground bg-accent text-[10px] font-black uppercase tracking-[0.14em]">
+              <table className="w-full min-w-[680px] text-left text-sm">
+                <caption className="sr-only">
+                  Påmeldte løpere med turer, kilometer, donasjoner og lodd per premiekategori
+                </caption>
+                <thead className="border-b-2 border-foreground bg-foreground text-[11px] font-black uppercase tracking-[0.14em] text-background">
                   <tr>
-                    <th className="p-4">Løper</th>
-                    <th className="p-4 text-right">Turer</th>
-                    <th className="p-4 text-right">Km</th>
-                    <th className="p-4 text-right">Donert</th>
-                    <th className="p-4 text-center">0–10</th>
-                    <th className="p-4 text-center">10–30</th>
-                    <th className="p-4 text-center">30+</th>
+                    <th scope="col" className="sticky left-0 z-10 bg-foreground p-4">
+                      Løper
+                    </th>
+                    <th scope="col" className="p-4 text-right">
+                      Turer
+                    </th>
+                    <th scope="col" className="p-4 text-right">
+                      Km
+                    </th>
+                    <th scope="col" className="p-4 text-right">
+                      Donert
+                    </th>
+                    {CATEGORY_ORDER.map((slug) => (
+                      <th key={slug} scope="col" className="p-4 text-center">
+                        <span
+                          className={cn(
+                            'inline-block border border-background/40 px-2 py-0.5',
+                            CATEGORY_META[slug].solid
+                          )}
+                        >
+                          {CATEGORY_META[slug].range.replace(' km', '')}
+                        </span>
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
                   {rows.map((row) => (
                     <tr
                       key={row.id}
-                      className="border-b border-foreground/25 last:border-0 hover:bg-muted/50"
+                      className="group border-b border-foreground/25 tabular-nums last:border-0"
                     >
-                      <td className="p-4 font-bold">
-                        <span className="mr-3 inline-flex min-w-14 bg-foreground px-2 py-1 font-mono text-xs text-background">
+                      <th
+                        scope="row"
+                        className="sticky left-0 z-10 bg-card p-4 text-left font-bold group-hover:bg-muted"
+                      >
+                        <span className="mr-3 inline-flex min-w-12 justify-center bg-foreground px-2 py-1 font-mono text-xs text-background">
                           #{row.bib_number}
                         </span>
                         {row.full_name}
-                      </td>
-                      <td className="p-4 text-right">{row.runs}</td>
-                      <td className="p-4 text-right">
+                      </th>
+                      <td className="p-4 text-right group-hover:bg-muted">{row.runs}</td>
+                      <td className="p-4 text-right group-hover:bg-muted">
                         {row.km.toLocaleString('nb-NO', { maximumFractionDigits: 1 })}
                       </td>
-                      <td className="p-4 text-right">{row.donated.toLocaleString('nb-NO')} kr</td>
-                      <td className="p-4 text-center font-black">{row.short}</td>
-                      <td className="p-4 text-center font-black">{row.medium}</td>
-                      <td className="p-4 text-center font-black">{row.long}</td>
+                      <td className="whitespace-nowrap p-4 text-right group-hover:bg-muted">
+                        {row.donated.toLocaleString('nb-NO')} kr
+                      </td>
+                      {CATEGORY_ORDER.map((slug) => (
+                        <td
+                          key={slug}
+                          className={cn(
+                            'p-4 text-center font-black group-hover:bg-muted',
+                            row[slug] === 0 && 'font-normal text-muted-foreground'
+                          )}
+                        >
+                          {row[slug]}
+                        </td>
+                      ))}
                     </tr>
                   ))}
                 </tbody>

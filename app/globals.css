@@ -20,14 +20,25 @@
     --accent-foreground: 150 30% 11%;
     --secondary: 14 78% 57%;
     --secondary-foreground: 150 30% 11%;
+    /* Darker clay for small text on light surfaces (WCAG AA on --background) */
+    --secondary-ink: 14 72% 38%;
     --muted: 47 18% 86%;
     --muted-foreground: 150 10% 35%;
     --destructive: 0 68% 46%;
     --destructive-foreground: 48 35% 97%;
     --border: 150 20% 20%;
-    --input: 48 20% 90%;
-    --ring: 74 83% 45%;
+    --input: 48 12% 70%;
+    --ring: 150 30% 11%;
     --radius: 0.35rem;
+
+    /* Button tokens, so year themes can restyle buttons without specificity overrides */
+    --button: 150 30% 11%;
+    --button-foreground: 48 28% 93%;
+    --button-hover: 150 30% 18%;
+    --button-secondary: 74 83% 65%;
+    --button-secondary-foreground: 150 30% 11%;
+    --button-secondary-hover: 74 83% 58%;
+    --button-outline: 150 30% 11%;
   }
 
   [data-event-year='2025'] {
@@ -50,8 +61,17 @@
     --destructive-foreground: 35 25% 95%;
     --border: 30 25% 18%;
     --input: 30 25% 15%;
+    --secondary-ink: 30 25% 45%;
     --ring: 35 85% 55%;
     --radius: 0.75rem;
+
+    --button: 33 23% 36%;
+    --button-foreground: 0 0% 100%;
+    --button-hover: 30 21% 29%;
+    --button-secondary: 160 38% 31%;
+    --button-secondary-foreground: 0 0% 100%;
+    --button-secondary-hover: 162 36% 25%;
+    --button-outline: 30 25% 15%;
   }
 }
 
@@ -90,30 +110,21 @@
     text-wrap: balance;
   }
 
+  .section-title {
+    @apply text-5xl font-black uppercase leading-[0.9] tracking-tight md:text-7xl;
+    font-family: var(--font-display), sans-serif;
+  }
+
+  .eyebrow {
+    @apply text-xs font-black uppercase tracking-[0.18em] text-secondary-ink;
+  }
+
   .trail-label {
     @apply inline-flex items-center gap-2 border border-foreground/30 bg-background/80 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em];
   }
 
   .trail-card {
     @apply border-2 border-foreground/80 bg-card shadow-[5px_5px_0_hsl(var(--foreground))];
-  }
-
-  .trail-rule {
-    background-image: repeating-linear-gradient(
-      -45deg,
-      hsl(var(--foreground)),
-      hsl(var(--foreground)) 5px,
-      transparent 5px,
-      transparent 10px
-    );
-  }
-
-  [data-event-year='2026'] .button-default {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90;
-  }
-
-  [data-event-year='2026'] .button-secondary {
-    @apply bg-accent text-accent-foreground hover:bg-accent/90;
   }
 }
 
@@ -138,8 +149,8 @@ textarea:-webkit-autofill:hover,
 textarea:-webkit-autofill:focus,
 textarea:-webkit-autofill:active {
   -webkit-text-fill-color: hsl(var(--foreground)) !important;
-  -webkit-box-shadow: 0 0 0 1000px hsl(var(--input)) inset !important;
-  box-shadow: 0 0 0 1000px hsl(var(--input)) inset !important;
+  -webkit-box-shadow: 0 0 0 1000px hsl(var(--card)) inset !important;
+  box-shadow: 0 0 0 1000px hsl(var(--card)) inset !important;
   transition: background-color 5000s ease-in-out 0s !important;
   color: hsl(var(--foreground)) !important;
   caret-color: hsl(var(--foreground)) !important;
