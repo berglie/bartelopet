@@ -77,10 +77,51 @@ const config: Config = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
+        rise: {
+          from: { opacity: '0', transform: 'translateY(45%) skewY(4deg)' },
+          to: { opacity: '1', transform: 'none' },
+        },
+        'fade-up': {
+          from: { opacity: '0', transform: 'translateY(1.25rem)' },
+          to: { opacity: '1', transform: 'none' },
+        },
+        'grow-x': {
+          from: { transform: 'scaleX(0)' },
+          to: { transform: 'scaleX(1)' },
+        },
+        draw: {
+          from: { strokeDashoffset: '1' },
+          to: { strokeDashoffset: '0' },
+        },
+        drift: {
+          '0%, 100%': { transform: 'scale(1.06) translate3d(0, 0, 0)' },
+          '50%': { transform: 'scale(1.06) translate3d(-2%, 1.5%, 0)' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+          '50%': { transform: 'translateY(-8px) rotate(-3deg)' },
+        },
+        marquee: {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(-50%)' },
+        },
+        tick: {
+          from: { opacity: '0.35', transform: 'translateY(-30%)' },
+          to: { opacity: '1', transform: 'none' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        rise: 'rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both',
+        'fade-up': 'fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both',
+        'grow-x': 'grow-x 1.2s cubic-bezier(0.65, 0, 0.35, 1) both',
+        draw: 'draw 2.4s cubic-bezier(0.65, 0, 0.35, 1) both',
+        drift: 'drift 18s ease-in-out infinite',
+        float: 'float 6s ease-in-out infinite',
+        marquee: 'marquee 32s linear infinite',
+        tick: 'tick 0.35s cubic-bezier(0.16, 1, 0.3, 1) both',
+        'spin-slow': 'spin 60s linear infinite',
       },
     },
   },
