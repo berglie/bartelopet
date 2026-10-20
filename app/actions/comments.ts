@@ -1,5 +1,7 @@
 'use server';
 
+import { GALLERY_EVENT_YEAR } from '@/app/_shared/lib/constants/config';
+
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/app/_shared/lib/supabase/server';
 import type { PhotoCommentWithParticipant } from '@/app/_shared/lib/types/database';
@@ -33,7 +35,8 @@ export async function getCurrentParticipantId(): Promise<string | null> {
       .from('participants')
       .select('id')
       .eq('user_id', user.id)
-      .single();
+      .eq('event_year', GALLERY_EVENT_YEAR)
+      .maybeSingle();
 
     if (participantError || !participant) {
       return null;
@@ -145,7 +148,8 @@ export async function addComment(
       .from('participants')
       .select('id')
       .eq('user_id', user.id)
-      .single();
+      .eq('event_year', GALLERY_EVENT_YEAR)
+      .maybeSingle();
 
     if (participantError || !participant) {
       return {
@@ -270,7 +274,8 @@ export async function deleteComment(commentId: string): Promise<ActionResponse> 
       .from('participants')
       .select('id')
       .eq('user_id', user.id)
-      .single();
+      .eq('event_year', GALLERY_EVENT_YEAR)
+      .maybeSingle();
 
     if (participantError || !participant) {
       return {

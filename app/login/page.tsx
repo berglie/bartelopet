@@ -25,16 +25,14 @@ export default function LoginPage() {
   // Display error from callback if present - initialize state directly
   const [error, setError] = useState(() => {
     const errorParam = searchParams.get('error');
-    const messageParam = searchParams.get('message');
 
     if (errorParam) {
       const errorMessages: Record<string, string> = {
         auth_failed: 'Innlogging feilet. Vennligst prøv igjen.',
-        verification_failed: messageParam || 'Kunne ikke verifisere innloggingslenken.',
+        verification_failed: 'Kunne ikke verifisere innloggingslenken. Be om en ny.',
         invalid_link: 'Innloggingslenken er ugyldig eller utløpt. Vennligst be om en ny.',
-        confirmation_failed:
-          messageParam || 'Kunne ikke bekrefte e-postadressen. Vennligst prøv igjen.',
-        oauth_failed: messageParam || 'OAuth innlogging feilet. Vennligst prøv igjen.',
+        confirmation_failed: 'Kunne ikke bekrefte e-postadressen. Vennligst prøv igjen.',
+        oauth_failed: 'Innlogging med Google feilet. Vennligst prøv igjen.',
       };
       return errorMessages[errorParam] || 'En ukjent feil oppstod';
     }
@@ -52,11 +50,15 @@ export default function LoginPage() {
       email,
       options: {
         emailRedirectTo: `${window.location.origin}/auth/callback`,
+        // New accounts are created through /pamelding, not by requesting a login link.
+        shouldCreateUser: false,
       },
     });
 
-    if (error) {
-      setError(error.message);
+    // Unknown addresses get the same "sent" screen, so the form does not reveal who has an
+    // account. Only rate limiting is reported.
+    if (error && error.status === 429) {
+      setError('For mange forsøk. Vent litt og prøv igjen.');
     } else {
       setSent(true);
     }

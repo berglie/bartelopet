@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
 
     // Rate limiting check - prevent spam/abuse
     const clientIp = getClientIp(request);
-    const rateLimitResult = await checkRateLimit('api', clientIp);
+    const rateLimitResult = await checkRateLimit('contact', clientIp);
 
     if (!rateLimitResult.success) {
       return NextResponse.json(
@@ -147,7 +147,7 @@ export async function POST(request: NextRequest) {
 
     // Validate admin email format
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(adminEmail)) {
-      console.error('Invalid admin email configuration:', adminEmail);
+      console.error('Invalid CONTACT_FORM_ADMIN_EMAIL configuration');
       return NextResponse.json(
         {
           success: false,
@@ -180,99 +180,35 @@ export async function POST(request: NextRequest) {
       }),
     });
 
-    // Send confirmation email to sender
-    const confirmationEmailResponse = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${resendApiKey}`,
-      },
-      body: JSON.stringify({
-        from: 'Barteløpet <onboarding@resend.dev>',
-        to: [sanitizedEmail], // Use sanitized email
-        subject: 'Bekreftelse på din henvendelse - Barteløpet',
-        text: `Hei ${sanitizedName},\n\nVi har mottatt din melding og kommer tilbake til deg så snart som mulig.\n\nDin melding:\n${validatedData.message}\n\nHvis du har spørsmål i mellomtiden, kan du svare direkte på denne e-posten.\n\nMed vennlig hilsen,\nBarteløpet-teamet\n\nBesøk barteløpet.no`,
-        html: `
-          <!DOCTYPE html>
-          <html>
-            <head>
-              <meta charset="utf-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <style>
-                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
-                .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
-                .message-box { background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #667eea; margin: 20px 0; }
-                .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 14px; }
-                h1 { margin: 0; font-size: 24px; }
-                h2 { color: #667eea; font-size: 18px; margin-top: 0; }
-                .button { display: inline-block; background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px; }
-              </style>
-            </head>
-            <body>
-              <div class="container">
-                <div class="header">
-                  <h1>Takk for din henvendelse!</h1>
-                </div>
-                <div class="content">
-                  <p>Hei ${escapeHtml(sanitizedName)},</p>
-                  <p>Vi har mottatt din melding og kommer tilbake til deg så snart som mulig.</p>
-
-                  <div class="message-box">
-                    <h2>Din melding:</h2>
-                    <p>${formatMessageForHtml(validatedData.message)}</p>
-                  </div>
-
-                  <p>Hvis du har spørsmål i mellomtiden, kan du svare direkte på denne e-posten.</p>
-
-                  <p>Med vennlig hilsen,<br>Barteløpet-teamet</p>
-
-                  <a href="https://barteløpet.no" class="button">Besøk barteløpet.no</a>
-                </div>
-                <div class="footer">
-                  <p>Dette er en automatisk bekreftelse fra Barteløpet</p>
-                  <p>© ${new Date().getFullYear()} ÅpenAid · Barteløpet samler inn penger til Prosjekt SUT</p>
-                </div>
-              </div>
-            </body>
-          </html>
-        `,
-      }),
-    });
-
-    // Check if both emails were sent successfully
-    if (!adminEmailResponse.ok || !confirmationEmailResponse.ok) {
-      const adminError = !adminEmailResponse.ok ? await adminEmailResponse.json() : null;
-      const confirmError = !confirmationEmailResponse.ok
-        ? await confirmationEmailResponse.json()
-        : null;
-
-      console.error('Resend API error:', { adminError, confirmError });
-      console.error('Contact form submission (email failed):', validatedData);
-
+    // No confirmation e-mail is sent to the address in the form. Anyone can type any address
+    // there, so a confirmation would let strangers send mail in Barteløpet's name.
+    if (!adminEmailResponse.ok) {
+      console.error('Resend API error:', adminEmailResponse.status);
       return NextResponse.json(
         {
-          success: true,
-          message: 'Takk for din henvendelse! Vi har mottatt meldingen din.',
+          success: false,
+          message: 'Meldingen kunne ikke sendes. Prøv igjen senere, eller send oss en e-post.',
         },
-        { status: 200 }
+        { status: 502 }
       );
     }
 
     return NextResponse.json(
       {
         success: true,
-        message: 'Takk for din henvendelse! Du vil motta en bekreftelse på e-post.',
+        message: 'Takk for din henvendelse! Vi svarer på e-postadressen du oppga.',
       },
       { status: 200 }
     );
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ success: false, errors: error.issues }, { status: 400 });
+      return NextResponse.json(
+        { success: false, message: error.issues[0]?.message ?? 'Ugyldig skjema' },
+        { status: 400 }
+      );
     }
 
-    console.error('Contact form error:', error);
+    console.error('Contact form error:', error instanceof Error ? error.name : 'unknown');
     return NextResponse.json(
       { success: false, message: 'En feil oppstod. Vennligst prøv igjen senere.' },
       { status: 500 }

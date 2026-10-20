@@ -3,10 +3,18 @@
 /** @type {import('next').NextConfig} */
 const path = require('path');
 
+// Images and API calls are only allowed to our own Supabase project, not every *.supabase.co.
+const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
+  ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).host
+  : '*.supabase.co';
+const isDevelopment = process.env.NODE_ENV === 'development';
+
 const nextConfig = {
+  poweredByHeader: false,
   experimental: {
     serverActions: {
-      bodySizeLimit: '50mb',
+      // Largest upload is a 10 MB run photo (re-encoded on the server).
+      bodySizeLimit: '11mb',
     },
   },
   // Turbopack configuration (Next.js 16+)
@@ -52,7 +60,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '*.supabase.co',
+        hostname: supabaseHost,
         port: '',
         pathname: '/storage/v1/object/public/**',
       },
@@ -80,27 +88,31 @@ const nextConfig = {
             value: 'nosniff',
           },
           {
+            // The legacy XSS auditor is removed from browsers and could itself be abused.
             key: 'X-XSS-Protection',
-            value: '1; mode=block',
+            value: '0',
           },
           {
             key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin',
+            value: 'strict-origin-when-cross-origin',
           },
           {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://api.mapbox.com https://vercel.live https://strava-embeds.com",
+              // 'unsafe-eval' is only needed by React in development. 'unsafe-inline' is needed
+              // for Next.js' inline hydration scripts unless every page renders with a nonce.
+              `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ''} https://api.mapbox.com https://vercel.live https://strava-embeds.com`,
               "worker-src 'self' blob: https://api.mapbox.com",
               "style-src 'self' 'unsafe-inline' https://api.mapbox.com",
-              "img-src 'self' data: blob: https://*.supabase.co https://api.mapbox.com https://strava-embeds.com",
+              `img-src 'self' data: blob: https://${supabaseHost} https://api.mapbox.com https://strava-embeds.com`,
               "font-src 'self' data:",
-              "connect-src 'self' https://*.supabase.co https://api.mapbox.com https://events.mapbox.com wss://*.supabase.co https://vercel.live https://strava-embeds.com",
+              `connect-src 'self' https://${supabaseHost} https://api.mapbox.com https://events.mapbox.com wss://${supabaseHost} https://vercel.live https://strava-embeds.com`,
               "frame-src 'self' https://strava-embeds.com https://vercel.live https://open.spotify.com",
               "frame-ancestors 'self'",
               "base-uri 'self'",
               "form-action 'self'",
+              "object-src 'none'",
             ].join('; '),
           },
           {

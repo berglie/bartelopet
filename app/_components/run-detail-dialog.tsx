@@ -45,7 +45,8 @@ interface RunDetailDialogProps {
 
 function getSafeEvidenceUrl(url: string | null) {
   if (!url) return null;
-  if (url.startsWith('/')) return url;
+  // Local paths (demo data) only; protocol-relative '//host' would leave the site.
+  if (url.startsWith('/')) return /^\/[^/\\]/.test(url) ? url : null;
 
   try {
     const parsedUrl = new URL(url);
@@ -63,11 +64,14 @@ export function RunDetailDialog({ run, summary, onOpenChange }: RunDetailDialogP
   );
   const totalTickets = Object.values(summary.tickets).reduce((total, count) => total + count, 0);
   const evidenceUrl = getSafeEvidenceUrl(run.evidence_url);
+  // Only photos uploaded to our own bucket are shown inline (next/image only allows that host).
+  // Every other link opens as a plain link.
   const evidenceIsImage = Boolean(
     evidenceUrl &&
     (evidenceUrl.startsWith('/') ||
-      new URL(evidenceUrl).pathname.includes('/storage/v1/object/public/run-evidence/') ||
-      /\.(?:avif|gif|jpe?g|png|webp)$/i.test(new URL(evidenceUrl).pathname))
+      evidenceUrl.startsWith(
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/run-evidence/`
+      ))
   );
 
   return (

@@ -25,3 +25,6 @@ export const config = {
 } as const;
 
 export const PROJECT_SUT_URL = 'https://www.sandnesultratrail.com/prosjekt-sut';
+
+/** The photo gallery, votes and comments belong to the 2025 edition (completions schema). */
+export const GALLERY_EVENT_YEAR = 2025;

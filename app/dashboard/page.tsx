@@ -8,6 +8,7 @@ import { cn } from '@/app/_shared/lib/utils/cn';
 import { RunForm2026 } from './_components/run-form-2026';
 import { Interests2026 } from './_components/interests-2026';
 import { RunCard2026 } from './_components/run-card-2026';
+import { PrivacySettings } from './_components/privacy-settings';
 import { TerrainLines } from '@/app/_shared/components/terrain-lines';
 
 export default async function DashboardPage() {
@@ -152,6 +153,16 @@ export default async function DashboardPage() {
             <Button asChild variant="line" className="w-full">
               <Link href="/premier">Se tilgjengelige startnumre</Link>
             </Button>
+            <Card className="border-2 border-foreground">
+              <CardHeader className="border-b-2 border-foreground">
+                <CardTitle className="font-display text-2xl font-black uppercase">
+                  Dine data
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <PrivacySettings />
+              </CardContent>
+            </Card>
           </div>
 
           <div className="space-y-8">

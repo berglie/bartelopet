@@ -1,36 +1,6 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: '13.0.5';
-  };
-  graphql_public: {
-    Tables: {
-      [_ in never]: never;
-    };
-    Views: {
-      [_ in never]: never;
-    };
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json;
-          operationName?: string;
-          query?: string;
-          variables?: Json;
-        };
-        Returns: Json;
-      };
-    };
-    Enums: {
-      [_ in never]: never;
-    };
-    CompositeTypes: {
-      [_ in never]: never;
-    };
-  };
   public: {
     Tables: {
       completions: {
@@ -109,7 +79,15 @@ export type Database = {
           minimum_km?: number;
           slug?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'distance_categories_event_year_fkey';
+            columns: ['event_year'];
+            isOneToOne: false;
+            referencedRelation: 'event_editions';
+            referencedColumns: ['event_year'];
+          },
+        ];
       };
       draw_results: {
         Row: {
@@ -154,7 +132,64 @@ export type Database = {
           published_at?: string | null;
           winning_run_id?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'draw_results_event_year_fkey';
+            columns: ['event_year'];
+            isOneToOne: false;
+            referencedRelation: 'event_editions';
+            referencedColumns: ['event_year'];
+          },
+          {
+            foreignKeyName: 'draw_results_participant_id_fkey';
+            columns: ['participant_id'];
+            isOneToOne: false;
+            referencedRelation: 'participants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'draw_results_participant_id_fkey';
+            columns: ['participant_id'];
+            isOneToOne: false;
+            referencedRelation: 'participants_safe';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'draw_results_prize_id_fkey';
+            columns: ['prize_id'];
+            isOneToOne: false;
+            referencedRelation: 'race_prizes';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'draw_results_prize_id_fkey';
+            columns: ['prize_id'];
+            isOneToOne: false;
+            referencedRelation: 'race_prizes_public';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'draw_results_winning_run_id_fkey';
+            columns: ['winning_run_id'];
+            isOneToOne: false;
+            referencedRelation: 'eligible_entries';
+            referencedColumns: ['run_id'];
+          },
+          {
+            foreignKeyName: 'draw_results_winning_run_id_fkey';
+            columns: ['winning_run_id'];
+            isOneToOne: false;
+            referencedRelation: 'runs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'draw_results_winning_run_id_fkey';
+            columns: ['winning_run_id'];
+            isOneToOne: false;
+            referencedRelation: 'runs_public';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       event_editions: {
         Row: {
@@ -214,7 +249,29 @@ export type Database = {
           event_year?: number;
           participant_id?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'participant_distance_interests_event_year_category_slug_fkey';
+            columns: ['event_year', 'category_slug'];
+            isOneToOne: false;
+            referencedRelation: 'distance_categories';
+            referencedColumns: ['event_year', 'slug'];
+          },
+          {
+            foreignKeyName: 'participant_distance_interests_participant_id_fkey';
+            columns: ['participant_id'];
+            isOneToOne: false;
+            referencedRelation: 'participants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'participant_distance_interests_participant_id_fkey';
+            columns: ['participant_id'];
+            isOneToOne: false;
+            referencedRelation: 'participants_safe';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       participants: {
         Row: {
@@ -261,99 +318,6 @@ export type Database = {
         };
         Relationships: [];
       };
-      race_prizes: {
-        Row: {
-          category_slug: string;
-          created_at: string;
-          distance_km: number;
-          donor_name: string | null;
-          event_year: number;
-          id: string;
-          notes: string | null;
-          race_date: string | null;
-          race_name: string;
-          status: string;
-          updated_at: string;
-          website_url: string | null;
-        };
-        Insert: {
-          category_slug: string;
-          created_at?: string;
-          distance_km: number;
-          donor_name?: string | null;
-          event_year: number;
-          id?: string;
-          notes?: string | null;
-          race_date?: string | null;
-          race_name: string;
-          status?: string;
-          updated_at?: string;
-          website_url?: string | null;
-        };
-        Update: {
-          category_slug?: string;
-          created_at?: string;
-          distance_km?: number;
-          donor_name?: string | null;
-          event_year?: number;
-          id?: string;
-          notes?: string | null;
-          race_date?: string | null;
-          race_name?: string;
-          status?: string;
-          updated_at?: string;
-          website_url?: string | null;
-        };
-        Relationships: [];
-      };
-      runs: {
-        Row: {
-          comment: string | null;
-          created_at: string;
-          distance_km: number;
-          donation_amount_nok: number;
-          donation_confirmed_at: string | null;
-          duration_text: string | null;
-          event_year: number;
-          evidence_url: string | null;
-          id: string;
-          participant_id: string;
-          run_date: string;
-          title: string | null;
-          updated_at: string;
-        };
-        Insert: {
-          comment?: string | null;
-          created_at?: string;
-          distance_km: number;
-          donation_amount_nok: number;
-          donation_confirmed_at?: string | null;
-          duration_text?: string | null;
-          event_year: number;
-          evidence_url?: string | null;
-          id?: string;
-          participant_id: string;
-          run_date: string;
-          title?: string | null;
-          updated_at?: string;
-        };
-        Update: {
-          comment?: string | null;
-          created_at?: string;
-          distance_km?: number;
-          donation_amount_nok?: number;
-          donation_confirmed_at?: string | null;
-          duration_text?: string | null;
-          event_year?: number;
-          evidence_url?: string | null;
-          id?: string;
-          participant_id?: string;
-          run_date?: string;
-          title?: string | null;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
       photo_comments: {
         Row: {
           comment_text: string;
@@ -395,13 +359,6 @@ export type Database = {
             columns: ['completion_id'];
             isOneToOne: false;
             referencedRelation: 'completions_with_counts';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'photo_comments_completion_id_fkey';
-            columns: ['completion_id'];
-            isOneToOne: false;
-            referencedRelation: 'current_year_completions';
             referencedColumns: ['id'];
           },
           {
@@ -455,13 +412,6 @@ export type Database = {
             columns: ['completion_id'];
             isOneToOne: false;
             referencedRelation: 'completions_with_counts';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'votes_completion_id_fkey';
-            columns: ['completion_id'];
-            isOneToOne: false;
-            referencedRelation: 'current_year_completions';
             referencedColumns: ['id'];
           },
           {
@@ -530,13 +480,6 @@ export type Database = {
             referencedColumns: ['id'];
           },
           {
-            foreignKeyName: 'completion_images_completion_id_fkey';
-            columns: ['completion_id'];
-            isOneToOne: false;
-            referencedRelation: 'current_year_completions';
-            referencedColumns: ['id'];
-          },
-          {
             foreignKeyName: 'completion_images_participant_id_fkey';
             columns: ['participant_id'];
             isOneToOne: false;
@@ -545,6 +488,136 @@ export type Database = {
           },
           {
             foreignKeyName: 'completion_images_participant_id_fkey';
+            columns: ['participant_id'];
+            isOneToOne: false;
+            referencedRelation: 'participants_safe';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      race_prizes: {
+        Row: {
+          category_slug: string;
+          created_at: string;
+          distance_km: number;
+          donor_name: string | null;
+          event_year: number;
+          id: string;
+          notes: string | null;
+          race_date: string | null;
+          race_name: string;
+          status: string;
+          updated_at: string;
+          website_url: string | null;
+        };
+        Insert: {
+          category_slug: string;
+          created_at?: string;
+          distance_km: number;
+          donor_name?: string | null;
+          event_year: number;
+          id?: string;
+          notes?: string | null;
+          race_date?: string | null;
+          race_name: string;
+          status?: string;
+          updated_at?: string;
+          website_url?: string | null;
+        };
+        Update: {
+          category_slug?: string;
+          created_at?: string;
+          distance_km?: number;
+          donor_name?: string | null;
+          event_year?: number;
+          id?: string;
+          notes?: string | null;
+          race_date?: string | null;
+          race_name?: string;
+          status?: string;
+          updated_at?: string;
+          website_url?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'race_prizes_event_year_category_slug_fkey';
+            columns: ['event_year', 'category_slug'];
+            isOneToOne: false;
+            referencedRelation: 'distance_categories';
+            referencedColumns: ['event_year', 'slug'];
+          },
+          {
+            foreignKeyName: 'race_prizes_event_year_fkey';
+            columns: ['event_year'];
+            isOneToOne: false;
+            referencedRelation: 'event_editions';
+            referencedColumns: ['event_year'];
+          },
+        ];
+      };
+      runs: {
+        Row: {
+          comment: string | null;
+          created_at: string;
+          distance_km: number;
+          donation_amount_nok: number;
+          donation_confirmed_at: string | null;
+          duration_text: string | null;
+          event_year: number;
+          evidence_url: string | null;
+          id: string;
+          participant_id: string;
+          run_date: string;
+          title: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          comment?: string | null;
+          created_at?: string;
+          distance_km: number;
+          donation_amount_nok: number;
+          donation_confirmed_at?: string | null;
+          duration_text?: string | null;
+          event_year: number;
+          evidence_url?: string | null;
+          id?: string;
+          participant_id: string;
+          run_date: string;
+          title?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          comment?: string | null;
+          created_at?: string;
+          distance_km?: number;
+          donation_amount_nok?: number;
+          donation_confirmed_at?: string | null;
+          duration_text?: string | null;
+          event_year?: number;
+          evidence_url?: string | null;
+          id?: string;
+          participant_id?: string;
+          run_date?: string;
+          title?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'runs_event_year_fkey';
+            columns: ['event_year'];
+            isOneToOne: false;
+            referencedRelation: 'event_editions';
+            referencedColumns: ['event_year'];
+          },
+          {
+            foreignKeyName: 'runs_participant_id_fkey';
+            columns: ['participant_id'];
+            isOneToOne: false;
+            referencedRelation: 'participants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'runs_participant_id_fkey';
             columns: ['participant_id'];
             isOneToOne: false;
             referencedRelation: 'participants_safe';
@@ -578,51 +651,21 @@ export type Database = {
       };
     };
     Views: {
-      eligible_entries: {
-        Row: {
-          category_slug: string | null;
-          event_year: number | null;
-          participant_id: string | null;
-          run_id: string | null;
-          tickets: number | null;
-        };
-        Relationships: [];
-      };
-      participant_ticket_totals: {
-        Row: {
-          category_slug: string | null;
-          event_year: number | null;
-          participant_id: string | null;
-          tickets: number | null;
-        };
-        Relationships: [];
-      };
       category_ticket_totals: {
         Row: {
           category_slug: string | null;
           event_year: number | null;
           tickets: number | null;
         };
-        Relationships: [];
-      };
-      runs_public: {
-        Row: {
-          bib_number: number | null;
-          comment: string | null;
-          created_at: string | null;
-          distance_km: number | null;
-          donation_amount_nok: number | null;
-          duration_text: string | null;
-          event_year: number | null;
-          evidence_url: string | null;
-          full_name: string | null;
-          id: string | null;
-          interest_categories: string[] | null;
-          participant_id: string | null;
-          run_date: string | null;
-          title: string | null;
-        };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'runs_event_year_fkey';
+            columns: ['event_year'];
+            isOneToOne: false;
+            referencedRelation: 'event_editions';
+            referencedColumns: ['event_year'];
+          },
+        ];
       };
       completions_with_counts: {
         Row: {
@@ -655,32 +698,117 @@ export type Database = {
           },
         ];
       };
-      current_year_completions: {
+      draw_results_public: {
         Row: {
-          bib_number: number | null;
-          comment: string | null;
-          comment_count: number | null;
-          completed_date: string | null;
-          created_at: string | null;
-          duration_text: string | null;
+          annulled_at: string | null;
+          candidate_count: number | null;
+          drawn_at: string | null;
           event_year: number | null;
-          full_name: string | null;
           id: string | null;
-          image_count: number | null;
           participant_id: string | null;
-          updated_at: string | null;
-          vote_count: number | null;
+          prize_id: string | null;
+          published_at: string | null;
+        };
+        Insert: {
+          annulled_at?: string | null;
+          candidate_count?: number | null;
+          drawn_at?: string | null;
+          event_year?: number | null;
+          id?: string | null;
+          participant_id?: never;
+          prize_id?: string | null;
+          published_at?: string | null;
+        };
+        Update: {
+          annulled_at?: string | null;
+          candidate_count?: number | null;
+          drawn_at?: string | null;
+          event_year?: number | null;
+          id?: string | null;
+          participant_id?: never;
+          prize_id?: string | null;
+          published_at?: string | null;
         };
         Relationships: [
           {
-            foreignKeyName: 'completions_participant_id_fkey';
+            foreignKeyName: 'draw_results_event_year_fkey';
+            columns: ['event_year'];
+            isOneToOne: false;
+            referencedRelation: 'event_editions';
+            referencedColumns: ['event_year'];
+          },
+          {
+            foreignKeyName: 'draw_results_prize_id_fkey';
+            columns: ['prize_id'];
+            isOneToOne: false;
+            referencedRelation: 'race_prizes';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'draw_results_prize_id_fkey';
+            columns: ['prize_id'];
+            isOneToOne: false;
+            referencedRelation: 'race_prizes_public';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      eligible_entries: {
+        Row: {
+          category_slug: string | null;
+          event_year: number | null;
+          participant_id: string | null;
+          run_id: string | null;
+          tickets: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'runs_event_year_fkey';
+            columns: ['event_year'];
+            isOneToOne: false;
+            referencedRelation: 'event_editions';
+            referencedColumns: ['event_year'];
+          },
+          {
+            foreignKeyName: 'runs_participant_id_fkey';
             columns: ['participant_id'];
             isOneToOne: false;
             referencedRelation: 'participants';
             referencedColumns: ['id'];
           },
           {
-            foreignKeyName: 'completions_participant_id_fkey';
+            foreignKeyName: 'runs_participant_id_fkey';
+            columns: ['participant_id'];
+            isOneToOne: false;
+            referencedRelation: 'participants_safe';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      participant_ticket_totals: {
+        Row: {
+          category_slug: string | null;
+          event_year: number | null;
+          participant_id: string | null;
+          tickets: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'runs_event_year_fkey';
+            columns: ['event_year'];
+            isOneToOne: false;
+            referencedRelation: 'event_editions';
+            referencedColumns: ['event_year'];
+          },
+          {
+            foreignKeyName: 'runs_participant_id_fkey';
+            columns: ['participant_id'];
+            isOneToOne: false;
+            referencedRelation: 'participants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'runs_participant_id_fkey';
             columns: ['participant_id'];
             isOneToOne: false;
             referencedRelation: 'participants_safe';
@@ -718,37 +846,172 @@ export type Database = {
         };
         Relationships: [];
       };
+      race_prizes_public: {
+        Row: {
+          category_slug: string | null;
+          created_at: string | null;
+          distance_km: number | null;
+          donor_name: string | null;
+          event_year: number | null;
+          id: string | null;
+          race_date: string | null;
+          race_name: string | null;
+          status: string | null;
+          website_url: string | null;
+        };
+        Insert: {
+          category_slug?: string | null;
+          created_at?: string | null;
+          distance_km?: number | null;
+          donor_name?: string | null;
+          event_year?: number | null;
+          id?: string | null;
+          race_date?: string | null;
+          race_name?: string | null;
+          status?: string | null;
+          website_url?: string | null;
+        };
+        Update: {
+          category_slug?: string | null;
+          created_at?: string | null;
+          distance_km?: number | null;
+          donor_name?: string | null;
+          event_year?: number | null;
+          id?: string | null;
+          race_date?: string | null;
+          race_name?: string | null;
+          status?: string | null;
+          website_url?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'race_prizes_event_year_category_slug_fkey';
+            columns: ['event_year', 'category_slug'];
+            isOneToOne: false;
+            referencedRelation: 'distance_categories';
+            referencedColumns: ['event_year', 'slug'];
+          },
+          {
+            foreignKeyName: 'race_prizes_event_year_fkey';
+            columns: ['event_year'];
+            isOneToOne: false;
+            referencedRelation: 'event_editions';
+            referencedColumns: ['event_year'];
+          },
+        ];
+      };
+      runs_public: {
+        Row: {
+          bib_number: number | null;
+          comment: string | null;
+          distance_km: number | null;
+          duration_text: string | null;
+          event_year: number | null;
+          evidence_url: string | null;
+          full_name: string | null;
+          id: string | null;
+          interest_categories: string[] | null;
+          participant_id: string | null;
+          run_date: string | null;
+          title: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'runs_event_year_fkey';
+            columns: ['event_year'];
+            isOneToOne: false;
+            referencedRelation: 'event_editions';
+            referencedColumns: ['event_year'];
+          },
+          {
+            foreignKeyName: 'runs_participant_id_fkey';
+            columns: ['participant_id'];
+            isOneToOne: false;
+            referencedRelation: 'participants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'runs_participant_id_fkey';
+            columns: ['participant_id'];
+            isOneToOne: false;
+            referencedRelation: 'participants_safe';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Functions: {
       annul_draw: {
-        Args: { p_result_id: string; p_declined: boolean };
-        Returns: Database['public']['Tables']['draw_results']['Row'];
+        Args: { p_declined: boolean; p_result_id: string };
+        Returns: {
+          annulled_at: string | null;
+          annulled_by: string | null;
+          candidate_count: number;
+          declined: boolean;
+          drawn_at: string;
+          drawn_by: string;
+          event_year: number;
+          id: string;
+          participant_id: string;
+          prize_id: string;
+          published_at: string | null;
+          winning_run_id: string;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'draw_results';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
       };
       close_submission_window: { Args: never; Returns: undefined };
+      delete_my_account: { Args: never; Returns: undefined };
       draw_race_prize: {
         Args: { p_prize_id: string };
-        Returns: Database['public']['Tables']['draw_results']['Row'];
-      };
-      get_current_event_year: { Args: never; Returns: number };
-      get_participant_history: {
-        Args: { p_user_id: string };
         Returns: {
-          bib_number: number;
-          completion_date: string;
-          email: string;
+          annulled_at: string | null;
+          annulled_by: string | null;
+          candidate_count: number;
+          declined: boolean;
+          drawn_at: string;
+          drawn_by: string;
           event_year: number;
-          full_name: string;
-          has_completed: boolean;
+          id: string;
           participant_id: string;
-          registration_date: string;
-          vote_count: number;
-        }[];
+          prize_id: string;
+          published_at: string | null;
+          winning_run_id: string;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'draw_results';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
       };
-      is_november_edit_window: { Args: never; Returns: boolean };
+      export_my_data: { Args: never; Returns: Json };
+      get_current_event_year: { Args: never; Returns: number };
       is_event_admin: { Args: never; Returns: boolean };
+      is_november_edit_window: { Args: never; Returns: boolean };
       is_submission_window_open: { Args: never; Returns: boolean };
       is_year_editable: { Args: { year_to_check: number }; Returns: boolean };
       open_submission_window: { Args: never; Returns: undefined };
+      publish_draws: {
+        Args: { p_event_year: number; p_publish: boolean };
+        Returns: undefined;
+      };
+      register_participant: {
+        Args: {
+          p_full_name: string;
+          p_interests: string[];
+          p_phone_number: string;
+          p_postal_address: string;
+        };
+        Returns: {
+          new_bib_number: number;
+          new_participant_id: string;
+        }[];
+      };
       set_current_event_year: { Args: { new_year: number }; Returns: undefined };
     };
     Enums: {
@@ -768,12 +1031,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
@@ -793,13 +1056,12 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+    keyof DefaultSchema['Tables'] | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
@@ -818,13 +1080,12 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+    keyof DefaultSchema['Tables'] | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
@@ -843,13 +1104,12 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema['Enums']
-    | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    keyof DefaultSchema['Enums'] | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
@@ -860,13 +1120,12 @@ export type Enums<
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema['CompositeTypes']
-    | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    keyof DefaultSchema['CompositeTypes'] | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
@@ -876,9 +1135,6 @@ export type CompositeTypes<
     : never;
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },

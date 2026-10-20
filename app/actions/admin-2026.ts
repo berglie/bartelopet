@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/app/_shared/lib/supabase/server';
 import { categoryForPrize, EVENT_YEAR_2026 } from '@/app/_shared/types/event-2026';
+import { DRAW_ERRORS, DRAW_FAILED } from '@/app/admin/_components/draw-errors';
 
 async function adminClient() {
   const supabase = await createClient();
@@ -18,48 +19,45 @@ function refreshAdmin() {
   revalidatePath('/');
 }
 
-const DRAW_ERRORS: Record<string, string> = {
-  'Close registration and run submissions before drawing':
-    'Steng påmelding og turregistrering før du trekker.',
-  'Longer prizes must be drawn first': 'Trekk de lengste løpene først.',
-  'No eligible entries are available': 'Ingen lodd igjen i potten for denne premien.',
-  'Prize is not available for drawing': 'Premien er ikke publisert eller er allerede trukket.',
-  'Prize has already been drawn': 'Premien er allerede trukket.',
-  'Draw not found or already annulled': 'Trekningen finnes ikke eller er allerede annullert.',
-};
-
 /** Shows draw errors as a banner on /admin instead of crashing the page mid-draw. */
 function failDraw(message: string): never {
-  redirect(`/admin?feil=${encodeURIComponent(DRAW_ERRORS[message] ?? message)}`);
+  if (!DRAW_ERRORS[message]) console.error('Draw failed:', message);
+  redirect(`/admin?feil=${encodeURIComponent(DRAW_ERRORS[message] ?? DRAW_FAILED)}`);
+}
+
+/** Empty, or an http(s) URL. Anything else (javascript:, data:) is rejected. */
+function optionalWebUrl(value: FormDataEntryValue | null, field: string): string | null {
+  const text = String(value || '').trim();
+  if (!text) return null;
+  try {
+    const url = new URL(text);
+    if (url.protocol === 'https:' || url.protocol === 'http:') return url.toString();
+  } catch {
+    // Falls through to the error below.
+  }
+  throw new Error(`${field} må være en http(s)-lenke`);
 }
 
 export async function saveEventSettings(formData: FormData): Promise<void> {
   const supabase = await adminClient();
-  const donationUrl = String(formData.get('donation_url') || '').trim();
   const { error } = await supabase
     .from('event_editions')
     .update({
       registration_open: formData.get('registration_open') === 'on',
       submissions_open: formData.get('submissions_open') === 'on',
-      donation_url: donationUrl || null,
-      winners_published: formData.get('winners_published') === 'on',
+      donation_url: optionalWebUrl(formData.get('donation_url'), 'Gavelenken'),
       updated_at: new Date().toISOString(),
     })
     .eq('event_year', EVENT_YEAR_2026);
-  if (error) throw new Error(error.message);
+  if (error) throw new Error('Kunne ikke lagre innstillingene');
 
-  // Draws made while winners are published get published_at in draw_race_prize().
-  // Here we only publish what is still unpublished, so earlier timestamps survive re-saves.
-  const publishWinners = formData.get('winners_published') === 'on';
-  const publishQuery = supabase
-    .from('draw_results')
-    .update({ published_at: publishWinners ? new Date().toISOString() : null })
-    .eq('event_year', EVENT_YEAR_2026)
-    .is('annulled_at', null);
-  const { error: publishError } = publishWinners
-    ? await publishQuery.is('published_at', null)
-    : await publishQuery;
-  if (publishError) throw new Error(publishError.message);
+  // Sets winners_published and publishes (or hides) every draw. Draws made while winners are
+  // published get published_at in draw_race_prize(); earlier timestamps survive re-saves.
+  const { error: publishError } = await supabase.rpc('publish_draws', {
+    p_event_year: EVENT_YEAR_2026,
+    p_publish: formData.get('winners_published') === 'on',
+  });
+  if (publishError) throw new Error('Kunne ikke publisere vinnerne');
   refreshAdmin();
 }
 
@@ -77,11 +75,11 @@ export async function createPrize(formData: FormData): Promise<void> {
     distance_km: distance,
     donor_name: String(formData.get('donor_name') || '').trim() || null,
     race_date: String(formData.get('race_date') || '') || null,
-    website_url: String(formData.get('website_url') || '').trim() || null,
+    website_url: optionalWebUrl(formData.get('website_url'), 'Nettsiden'),
     notes: String(formData.get('notes') || '').trim() || null,
     status: formData.get('publish') === 'on' ? 'available' : 'draft',
   });
-  if (error) throw new Error(error.message);
+  if (error) throw new Error('Kunne ikke opprette premien');
   refreshAdmin();
 }
 
@@ -92,7 +90,7 @@ export async function setPrizeAvailability(prizeId: string, available: boolean):
     .update({ status: available ? 'available' : 'draft', updated_at: new Date().toISOString() })
     .eq('id', prizeId)
     .neq('status', 'drawn');
-  if (error) throw new Error(error.message);
+  if (error) throw new Error('Kunne ikke endre premien');
   refreshAdmin();
 }
 

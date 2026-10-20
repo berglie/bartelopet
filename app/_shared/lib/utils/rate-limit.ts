@@ -75,6 +75,17 @@ export const rateLimiters = {
         })
       : null,
 
+  // Contact form - 5 messages per hour per IP
+  contact:
+    redis && isRedisAvailable
+      ? new Ratelimit({
+          redis,
+          limiter: Ratelimit.slidingWindow(5, '1 h'),
+          analytics: true,
+          prefix: 'ratelimit:contact',
+        })
+      : null,
+
   // General API - 60 requests per minute per IP
   api:
     redis && isRedisAvailable
@@ -106,45 +117,42 @@ export async function checkRateLimit(
   identifier: string
 ): Promise<RateLimitResult> {
   const limiter = rateLimiters[limiterKey];
+  // In production a missing or failing limiter blocks the request (fail closed), so spam
+  // protection cannot silently switch off. Locally it lets everything through.
+  const fallback: RateLimitResult = {
+    success: process.env.NODE_ENV !== 'production',
+    limit: 0,
+    remaining: 0,
+    reset: Date.now() + 60_000,
+  };
 
-  // If rate limiting is not configured, allow the request
   if (!limiter || !isRedisAvailable) {
-    return {
-      success: true,
-      limit: 0,
-      remaining: 0,
-      reset: 0,
-    };
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[Rate Limit] Upstash Redis is not configured; blocking request.');
+    }
+    return fallback;
   }
 
   try {
-    const result = await limiter.limit(identifier);
-    return result;
+    return await limiter.limit(identifier);
   } catch (error) {
     console.error('[Rate Limit] Error checking rate limit:', error);
-    // Fail open - allow the request if rate limiting fails
-    return {
-      success: true,
-      limit: 0,
-      remaining: 0,
-      reset: 0,
-    };
+    return fallback;
   }
 }
 
 /**
- * Get client IP address from request
- * Works with Vercel, Cloudflare, and other proxies
+ * Get client IP address from request.
+ * Vercel sets x-real-ip and overwrites x-forwarded-for with the real client address. Headers
+ * such as cf-connecting-ip are passed through from the client unchanged, so they are not
+ * trusted: an attacker could rotate them to get a fresh rate limit on every request.
  */
 export function getClientIp(request: Request): string {
-  // Try multiple headers in order of preference
   const headers = request.headers;
-  const forwardedFor = headers.get('x-forwarded-for');
   const realIp = headers.get('x-real-ip');
-  const cfConnectingIp = headers.get('cf-connecting-ip');
+  const forwardedFor = headers.get('x-forwarded-for');
 
-  if (cfConnectingIp) return cfConnectingIp;
-  if (realIp) return realIp;
+  if (realIp) return realIp.trim();
   if (forwardedFor) return forwardedFor.split(',')[0].trim();
 
   return '127.0.0.1'; // Fallback for local development
