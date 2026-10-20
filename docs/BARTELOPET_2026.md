@@ -68,7 +68,19 @@ beskyttelsen. Se `20261020000002_security_hardening.sql`.
   EXIF/GPS. De lagres under deltaker-ID, ikke auth-bruker-ID, og bøttene kan ikke listes.
 - Brukere kan laste ned (`export_my_data()`) og slette (`delete_my_account()`) dataene sine på Min
   side. Vinnere anonymiseres i stedet for å slettes, slik at trekningshistorikken består.
-- Endre aldri policyer for hånd i dashboardet. Legg endringen i en ny migrasjon.
+- `is_event_admin()` leser rollen fra `auth.users`, ikke fra JWT-en. Fjernes arrangørrollen, mister
+  personen tilgangen med en gang, ikke først når tokenet utløper.
+- Når premiene er levert, trykker arrangøren «Slett kontaktinformasjon» på `/admin`
+  (`purge_contact_details()`). Postadresse og telefon slettes for alle deltakere det året, slik
+  personvernerklæringen lover.
+- 2025-stemmer er private. Publikum ser bare antall via `completions_with_counts`.
+- Content-Security-Policy settes i `proxy.ts` med en ny nonce per forespørsel og `'strict-dynamic'`
+  (`app/_shared/lib/security/csp.ts`). Inline-skript uten nonce blokkeres. Egne inline-skript må få
+  `nonce` fra `headers().get('x-nonce')`, slik som i `app/layout.tsx`.
+- Rate limiting (Upstash) feiler lukket i produksjon. Uten `UPSTASH_REDIS_REST_URL` og
+  `UPSTASH_REDIS_REST_TOKEN` avvises kontaktskjema, opplastinger og konto-eksport/-sletting.
+- Endre aldri policyer for hånd i dashboardet. Legg endringen i en ny migrasjon. Migrasjonen
+  fjerner ukjente policyer på `participants`, men andre tabeller ryddes ikke automatisk.
 
 ## Årsarkiv
 

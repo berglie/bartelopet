@@ -41,7 +41,7 @@ export function ParticipantDetailModal({
   onOpenChange,
 }: ParticipantDetailModalProps) {
   const [loading, setLoading] = useState(true);
-  const [detail, setDetail] = useState<ParticipantDetail | null>(null);
+  const [loadedDetail, setDetail] = useState<ParticipantDetail | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   // Fetch participant details when modal opens
@@ -68,12 +68,19 @@ export function ParticipantDetailModal({
 
     if (open && participant) {
       fetchParticipantDetail();
-    } else {
-      // Reset state when modal closes
+    }
+  }, [open, participant]);
+
+  // Reset when the modal closes, so the next participant does not flash the previous one.
+  const handleOpenChange = (next: boolean) => {
+    if (!next) {
       setDetail(null);
       setSelectedImageIndex(0);
     }
-  }, [open, participant]);
+    onOpenChange(next);
+  };
+  const detail =
+    loadedDetail && loadedDetail.bib_number === participant?.bib_number ? loadedDetail : null;
 
   const formatDuration = (minutes: number | null) => {
     if (!minutes) return 'Ikke registrert';
@@ -83,7 +90,7 @@ export function ParticipantDetailModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="flex max-h-[90vh] flex-col p-0 sm:max-h-[85vh] sm:max-w-3xl">
         <DialogHeader className="sr-only">
           <DialogTitle>Deltakerinformasjon</DialogTitle>

@@ -13,18 +13,63 @@
 -- * Storage buckets can no longer be listed, and run evidence is stored per participant id
 --   instead of per auth user id.
 -- * Users can export and delete their own data (GDPR art. 15, 17 and 20).
+-- * Admin rights are read from auth.users, so removing the role takes effect at once.
+-- * 2025 votes are private; only the totals are public.
+-- * Organizers can delete postal addresses and phone numbers once prizes are delivered.
+
+-- ============================================================================
+-- 0. Admin check
+-- ============================================================================
+
+-- Reads the role from auth.users instead of the JWT. A JWT keeps its claims until it expires
+-- (up to an hour), so removing someone's organizer role, or deleting the user, now takes
+-- effect immediately. The role is in app_metadata, which users cannot change themselves.
+CREATE OR REPLACE FUNCTION public.is_event_admin()
+RETURNS BOOLEAN
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+  SELECT COALESCE(
+    (SELECT u.raw_app_meta_data ->> 'role' FROM auth.users u WHERE u.id = auth.uid())
+      IN ('admin', 'organizer'),
+    false
+  );
+$$;
+
+REVOKE EXECUTE ON FUNCTION public.is_event_admin() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.is_event_admin() TO anon, authenticated;
 
 -- ============================================================================
 -- 1. participants
 -- ============================================================================
 
-DROP POLICY IF EXISTS "Public can view all participants (all years)" ON participants;
-DROP POLICY IF EXISTS "Public can view participants" ON participants;
-DROP POLICY IF EXISTS "Registration follows active edition" ON participants;
-DROP POLICY IF EXISTS "Anyone can register for current event year" ON participants;
-DROP POLICY IF EXISTS "Anyone can register (insert)" ON participants;
-DROP POLICY IF EXISTS "Users can update own participant record when window open" ON participants;
-DROP POLICY IF EXISTS "Users can update own participant record" ON participants;
+-- Drops every participants policy except the two below, including ones added by hand in the
+-- dashboard (the test project had "Public can SELECT for safe view access" USING (true)).
+DO $$
+DECLARE
+  policy RECORD;
+BEGIN
+  FOR policy IN
+    SELECT policyname FROM pg_policies
+    WHERE schemaname = 'public' AND tablename = 'participants'
+      AND policyname NOT IN (
+        'Users can view own full participant record',
+        'Admins view participant contact details'
+      )
+  LOOP
+    EXECUTE format('DROP POLICY %I ON public.participants', policy.policyname);
+  END LOOP;
+END;
+$$;
+
+DROP POLICY IF EXISTS "Users can view own full participant record" ON participants;
+CREATE POLICY "Users can view own full participant record" ON participants FOR SELECT
+  USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Admins view participant contact details" ON participants;
+CREATE POLICY "Admins view participant contact details" ON participants FOR SELECT
+  USING (public.is_event_admin());
 
 -- Remaining SELECT policies: "Users can view own full participant record" (own rows) and
 -- "Admins view participant contact details". The public reads participants_safe.
@@ -227,8 +272,13 @@ GRANT INSERT (
 GRANT UPDATE (run_date, distance_km, title, duration_text, comment, evidence_url)
   ON runs TO authenticated;
 
+-- https only; plain http just for a local Supabase stack in development.
 ALTER TABLE runs ADD CONSTRAINT runs_evidence_url_https
-  CHECK (evidence_url IS NULL OR evidence_url ~ '^https://[^/\s]+') NOT VALID;
+  CHECK (
+    evidence_url IS NULL
+    OR evidence_url ~ '^https://[^/\s]+'
+    OR evidence_url ~ '^http://(127\.0\.0\.1|localhost)(:[0-9]+)?/'
+  ) NOT VALID;
 
 -- Updates that keep the date, distance and owner skip the period checks, so delete_my_account()
 -- can clear personal text from a winning run after submissions close. Users still cannot edit
@@ -613,6 +663,21 @@ CREATE POLICY "Participants cannot vote for themselves" ON photo_votes
     )
   );
 
+-- Votes showed who voted for whom. Voters now see only their own votes; the public sees totals
+-- through completions_with_counts, which reads votes with the owner's rights.
+DROP POLICY IF EXISTS "Public can view all photo votes (all years)" ON photo_votes;
+DROP POLICY IF EXISTS "Public can view all votes (all years)" ON photo_votes;
+CREATE POLICY "Voters view own votes" ON photo_votes FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.participants p
+      WHERE p.id = photo_votes.voter_id AND p.user_id = auth.uid()
+    )
+  );
+
+ALTER VIEW public.completions_with_counts SET (security_invoker = off);
+ALTER VIEW public.completions_with_counts OWNER TO postgres;
+
 -- ============================================================================
 -- 6. Storage
 -- ============================================================================
@@ -815,3 +880,42 @@ REVOKE EXECUTE ON FUNCTION public.export_my_data() FROM PUBLIC, anon;
 REVOKE EXECUTE ON FUNCTION public.delete_my_account() FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.export_my_data() TO authenticated;
 GRANT EXECUTE ON FUNCTION public.delete_my_account() TO authenticated;
+
+-- ============================================================================
+-- 8. Deleting contact details after prize delivery
+-- ============================================================================
+
+-- Postal addresses and phone numbers are only needed to deliver prizes. Organizers run this
+-- from /admin once prizes are delivered; it can only run after registration and submissions
+-- close. Names, e-mail addresses (for login) and runs are kept.
+CREATE OR REPLACE FUNCTION public.purge_contact_details(p_event_year INTEGER)
+RETURNS INTEGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  IF NOT public.is_event_admin() THEN
+    RAISE EXCEPTION 'Administrator access required';
+  END IF;
+
+  IF EXISTS (
+    SELECT 1 FROM public.event_editions e
+    WHERE e.event_year = p_event_year AND (e.registration_open OR e.submissions_open)
+  ) THEN
+    RAISE EXCEPTION 'Close registration and run submissions first';
+  END IF;
+
+  UPDATE public.participants
+  SET postal_address = 'Slettet', phone_number = NULL, updated_at = NOW()
+  WHERE event_year = p_event_year
+    AND (postal_address <> 'Slettet' OR phone_number IS NOT NULL);
+  GET DIAGNOSTICS v_count = ROW_COUNT;
+  RETURN v_count;
+END;
+$$;
+
+REVOKE EXECUTE ON FUNCTION public.purge_contact_details(INTEGER) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.purge_contact_details(INTEGER) TO authenticated;

@@ -63,12 +63,16 @@ export function ImageViewerDialog({
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
 
-  // Reset image loaded state when completion changes
-  useEffect(() => {
+  // Reset per-completion state when another completion is shown (adjusting state during
+  // render, as React recommends, instead of an effect that renders twice).
+  const resetKey = `${completion.id}:${openWithComments}`;
+  const [shownKey, setShownKey] = useState(resetKey);
+  if (shownKey !== resetKey) {
+    setShownKey(resetKey);
     setImageLoaded(false);
     setShowComments(openWithComments);
     setComments([]);
-  }, [completion.id, openWithComments]);
+  }
 
   // Load comments when comments section is opened
   useEffect(() => {

@@ -1,6 +1,7 @@
 import { updateSession } from '@/app/_shared/lib/supabase/middleware';
 import { createClient } from '@/app/_shared/lib/supabase/server';
 import { NextResponse, type NextRequest } from 'next/server';
+import { buildContentSecurityPolicy } from '@/app/_shared/lib/security/csp';
 
 /**
  * Root proxy for global session management and route protection
@@ -10,8 +11,17 @@ export async function proxy(request: NextRequest) {
   // /admin is not blocked here: the page and every admin action check is_event_admin() on the
   // server, and the database checks it again. The proxy is a convenience, not a security gate.
 
+  // A fresh nonce per request. Next.js reads it from the request's CSP header and adds it to
+  // its scripts; the layout reads x-nonce for our own inline script.
+  const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
+  const csp = buildContentSecurityPolicy(nonce);
+
   // Refresh session if needed
-  const response = await updateSession(request);
+  const response = await updateSession(request, {
+    'x-nonce': nonce,
+    'Content-Security-Policy': csp,
+  });
+  response.headers.set('Content-Security-Policy', csp);
 
   // Protected routes that require authentication
   const protectedPaths = ['/dashboard', '/profil'];

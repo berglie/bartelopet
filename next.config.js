@@ -4,10 +4,7 @@
 const path = require('path');
 
 // Images and API calls are only allowed to our own Supabase project, not every *.supabase.co.
-const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
-  ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).host
-  : '*.supabase.co';
-const isDevelopment = process.env.NODE_ENV === 'development';
+const supabaseUrl = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://*.supabase.co');
 
 const nextConfig = {
   poweredByHeader: false,
@@ -59,13 +56,14 @@ const nextConfig = {
     qualities: [100, 75],
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: supabaseHost,
-        port: '',
+        protocol: supabaseUrl.protocol.replace(':', ''),
+        hostname: supabaseUrl.hostname,
+        port: supabaseUrl.port,
         pathname: '/storage/v1/object/public/**',
       },
     ],
   },
+  // Content-Security-Policy is set per request with a nonce in proxy.ts.
   async headers() {
     return [
       {
@@ -95,25 +93,6 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
-          },
-          {
-            key: 'Content-Security-Policy',
-            value: [
-              "default-src 'self'",
-              // 'unsafe-eval' is only needed by React in development. 'unsafe-inline' is needed
-              // for Next.js' inline hydration scripts unless every page renders with a nonce.
-              `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ''} https://api.mapbox.com https://vercel.live https://strava-embeds.com`,
-              "worker-src 'self' blob: https://api.mapbox.com",
-              "style-src 'self' 'unsafe-inline' https://api.mapbox.com",
-              `img-src 'self' data: blob: https://${supabaseHost} https://api.mapbox.com https://strava-embeds.com`,
-              "font-src 'self' data:",
-              `connect-src 'self' https://${supabaseHost} https://api.mapbox.com https://events.mapbox.com wss://${supabaseHost} https://vercel.live https://strava-embeds.com`,
-              "frame-src 'self' https://strava-embeds.com https://vercel.live https://open.spotify.com",
-              "frame-ancestors 'self'",
-              "base-uri 'self'",
-              "form-action 'self'",
-              "object-src 'none'",
-            ].join('; '),
           },
           {
             key: 'Permissions-Policy',

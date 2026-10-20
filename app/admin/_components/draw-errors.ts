@@ -7,6 +7,8 @@ export const DRAW_ERRORS: Record<string, string> = {
   'Prize is not available for drawing': 'Premien er ikke publisert eller er allerede trukket.',
   'Prize has already been drawn': 'Premien er allerede trukket.',
   'Draw not found or already annulled': 'Trekningen finnes ikke eller er allerede annullert.',
+  'Close registration and run submissions first':
+    'Steng påmelding og turregistrering før du sletter kontaktinformasjon.',
 };
 
 export const DRAW_FAILED = 'Trekningen feilet. Prøv igjen.';

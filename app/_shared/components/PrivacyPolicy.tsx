@@ -140,7 +140,8 @@ export function PrivacyPolicy() {
             inn og melde deg på senere år
           </li>
           <li>
-            <strong>Postadresse og telefonnummer</strong> - slettes når premiene for året er levert
+            <strong>Postadresse og telefonnummer</strong> - slettes for alle deltakere når premiene
+            for året er levert
           </li>
           <li>
             <strong>Trekninger</strong> - beholdes for å dokumentere at trekningen var rettferdig.
@@ -158,7 +159,8 @@ export function PrivacyPolicy() {
         </p>
         <ul>
           <li>
-            <strong>Supabase</strong> - database, innlogging og lagring av bilder
+            <strong>Supabase</strong> - database, innlogging og lagring av bilder. Databasen ligger
+            i EU (Irland)
           </li>
           <li>
             <strong>Vercel</strong> - drift av nettsiden
@@ -205,7 +207,8 @@ export function PrivacyPolicy() {
           </li>
           <li>
             <strong>Tilgangskontroll</strong> - bare du ser kontaktinformasjonen din. Arrangørene
-            ser kontaktinformasjonen til vinnere for å levere premier
+            ser kontaktinformasjonen til vinnere for å levere premier, og arrangørtilgang kan
+            trekkes tilbake med umiddelbar virkning
           </li>
           <li>
             <strong>Bilder uten posisjon</strong> - posisjonsdata (EXIF/GPS) fjernes fra bilder du
@@ -224,7 +227,7 @@ export function PrivacyPolicy() {
           <li>Bilder og aktivitetslenker (for eksempel Strava) du legger ved turene</li>
           <li>Valgte premiekategorier og antall lodd</li>
           <li>Navn på publiserte vinnere</li>
-          <li>Fra 2025: bilder, kommentarer og hvilke bilder deltakerne stemte på</li>
+          <li>Fra 2025: bilder, kommentarer og antall stemmer per bilde (ikke hvem som stemte)</li>
         </ul>
         <p className="font-semibold">
           OBS: Ikke del sensitive eller private opplysninger i kommentarfeltet eller bilder, da

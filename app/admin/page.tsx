@@ -11,6 +11,7 @@ import {
   drawPrize,
   saveEventSettings,
   setPrizeAvailability,
+  purgeContactDetails,
 } from '@/app/actions/admin-2026';
 import { CATEGORY_META, EVENT_YEAR_2026 } from '@/app/_shared/types/event-2026';
 import { formatDate } from '@/app/_shared/lib/utils/format';
@@ -20,9 +21,10 @@ import { isKnownDrawError } from './_components/draw-errors';
 export default async function AdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ feil?: string }>;
+  searchParams: Promise<{ feil?: string; slettet?: string }>;
 }) {
-  const { feil } = await searchParams;
+  const { feil, slettet } = await searchParams;
+  const purgedCount = slettet && /^\d+$/.test(slettet) ? Number(slettet) : null;
   const supabase = await createClient();
   const { data: isAdmin } = await supabase.rpc('is_event_admin');
   if (!isAdmin) notFound();
@@ -70,6 +72,15 @@ export default async function AdminPage({
         <p className="text-sm font-semibold text-accent">Arrangør</p>
         <h1 className="text-4xl font-bold">Barteløpet 2026</h1>
       </div>
+
+      {purgedCount !== null && (
+        <div
+          role="status"
+          className="mb-6 rounded-xl border-2 border-foreground bg-accent/30 p-4 font-semibold"
+        >
+          Postadresse og telefonnummer er slettet for {purgedCount} deltakere.
+        </div>
+      )}
 
       {feil && isKnownDrawError(feil) && (
         <div
@@ -305,6 +316,28 @@ export default async function AdminPage({
             {prizes.length === 0 && (
               <p className="text-muted-foreground">Ingen premier lagt inn.</p>
             )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Personvern</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <p>
+              Når premiene er levert, slett postadresse og telefonnummer for alle deltakere i{' '}
+              {EVENT_YEAR_2026}, slik personvernerklæringen lover. Navn, e-post og turer beholdes.
+              Krever at påmelding og turregistrering er stengt.
+            </p>
+            <form action={purgeContactDetails}>
+              <ConfirmButton
+                variant="destructive"
+                disabled={drawLocked}
+                confirmText="Slette postadresse og telefonnummer for alle deltakere? Dette kan ikke angres."
+              >
+                Slett kontaktinformasjon
+              </ConfirmButton>
+            </form>
           </CardContent>
         </Card>
       </div>

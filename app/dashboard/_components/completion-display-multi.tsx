@@ -28,8 +28,8 @@ export function CompletionDisplayMulti({ completion }: { completion: Completion 
   const [images, setImages] = useState<CompletionImage[]>([]);
   const [loadingImages, setLoadingImages] = useState(true);
 
+  // Starts with loadingImages = true; refetches keep showing the current images meanwhile.
   const fetchImages = useCallback(async () => {
-    setLoadingImages(true);
     const result = await getPhotos(completion.id);
     if (result.success && result.data) {
       setImages(result.data);
@@ -38,8 +38,15 @@ export function CompletionDisplayMulti({ completion }: { completion: Completion 
   }, [completion.id]);
 
   useEffect(() => {
-    void fetchImages();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    let cancelled = false;
+    getPhotos(completion.id).then((result) => {
+      if (cancelled) return;
+      if (result.success && result.data) setImages(result.data);
+      setLoadingImages(false);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [completion.id]);
 
   const handleSuccess = () => {
