@@ -7,10 +7,8 @@ import { NextResponse, type NextRequest } from 'next/server';
  * Runs on all requests except static files
  */
 export async function proxy(request: NextRequest) {
-  // Block non-existent admin routes early to prevent compilation overhead
-  if (request.nextUrl.pathname.startsWith('/admin')) {
-    return new NextResponse('Not Found', { status: 404 });
-  }
+  // /admin is not blocked here: the page and every admin action check is_event_admin() on the
+  // server, and the database checks it again. The proxy is a convenience, not a security gate.
 
   // Refresh session if needed
   const response = await updateSession(request);

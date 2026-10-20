@@ -1,5 +1,7 @@
 'use server';
 
+import { GALLERY_EVENT_YEAR } from '@/app/_shared/lib/constants/config';
+
 import { createClient } from '@/app/_shared/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 
@@ -25,7 +27,8 @@ export async function togglePhotoVote(completionId: string) {
     .from('participants')
     .select('id')
     .eq('user_id', user.id)
-    .single();
+    .eq('event_year', GALLERY_EVENT_YEAR)
+    .maybeSingle();
 
   if (voterError || !voter) {
     return {

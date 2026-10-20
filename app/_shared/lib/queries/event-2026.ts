@@ -4,10 +4,15 @@ import { getMock2026Overview } from '@/app/_shared/lib/mock/event-2026';
 import { isCategorySlug, type PublicRun, type TicketTotals } from '@/app/_shared/types/event-2026';
 import { EVENT_YEAR_2026 } from '@/app/_shared/types/event-2026';
 
+/** Columns the public pages need. Keep in sync with PublicRun; never select('*') here. */
+const PUBLIC_RUN_COLUMNS =
+  'id, participant_id, full_name, bib_number, run_date, distance_km, title, duration_text, comment, evidence_url, interest_categories';
+
 export async function get2026Overview() {
-  const mockSetting = process.env.BARTELOPET_USE_MOCK_DATA;
-  const useMockDataAutomatically =
-    mockSetting !== 'false' && process.env.NODE_ENV === 'development';
+  // Mock data is for local development only, so a stray env var cannot show fake data in prod.
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  const mockSetting = isDevelopment ? process.env.BARTELOPET_USE_MOCK_DATA : undefined;
+  const useMockDataAutomatically = isDevelopment && mockSetting !== 'false';
 
   if (mockSetting === 'true') {
     return {
@@ -25,7 +30,7 @@ export async function get2026Overview() {
         fetchAll((from, to) =>
           supabase
             .from('runs_public')
-            .select('*')
+            .select(PUBLIC_RUN_COLUMNS)
             .eq('event_year', EVENT_YEAR_2026)
             .order('run_date', { ascending: false })
             .order('id')
@@ -36,10 +41,9 @@ export async function get2026Overview() {
           .select('category_slug, tickets')
           .eq('event_year', EVENT_YEAR_2026),
         supabase
-          .from('race_prizes')
+          .from('race_prizes_public')
           .select('*')
           .eq('event_year', EVENT_YEAR_2026)
-          .neq('status', 'draft')
           .order('distance_km'),
         supabase.from('event_editions').select('*').eq('event_year', EVENT_YEAR_2026).maybeSingle(),
         supabase
@@ -56,7 +60,6 @@ export async function get2026Overview() {
         run.bib_number !== null &&
         run.run_date &&
         run.distance_km !== null &&
-        run.donation_amount_nok !== null &&
         Array.isArray(run.interest_categories)
     ) as PublicRun[];
 

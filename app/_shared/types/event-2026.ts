@@ -15,7 +15,6 @@ export interface PublicRun {
   bib_number: number;
   run_date: string;
   distance_km: number;
-  donation_amount_nok: number;
   title: string | null;
   duration_text: string | null;
   comment: string | null;

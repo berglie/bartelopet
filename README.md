@@ -119,8 +119,9 @@ Mer om produksjonsoppsett, administratorrolle og reglene i databasen står i
 | **🔵 Preview**    | Pull Request    | [`cd-preview.yaml`](.github/workflows/cd-preview.yaml) |
 | **🟢 Produksjon** | Push til `main` | [`cd-prod.yaml`](.github/workflows/cd-prod.yaml)       |
 
-Databasemigreringer kjøres ikke automatisk. Kjør nye filer i `supabase/migrations/` i Supabase før
-koden som bruker dem går i produksjon. Utgivelser er beskrevet i [`docs/RELEASE.md`](docs/RELEASE.md).
+Databasemigreringer kjøres automatisk med `supabase db push` før utrulling: preview-workflowen mot
+preview-databasen og prod-workflowen mot produksjonsdatabasen. Endre aldri policyer eller rettigheter
+for hånd i Supabase-dashboardet; legg dem i en ny migrasjon, ellers skiller databasene lag. Utgivelser er beskrevet i [`docs/RELEASE.md`](docs/RELEASE.md).
 
 ## 🤝 Bidra
 

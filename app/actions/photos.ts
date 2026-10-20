@@ -1,5 +1,7 @@
 'use server';
 
+import { GALLERY_EVENT_YEAR } from '@/app/_shared/lib/constants/config';
+
 import { createClient } from '@/app/_shared/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 import type { CompletionImage, CompletionImageInsert } from '@/app/_shared/lib/types/database';
@@ -53,7 +55,8 @@ export async function uploadCompletionImages(
       .from('participants')
       .select('id')
       .eq('user_id', user.id)
-      .single();
+      .eq('event_year', GALLERY_EVENT_YEAR)
+      .maybeSingle();
 
     if (participantError || !participant) {
       return { success: false, error: 'Finner ikke deltaker' };
@@ -157,7 +160,9 @@ export async function uploadCompletionImages(
         image_url: publicUrl,
         is_starred: i === starredIndex,
         display_order: i,
-        caption: image.caption || null,
+        caption: image.caption
+          ? imageCaptionSchema.safeParse({ caption: image.caption }).data?.caption || null
+          : null,
       };
 
       const { data: insertedImage, error: insertError } = await supabase
@@ -283,7 +288,8 @@ export async function updateStarredImage(
       .from('participants')
       .select('id')
       .eq('user_id', user.id)
-      .single();
+      .eq('event_year', GALLERY_EVENT_YEAR)
+      .maybeSingle();
 
     if (!participant) {
       return { success: false, error: 'Finner ikke deltaker' };
@@ -383,7 +389,8 @@ export async function deleteCompletionImage(
       .from('participants')
       .select('id')
       .eq('user_id', user.id)
-      .single();
+      .eq('event_year', GALLERY_EVENT_YEAR)
+      .maybeSingle();
 
     if (!participant) {
       return { success: false, error: 'Finner ikke deltaker' };
@@ -514,7 +521,8 @@ export async function reorderImages(
       .from('participants')
       .select('id')
       .eq('user_id', user.id)
-      .single();
+      .eq('event_year', GALLERY_EVENT_YEAR)
+      .maybeSingle();
 
     if (!participant) {
       return { success: false, error: 'Finner ikke deltaker' };
@@ -622,7 +630,8 @@ export async function updateImageCaption(
       .from('participants')
       .select('id')
       .eq('user_id', user.id)
-      .single();
+      .eq('event_year', GALLERY_EVENT_YEAR)
+      .maybeSingle();
 
     if (!participant) {
       return { success: false, error: 'Finner ikke deltaker' };

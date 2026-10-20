@@ -6,7 +6,7 @@ konverteres.
 
 ## Produksjonsoppsett
 
-1. Kjør migreringen `supabase/migrations/20260725000000_add_2026_event.sql`.
+1. Kjør migreringene (`supabase db push`), inkludert `20261020000002_security_hardening.sql`.
 2. Merk arrangørens eksisterende Supabase-bruker som administrator. Erstatt e-postadressen:
 
    ```sql
@@ -46,6 +46,29 @@ konverteres.
 - Trekninger publiseres med en gang hvis «Publiser vinnere» allerede er på.
 
 Den offentlige forklaringen av trekningen ligger på `/trekning`.
+
+## Sikkerhet og personvern
+
+Anon-nøkkelen ligger i nettleseren, så RLS, rettigheter og databasefunksjoner er den eneste
+beskyttelsen. Se `20261020000002_security_hardening.sql`.
+
+- `participants` kan ikke leses av publikum og kan ikke skrives direkte. Offentlige sider bruker
+  `participants_safe`. Påmelding skjer bare via `register_participant()`, som krever innlogget
+  bruker med bekreftet e-post, henter e-posten fra kontoen og tildeler startnummer i databasen.
+- Ved e-postpåmelding lagres skjemaet i brukerens metadata til e-posten er bekreftet. Da oppretter
+  `/auth/callback` deltakeren og fjerner adressen fra metadataene.
+- `runs`, `race_prizes` og `draw_results` leses offentlig bare via `runs_public`,
+  `race_prizes_public` og `draw_results_public`. Visningene utelater gavebeløp, interne notater,
+  admin-ID-er og hvem som takket nei. Annullerte trekninger vises uten navn.
+- Trekninger skrives bare av `draw_race_prize()`, `annul_draw()` og `publish_draws()`, som tar en
+  lås slik at to arrangører ikke kan trekke samtidig. Status `drawn` kan ikke settes for hånd.
+- `set_current_event_year()`, `open_submission_window()` og `close_submission_window()` kan bare
+  kjøres i SQL-editoren, ikke via API-et.
+- Turbilder lastes opp via serveren (`uploadRunEvidence`), som koder bildet på nytt og fjerner
+  EXIF/GPS. De lagres under deltaker-ID, ikke auth-bruker-ID, og bøttene kan ikke listes.
+- Brukere kan laste ned (`export_my_data()`) og slette (`delete_my_account()`) dataene sine på Min
+  side. Vinnere anonymiseres i stedet for å slettes, slik at trekningshistorikken består.
+- Endre aldri policyer for hånd i dashboardet. Legg endringen i en ny migrasjon.
 
 ## Årsarkiv
 

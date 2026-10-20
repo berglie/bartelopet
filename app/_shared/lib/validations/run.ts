@@ -27,6 +27,7 @@ export const runInputSchema = z.object({
     .trim()
     .max(2048)
     .url('Lenken må være en gyldig URL')
+    .refine((value) => value.startsWith('https://'), 'Lenken må starte med https://')
     .optional()
     .nullable()
     .or(z.literal('')),

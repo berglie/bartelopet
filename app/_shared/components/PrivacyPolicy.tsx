@@ -15,7 +15,7 @@ export function PrivacyPolicy() {
       <article className="prose prose-zinc max-w-none dark:prose-invert prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-li:text-foreground">
         <h1 className="text-foreground">Personvernerklæring</h1>
         <p className="text-sm text-muted-foreground">
-          <em>Sist oppdatert: 25. juli 2026</em>
+          <em>Sist oppdatert: 20. oktober 2026</em>
         </p>
 
         <h2>1. Innledning</h2>
@@ -25,7 +25,14 @@ export function PrivacyPolicy() {
         </p>
 
         <h2>2. Behandlingsansvarlig</h2>
-        <p>Barteløpet er behandlingsansvarlig for behandling av dine personopplysninger.</p>
+        <p>
+          ÅpenAid, som arrangerer Barteløpet, er behandlingsansvarlig for behandlingen av dine
+          personopplysninger. Du når oss via{' '}
+          <Link href="/kontakt" className="text-primary hover:underline">
+            kontaktskjemaet
+          </Link>
+          .
+        </p>
 
         <h2>3. Hvilke personopplysninger samler vi inn?</h2>
         <p>Vi samler inn følgende opplysninger når du registrerer deg:</p>
@@ -76,6 +83,10 @@ export function PrivacyPolicy() {
             <strong>Innloggingsdata</strong> - tidspunkt for innlogging og aktivitet
           </li>
           <li>
+            <strong>IP-adresse</strong> - brukes kortvarig for å begrense misbruk av kontaktskjemaet
+            og opplastinger
+          </li>
+          <li>
             <strong>Trekningsdata</strong> - kvalifiserte lodd og eventuell premiegevinst
           </li>
         </ul>
@@ -121,45 +132,63 @@ export function PrivacyPolicy() {
             <strong>Kontoinformasjon</strong> - lagres så lenge du har en aktiv konto
           </li>
           <li>
-            <strong>Løpsdata og bilder</strong> - lagres permanent for historiske formål, med mindre
-            du ber om sletting
+            <strong>Turer, bilder og kommentarer</strong> - lagres som arrangementets historikk til
+            du sletter dem eller kontoen din
           </li>
           <li>
-            <strong>E-postadresse</strong> - beholdes for kommunikasjon selv etter arrangementet
+            <strong>E-postadresse</strong> - lagres så lenge du har en konto, slik at du kan logge
+            inn og melde deg på senere år
           </li>
           <li>
-            <strong>Postadresse og telefonnummer</strong> - kan slettes etter at premier er levert
+            <strong>Postadresse og telefonnummer</strong> - slettes når premiene for året er levert
+          </li>
+          <li>
+            <strong>Trekninger</strong> - beholdes for å dokumentere at trekningen var rettferdig.
+            Sletter en vinner kontoen sin, fjernes navn og kontaktinformasjon fra trekningen
           </li>
         </ul>
         <p>
-          Du kan når som helst be om at dine personopplysninger slettes. Se punkt 9 for dine
-          rettigheter.
+          Du kan når som helst slette kontoen din selv på Min side. Se punkt 9 for dine rettigheter.
         </p>
 
         <h2>6. Deling med tredjeparter</h2>
         <p>
-          <strong>Vi deler IKKE dine personopplysninger med tredjeparter.</strong>
+          Vi selger aldri personopplysninger og deler dem ikke for markedsføring. For å drive
+          nettsiden bruker vi disse leverandørene (databehandlere):
         </p>
-        <p>Dine opplysninger behandles kun av:</p>
         <ul>
           <li>
-            <strong>Barteløpet</strong> - arrangøren
+            <strong>Supabase</strong> - database, innlogging og lagring av bilder
           </li>
           <li>
-            <strong>Supabase</strong> - vår tekniske leverandør for database og autentisering
-            (databehandler)
+            <strong>Vercel</strong> - drift av nettsiden
           </li>
           <li>
-            <strong>Vercel</strong> - vår hostingleverandør (databehandler)
+            <strong>Resend</strong> - sender meldinger fra kontaktskjemaet til oss (navn, e-post og
+            melding)
           </li>
           <li>
-            <strong>Posten/logistikkpartner</strong> - kun for levering av fysiske premier (kun navn
-            og adresse)
+            <strong>Upstash</strong> - begrenser antall forsøk per IP-adresse eller bruker for å
+            hindre misbruk
+          </li>
+          <li>
+            <strong>Google</strong> - kun hvis du velger å logge inn med Google
+          </li>
+          <li>
+            <strong>Posten/logistikkpartner</strong> - kun for levering av fysiske premier (navn og
+            adresse)
           </li>
         </ul>
         <p>
-          Alle databehandlere er underlagt databehandleravtaler som sikrer at dine data behandles
-          forsvarlig.
+          Når du besøker sider med kart eller innebygd innhold, henter nettleseren din innhold
+          direkte fra <strong>Mapbox</strong> (kart), <strong>Strava</strong> og{' '}
+          <strong>Spotify</strong>. Disse tjenestene ser da IP-adressen din. Gavelenken går til{' '}
+          <strong>Spleis</strong>, som har sin egen personvernerklæring.
+        </p>
+        <p>
+          Flere av leverandørene er amerikanske selskaper. Når personopplysninger behandles utenfor
+          EU/EØS, skjer det på grunnlag av EUs standardkontraktsklausuler eller EU–US Data Privacy
+          Framework.
         </p>
 
         <h2>7. Sikkerhet</h2>
@@ -175,7 +204,12 @@ export function PrivacyPolicy() {
             <strong>Database-sikkerhet</strong> - Row Level Security (RLS) i Supabase
           </li>
           <li>
-            <strong>Tilgangskontroll</strong> - kun du har tilgang til dine egne data
+            <strong>Tilgangskontroll</strong> - bare du ser kontaktinformasjonen din. Arrangørene
+            ser kontaktinformasjonen til vinnere for å levere premier
+          </li>
+          <li>
+            <strong>Bilder uten posisjon</strong> - posisjonsdata (EXIF/GPS) fjernes fra bilder du
+            laster opp
           </li>
           <li>
             <strong>Backup</strong> - regelmessig sikkerhetskopiering av data
@@ -185,12 +219,12 @@ export function PrivacyPolicy() {
         <h2>8. Offentlig tilgjengelig informasjon</h2>
         <p>Følgende informasjon er offentlig synlig på nettsiden:</p>
         <ul>
-          <li>Ditt fulle navn (eller visningsnavn hvis oppgitt)</li>
-          <li>Bilder du laster opp</li>
-          <li>Kommentarer du skriver</li>
-          <li>Dato, distanse og varighet</li>
-          <li>Valgte premiekategorier og antall kvalifiserte lodd</li>
+          <li>Ditt fulle navn og startnummer</li>
+          <li>Turene dine: dato, distanse, varighet, tittel og kommentar</li>
+          <li>Bilder og aktivitetslenker (for eksempel Strava) du legger ved turene</li>
+          <li>Valgte premiekategorier og antall lodd</li>
           <li>Navn på publiserte vinnere</li>
+          <li>Fra 2025: bilder, kommentarer og hvilke bilder deltakerne stemte på</li>
         </ul>
         <p className="font-semibold">
           OBS: Ikke del sensitive eller private opplysninger i kommentarfeltet eller bilder, da
@@ -208,15 +242,19 @@ export function PrivacyPolicy() {
 
         <h3>Rett til sletting</h3>
         <p>
-          Du kan be om at dine personopplysninger slettes. Merk at dette vil føre til at du ikke
-          lenger kan delta i arrangementet og at din historikk fjernes.
+          Du kan slette kontoen din selv under «Dine data» på Min side. Påmeldingen, turene, bildene
+          og kontoen slettes da for alle år. Har du vunnet en premie, beholdes trekningen uten navn
+          og kontaktinformasjon.
         </p>
 
         <h3>Rett til begrensning</h3>
         <p>Du kan be om at behandlingen av dine personopplysninger begrenses.</p>
 
         <h3>Rett til dataportabilitet</h3>
-        <p>Du kan be om å få dine personopplysninger i et strukturert format.</p>
+        <p>
+          Du kan laste ned alle opplysningene vi har om deg som en JSON-fil under «Dine data» på Min
+          side.
+        </p>
 
         <h3>Rett til å trekke samtykke</h3>
         <p>Du kan når som helst trekke ditt samtykke til behandling av personopplysninger.</p>
@@ -228,7 +266,7 @@ export function PrivacyPolicy() {
         </p>
 
         <p className="font-semibold">
-          For å utøve dine rettigheter, ta kontakt med oss via e-post eller kontaktskjema.
+          For andre henvendelser om rettighetene dine, ta kontakt via kontaktskjemaet.
         </p>
 
         <h2>10. Cookies og sporingsteknikker</h2>

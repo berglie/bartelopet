@@ -17,20 +17,25 @@ export async function Prizes2026() {
   const supabase = await createClient();
   const [{ data: prizes }, { data: draws }] = await Promise.all([
     supabase
-      .from('race_prizes')
+      .from('race_prizes_public')
       .select('*')
       .eq('event_year', EVENT_YEAR_2026)
-      .neq('status', 'draft')
       .order('distance_km'),
+    // Published draws only. Annulled draws are included without a name, so redraws are visible.
     supabase
-      .from('draw_results')
-      .select('prize_id, participant_id, candidate_count')
-      .eq('event_year', EVENT_YEAR_2026)
-      .is('annulled_at', null)
-      .not('published_at', 'is', null),
+      .from('draw_results_public')
+      .select('prize_id, participant_id, candidate_count, annulled_at')
+      .eq('event_year', EVENT_YEAR_2026),
   ]);
-  const prizeList = prizes || [];
-  const winnerIds = (draws || []).map((draw) => draw.participant_id);
+  const prizeList = (prizes || []).flatMap((prize) =>
+    prize.id && prize.race_name && prize.distance_km !== null && prize.category_slug
+      ? [{ ...prize, id: prize.id, distance_km: prize.distance_km }]
+      : []
+  );
+  const activeDraws = (draws || []).filter((draw) => !draw.annulled_at);
+  const winnerIds = activeDraws.flatMap((draw) =>
+    draw.participant_id ? [draw.participant_id] : []
+  );
   const { data: winners } = winnerIds.length
     ? await supabase.from('participants_safe').select('id, full_name').in('id', winnerIds)
     : { data: [] };
@@ -71,11 +76,15 @@ export async function Prizes2026() {
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {prizeList.map((prize, index) => {
-            const draw = (draws || []).find((item) => item.prize_id === prize.id);
+            const draw = activeDraws.find((item) => item.prize_id === prize.id);
+            const redraws = (draws || []).filter(
+              (item) => item.prize_id === prize.id && item.annulled_at
+            ).length;
             const winner = winners?.find((item) => item.id === draw?.participant_id);
-            const slug = isCategorySlug(prize.category_slug)
-              ? prize.category_slug
-              : categoryForPrize(prize.distance_km);
+            const slug =
+              prize.category_slug && isCategorySlug(prize.category_slug)
+                ? prize.category_slug
+                : categoryForPrize(prize.distance_km);
             return (
               <Card
                 key={prize.id}
@@ -125,9 +134,15 @@ export async function Prizes2026() {
                   {prize.status === 'drawn' && (
                     <div className="border-2 border-foreground bg-accent p-3 text-center font-black uppercase tracking-wide">
                       {winner?.full_name ? `Vinner: ${winner.full_name}` : 'Trukket'}
-                      {draw && (
+                      {draw?.candidate_count && (
                         <span className="mt-1 block text-xs font-bold normal-case tracking-normal">
                           Trukket blant {draw.candidate_count.toLocaleString('nb-NO')} lodd
+                        </span>
+                      )}
+                      {redraws > 0 && (
+                        <span className="mt-1 block text-xs font-bold normal-case tracking-normal">
+                          Trukket på nytt {redraws === 1 ? 'én gang' : `${redraws} ganger`} (vinner
+                          takket nei eller feiltrekning)
                         </span>
                       )}
                     </div>

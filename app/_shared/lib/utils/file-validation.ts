@@ -1,4 +1,4 @@
-import sharp from 'sharp';
+import sharp, { type Metadata } from 'sharp';
 import { createHash } from 'crypto';
 
 /**
@@ -72,7 +72,7 @@ export async function validateAndSanitizeImage(
     }
 
     // 3. Verify it's actually an image using sharp (validates magic bytes)
-    let metadata: sharp.Metadata;
+    let metadata: Metadata;
     try {
       metadata = await sharp(buffer).metadata();
     } catch {

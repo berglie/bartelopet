@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createRun, updateRun } from '@/app/actions/runs';
+import { createRun, updateRun, uploadRunEvidence } from '@/app/actions/runs';
 import { Button } from '@/app/_shared/components/ui/button';
 import { Input } from '@/app/_shared/components/ui/input';
 import { Label } from '@/app/_shared/components/ui/label';
@@ -17,7 +17,6 @@ import {
   ticketsForRun,
 } from '@/app/_shared/types/event-2026';
 import type { Database } from '@/app/_shared/lib/supabase/types';
-import { createClient } from '@/app/_shared/lib/supabase/client';
 
 type Run = Database['public']['Tables']['runs']['Row'];
 
@@ -52,31 +51,21 @@ export function RunForm2026({
     const evidenceFile = form.get('evidence_file');
 
     if (evidenceFile instanceof File && evidenceFile.size > 0) {
-      if (!evidenceFile.type.startsWith('image/') || evidenceFile.size > 5 * 1024 * 1024) {
-        setError('Bildet må være en bildefil på maksimalt 5 MB');
+      if (!evidenceFile.type.startsWith('image/') || evidenceFile.size > 10 * 1024 * 1024) {
+        setError('Bildet må være en bildefil på maksimalt 10 MB');
         setLoading(false);
         return;
       }
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
-        setError('Du må være innlogget');
+      // Uploaded through the server, which removes location data (EXIF) from the photo.
+      const upload = new FormData();
+      upload.append('file', evidenceFile);
+      const uploaded = await uploadRunEvidence(upload);
+      if (!uploaded.success || !uploaded.data) {
+        setError(uploaded.success ? 'Opplastingen feilet. Prøv igjen.' : uploaded.error);
         setLoading(false);
         return;
       }
-      const extension = evidenceFile.name.split('.').pop()?.toLowerCase() || 'jpg';
-      const path = `${user.id}/${crypto.randomUUID()}.${extension}`;
-      const { error: uploadError } = await supabase.storage
-        .from('run-evidence')
-        .upload(path, evidenceFile, { contentType: evidenceFile.type });
-      if (uploadError) {
-        setError(uploadError.message);
-        setLoading(false);
-        return;
-      }
-      evidenceUrl = supabase.storage.from('run-evidence').getPublicUrl(path).data.publicUrl;
+      evidenceUrl = uploaded.data.url;
     }
 
     const payload = {
@@ -195,10 +184,12 @@ export function RunForm2026({
           id={`evidence-file-${run?.id || 'new'}`}
           name="evidence_file"
           type="file"
-          accept="image/jpeg,image/png,image/webp,image/gif"
+          accept="image/jpeg,image/png,image/webp"
           disabled={loading || disabled}
         />
-        <p className="text-xs text-muted-foreground">Valgfritt og offentlig. Maks 5 MB.</p>
+        <p className="text-xs text-muted-foreground">
+          Valgfritt og offentlig. Maks 10 MB. Posisjonsdata fjernes fra bildet.
+        </p>
       </div>
       <div className="space-y-2">
         <Label htmlFor={`comment-${run?.id || 'new'}`}>Kommentar</Label>

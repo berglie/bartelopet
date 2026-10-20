@@ -47,7 +47,7 @@ const steps = [
   {
     icon: ScrollText,
     title: 'Alt logges',
-    text: 'Hver trekning lagres med tidspunkt, hvor mange lodd som var i potten og hvilken tur som vant. Annullerte trekninger slettes ikke, men blir stående i historikken.',
+    text: 'Hver trekning lagres med tidspunkt, hvor mange lodd som var i potten og hvilken tur som vant. Trekninger kan verken endres eller slettes. Må en premie trekkes på nytt, for eksempel fordi vinneren takker nei, vises det på premiesiden at den er trukket på nytt.',
   },
 ];
 

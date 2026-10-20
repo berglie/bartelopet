@@ -40,3 +40,4 @@ next-env.d.ts
 .hive-mind/
 supabase/.temp/
 .env.test
+.claude/settings.local.json

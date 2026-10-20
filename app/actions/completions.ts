@@ -1,5 +1,8 @@
 'use server';
 
+import { GALLERY_EVENT_YEAR } from '@/app/_shared/lib/constants/config';
+import type { Database } from '@/app/_shared/lib/supabase/types';
+
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/app/_shared/lib/supabase/server';
 import { completionUpdateSchema } from '@/app/_shared/lib/validations/completion';
@@ -69,7 +72,8 @@ export async function updateCompletion(
       .from('participants')
       .select('id')
       .eq('user_id', user.id)
-      .single();
+      .eq('event_year', GALLERY_EVENT_YEAR)
+      .maybeSingle();
 
     if (participantError || !participant) {
       return {
@@ -114,7 +118,7 @@ export async function updateCompletion(
     }
 
     // Build update object with only validated fields (prevent mass assignment)
-    const updateData: Record<string, string | null> = {
+    const updateData: Database['public']['Tables']['completions']['Update'] = {
       updated_at: new Date().toISOString(),
     };
 
@@ -205,7 +209,8 @@ export async function createCompletion(data: {
       .from('participants')
       .select('id, has_completed')
       .eq('user_id', user.id)
-      .single();
+      .eq('event_year', GALLERY_EVENT_YEAR)
+      .maybeSingle();
 
     if (participantError || !participant) {
       return {
@@ -238,9 +243,9 @@ export async function createCompletion(data: {
       .from('completions')
       .insert({
         participant_id: participant.id,
-        completed_date: data.completed_date,
-        duration_text: data.duration_text || null,
-        comment: data.comment || null,
+        completed_date: validationResult.data.completed_date ?? data.completed_date,
+        duration_text: validationResult.data.duration_text || null,
+        comment: validationResult.data.comment || null,
         event_year: currentYear,
       })
       .select('id')

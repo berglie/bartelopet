@@ -15,6 +15,7 @@ import {
 import { CATEGORY_META, EVENT_YEAR_2026 } from '@/app/_shared/types/event-2026';
 import { formatDate } from '@/app/_shared/lib/utils/format';
 import { ConfirmButton } from './_components/confirm-button';
+import { isKnownDrawError } from './_components/draw-errors';
 
 export default async function AdminPage({
   searchParams,
@@ -70,7 +71,7 @@ export default async function AdminPage({
         <h1 className="text-4xl font-bold">Barteløpet 2026</h1>
       </div>
 
-      {feil && (
+      {feil && isKnownDrawError(feil) && (
         <div
           role="alert"
           className="mb-6 rounded-xl border-2 border-destructive bg-destructive/10 p-4 font-semibold text-destructive"

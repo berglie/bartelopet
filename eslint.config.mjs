@@ -22,6 +22,8 @@ export default [
       'react/prop-types': 'off',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'warn',
+      // New in eslint-plugin-react-hooks 7. Only the archived 2025 gallery components trip it.
+      'react-hooks/set-state-in-effect': 'warn',
     },
     settings: {
       react: {
