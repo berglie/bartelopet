@@ -33,6 +33,41 @@ export const EVENT_YEAR_2026 = 2026;
 
 export const CATEGORY_ORDER: DistanceCategorySlug[] = ['short', 'medium', 'long'];
 
+/**
+ * Single source of truth for how each prize category is named and coloured.
+ * `solid` is for filled surfaces (cards, headers), `soft` for large tinted areas.
+ */
+export const CATEGORY_META: Record<
+  DistanceCategorySlug,
+  { name: string; range: string; examples: string; solid: string; soft: string }
+> = {
+  short: {
+    name: 'Kort',
+    range: '0–10 km',
+    examples: '3 km, 5 km og 10 km',
+    solid: 'bg-accent text-accent-foreground',
+    soft: 'bg-accent/40',
+  },
+  medium: {
+    name: 'Mellom',
+    range: '10–30 km',
+    examples: 'Halvmaraton (21,1 km) og løp opp til 30 km',
+    solid: 'bg-secondary text-secondary-foreground',
+    soft: 'bg-secondary/35',
+  },
+  long: {
+    name: 'Lang',
+    range: '30+ km',
+    examples: 'Maraton og ultraløp',
+    solid: 'bg-foreground text-background',
+    soft: 'bg-foreground/10',
+  },
+};
+
+export function isCategorySlug(value: string): value is DistanceCategorySlug {
+  return value in CATEGORY_META;
+}
+
 export function categoryForPrize(distanceKm: number): DistanceCategorySlug {
   if (distanceKm <= 10) return 'short';
   if (distanceKm < 30) return 'medium';

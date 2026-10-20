@@ -268,6 +268,7 @@ export function getMock2026Overview() {
       runners: new Set(runs.map((run) => run.participant_id)).size,
       kilometers: runs.reduce((sum, run) => sum + run.distance_km, 0),
       donated: runs.reduce((sum, run) => sum + run.donation_amount_nok, 0),
+      registered: 42,
     },
   };
 }

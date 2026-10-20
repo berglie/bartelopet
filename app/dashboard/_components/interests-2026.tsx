@@ -3,20 +3,17 @@
 import { useState } from 'react';
 import { updateDistanceInterests } from '@/app/actions/runs';
 import { Button } from '@/app/_shared/components/ui/button';
-import type { DistanceCategorySlug } from '@/app/_shared/types/event-2026';
-
-const categories: Array<{ slug: DistanceCategorySlug; label: string; help: string }> = [
-  { slug: 'short', label: '0–10 km', help: '3 km, 5 km og 10 km' },
-  { slug: 'medium', label: '10–30 km', help: '10 miles og halvmaraton' },
-  { slug: 'long', label: '30+ km', help: 'Maraton og ultraløp' },
-];
+import { CategoryPicker } from '@/app/_shared/components/category-picker';
 
 export function Interests2026({ initial, disabled }: { initial: string[]; disabled: boolean }) {
   const [selected, setSelected] = useState(initial);
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState<{ ok: boolean; text: string } | null>(null);
   const [loading, setLoading] = useState(false);
+  const dirty =
+    selected.length !== initial.length || selected.some((slug) => !initial.includes(slug));
 
   function toggle(slug: string) {
+    setStatus(null);
     setSelected((current) =>
       current.includes(slug) ? current.filter((item) => item !== slug) : [...current, slug]
     );
@@ -24,38 +21,42 @@ export function Interests2026({ initial, disabled }: { initial: string[]; disabl
 
   async function save() {
     setLoading(true);
-    setStatus('');
+    setStatus(null);
     const result = await updateDistanceInterests(selected);
     setLoading(false);
-    setStatus(result.success ? 'Lagret' : result.error);
+    setStatus(result.success ? { ok: true, text: 'Lagret' } : { ok: false, text: result.error });
   }
 
   return (
-    <div className="space-y-3">
-      {categories.map((category) => (
-        <label
-          key={category.slug}
-          className="flex cursor-pointer items-center gap-3 border-2 border-foreground p-3 transition-colors has-[:checked]:bg-accent"
-        >
-          <input
-            type="checkbox"
-            checked={selected.includes(category.slug)}
-            onChange={() => toggle(category.slug)}
-            disabled={disabled}
-            className="h-4 w-4"
-          />
-          <span>
-            <strong className="block text-sm">{category.label}</strong>
-            <span className="text-xs text-muted-foreground">{category.help}</span>
+    <div className="space-y-4">
+      <CategoryPicker selected={selected} onToggle={toggle} disabled={disabled} />
+      {disabled ? (
+        <p className="text-xs text-muted-foreground">
+          Kategoriene er låst fordi påmeldingen og turregistreringen er stengt.
+        </p>
+      ) : (
+        <div className="flex items-center gap-3">
+          <Button
+            onClick={save}
+            variant="ink"
+            size="sm"
+            disabled={loading || selected.length === 0 || !dirty}
+          >
+            {loading ? 'Lagrer…' : 'Lagre valg'}
+          </Button>
+          <span
+            role="status"
+            className={status?.ok === false ? 'text-sm text-destructive' : 'text-sm font-semibold'}
+          >
+            {status?.text ??
+              (selected.length === 0
+                ? 'Velg minst én kategori'
+                : dirty
+                  ? 'Ulagrede endringer'
+                  : '')}
           </span>
-        </label>
-      ))}
-      <div className="flex items-center gap-3">
-        <Button onClick={save} disabled={disabled || loading || selected.length === 0} size="sm">
-          {loading ? 'Lagrer…' : 'Lagre interesser'}
-        </Button>
-        {status && <span className="text-sm text-muted-foreground">{status}</span>}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

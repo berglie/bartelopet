@@ -36,11 +36,11 @@ export default function SubmitPage() {
           <p className="inline-flex border border-accent bg-accent px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-accent-foreground">
             Barteløpet {currentYear}
           </p>
-          <h1 className="font-display mt-5 text-7xl font-black uppercase leading-[0.82] md:text-9xl">
+          <h1 className="font-display mt-5 text-7xl font-black uppercase leading-[0.88] md:text-9xl">
             Finn din
             <span className="block text-accent">startlinje.</span>
           </h1>
-          <p className="mt-6 max-w-xl text-lg text-background/65">
+          <p className="mt-6 max-w-xl text-lg text-background/75">
             Påmeldingen er gratis. Du bestemmer selv hvor langt og hvor du vil løpe.
           </p>
         </div>
@@ -49,10 +49,8 @@ export default function SubmitPage() {
       <main className="mx-auto grid max-w-[1200px] gap-10 px-4 py-12 md:px-8 md:py-20 lg:grid-cols-[0.75fr_1.25fr] lg:items-start">
         <aside className="space-y-6 lg:sticky lg:top-28">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-secondary">
-              Kort fortalt
-            </p>
-            <h2 className="font-display mt-2 text-5xl font-black uppercase leading-none">
+            <p className="eyebrow">Kort fortalt</p>
+            <h2 className="font-display mt-2 text-5xl font-black uppercase leading-[0.95]">
               Klar.
               <br />
               Ferdig.
@@ -74,7 +72,7 @@ export default function SubmitPage() {
                         Steg {index + 1}
                       </p>
                       <h3 className="font-display text-2xl font-black uppercase">{step.title}</h3>
-                      <p className="mt-1 text-sm text-foreground/70">{step.text}</p>
+                      <p className="mt-1 text-sm text-foreground/75">{step.text}</p>
                     </div>
                   </div>
                 );

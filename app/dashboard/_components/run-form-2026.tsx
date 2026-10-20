@@ -7,6 +7,7 @@ import { Button } from '@/app/_shared/components/ui/button';
 import { Input } from '@/app/_shared/components/ui/input';
 import { Label } from '@/app/_shared/components/ui/label';
 import { Textarea } from '@/app/_shared/components/ui/textarea';
+import { Checkbox } from '@/app/_shared/components/ui/checkbox';
 import { donationForDistance } from '@/app/_shared/types/event-2026';
 import type { Database } from '@/app/_shared/lib/supabase/types';
 import { createClient } from '@/app/_shared/lib/supabase/client';
@@ -34,9 +35,11 @@ export function RunForm2026({
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    // Keep a reference: React clears event.currentTarget once we await below.
+    const formElement = event.currentTarget;
     setLoading(true);
     setError('');
-    const form = new FormData(event.currentTarget);
+    const form = new FormData(formElement);
     let evidenceUrl = String(form.get('evidence_url') || '');
     const evidenceFile = form.get('evidence_file');
 
@@ -85,7 +88,7 @@ export function RunForm2026({
       return;
     }
     if (!run) {
-      event.currentTarget.reset();
+      formElement.reset();
       setDistance('');
       setConfirmed(false);
     }
@@ -95,7 +98,12 @@ export function RunForm2026({
   return (
     <form onSubmit={submit} className="space-y-4">
       {error && (
-        <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
+        <div
+          role="alert"
+          className="border-2 border-destructive bg-destructive/10 p-3 text-sm font-semibold text-destructive"
+        >
+          {error}
+        </div>
       )}
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
@@ -184,18 +192,22 @@ export function RunForm2026({
           disabled={loading || disabled}
         />
       </div>
-      <label className="flex items-start gap-3 rounded-xl border border-accent/30 bg-accent/10 p-4">
-        <input
-          type="checkbox"
-          className="mt-1 h-4 w-4"
+      <div className="flex items-start gap-3 border-2 border-foreground bg-accent/30 p-4">
+        <Checkbox
+          id={`confirmed-${run?.id || 'new'}`}
+          className="mt-0.5"
           checked={confirmed}
-          onChange={(event) => setConfirmed(event.target.checked)}
+          onCheckedChange={(checked) => setConfirmed(checked === true)}
           disabled={loading || disabled}
         />
-        <span className="text-sm">
-          Jeg bekrefter at jeg har donert minst{' '}
-          <strong className="text-accent">{donation.toLocaleString('nb-NO')} kr</strong> (5 kr per
-          km).
+        <div className="text-sm">
+          <label htmlFor={`confirmed-${run?.id || 'new'}`} className="cursor-pointer">
+            Jeg bekrefter at jeg har donert minst{' '}
+            <strong className="font-display text-lg font-black">
+              {donation.toLocaleString('nb-NO')} kr
+            </strong>{' '}
+            (5 kr per km).
+          </label>
           {donationUrl && (
             <>
               {' '}
@@ -203,16 +215,18 @@ export function RunForm2026({
                 href={donationUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-semibold text-accent underline"
+                className="font-semibold underline decoration-secondary decoration-2 underline-offset-2 hover:decoration-foreground"
               >
                 Åpne innsamlingen
               </a>
             </>
           )}
-        </span>
-      </label>
+        </div>
+      </div>
       <Button
         type="submit"
+        variant="ink"
+        size="lg"
         className="w-full"
         disabled={loading || disabled || !confirmed || donation < 1}
       >

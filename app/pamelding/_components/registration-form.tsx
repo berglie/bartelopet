@@ -16,6 +16,8 @@ import { Checkbox } from '@/app/_shared/components/ui/checkbox';
 import { createClient } from '@/app/_shared/lib/supabase/client';
 import { getCurrentEventYear } from '@/app/_shared/lib/utils/event-year';
 import Link from 'next/link';
+import { GoogleIcon } from '@/app/_shared/components/google-icon';
+import { CategoryPicker } from '@/app/_shared/components/category-picker';
 
 export function RegistrationForm() {
   const router = useRouter();
@@ -287,27 +289,45 @@ export function RegistrationForm() {
 
     return (
       <Card className="border-2 border-foreground shadow-[7px_7px_0_hsl(var(--foreground))]">
-        <CardHeader>
-          <CardTitle>Registrering vellykket! 🎉</CardTitle>
-          <CardDescription>Du er nå påmeldt Barteløpet 2026</CardDescription>
+        <CardHeader className="border-b-2 border-foreground bg-foreground text-background">
+          <CardTitle className="font-display text-3xl font-black uppercase">Du er med!</CardTitle>
+          <CardDescription className="text-background/75">
+            Du er nå påmeldt Barteløpet {getCurrentEventYear()}
+          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="py-8 text-center">
-            <p className="mb-2 text-sm text-muted-foreground">Ditt startnummer er</p>
-            <p className="text-6xl font-bold text-accent">{bibNumber}</p>
+        <CardContent className="space-y-4 pt-6">
+          <div
+            className="relative mx-auto max-w-xs border-2 border-foreground bg-accent px-6 py-8 text-center shadow-[6px_6px_0_hsl(var(--secondary))]"
+            aria-live="polite"
+          >
+            <span
+              aria-hidden="true"
+              className="absolute left-3 top-3 h-3 w-3 rounded-full border-2 border-foreground bg-background"
+            />
+            <span
+              aria-hidden="true"
+              className="absolute right-3 top-3 h-3 w-3 rounded-full border-2 border-foreground bg-background"
+            />
+            <p className="text-[11px] font-black uppercase tracking-[0.2em]">Ditt startnummer</p>
+            <p className="font-display text-8xl font-black tabular-nums leading-none">
+              {bibNumber}
+            </p>
+            <p className="mt-2 text-[11px] font-black uppercase tracking-[0.2em]">
+              Barteløpet · For Prosjekt SUT
+            </p>
           </div>
 
           {isOAuthUser ? (
-            <div className="space-y-2 rounded-lg border border-primary bg-primary/10 p-4">
-              <p className="font-semibold text-accent">✅ Logget inn med Google</p>
+            <div className="space-y-2 border-2 border-foreground bg-accent/30 p-4">
+              <p className="font-black">✅ Logget inn med Google</p>
               <p className="text-sm text-foreground">
                 Du er nå påmeldt og din e-postadresse er bekreftet. Du blir automatisk sendt til
                 dashboardet.
               </p>
             </div>
           ) : (
-            <div className="space-y-2 rounded-lg border border-primary bg-primary/10 p-4">
-              <p className="font-semibold text-accent">📧 Bekreft e-postadressen din</p>
+            <div className="space-y-2 border-2 border-foreground bg-accent/30 p-4">
+              <p className="font-black">📧 Bekreft e-postadressen din</p>
               <p className="text-sm text-foreground">
                 Vi har sendt en bekreftelseslenke til din e-post. Klikk på lenken for å aktivere
                 kontoen din og logge inn.
@@ -315,7 +335,7 @@ export function RegistrationForm() {
             </div>
           )}
 
-          <div className="space-y-2 rounded-lg bg-muted p-4">
+          <div className="space-y-2 border-2 border-foreground/20 bg-muted/60 p-4">
             <p className="font-semibold">Neste steg:</p>
             <ol className="list-inside list-decimal space-y-1 text-sm text-muted-foreground">
               {!isOAuthUser && <li>Sjekk e-posten din og klikk på bekreftelseslenken</li>}
@@ -338,11 +358,9 @@ export function RegistrationForm() {
 
   return (
     <Card className="border-2 border-foreground shadow-[7px_7px_0_hsl(var(--foreground))]">
-      <CardHeader className="border-b-2 border-foreground bg-secondary">
-        <CardTitle className="font-display text-3xl font-black uppercase">
-          Registreringsskjema
-        </CardTitle>
-        <CardDescription>
+      <CardHeader className="border-b-2 border-foreground bg-accent">
+        <CardTitle className="font-display text-3xl font-black uppercase">Påmelding</CardTitle>
+        <CardDescription className="text-foreground/75">
           {needsCompletion
             ? 'E-posten din er bekreftet! Fullfør registreringen ved å fylle ut informasjonen under'
             : prefillData
@@ -350,10 +368,10 @@ export function RegistrationForm() {
               : 'Alle feltene må fylles ut bortsett fra telefonnummer'}
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 pt-6">
         {needsCompletion && (
-          <div className="mb-4 rounded-lg border border-primary bg-primary/10 p-4 text-sm">
-            <p className="mb-2 font-semibold text-accent">✅ E-post bekreftet!</p>
+          <div className="mb-4 border-2 border-foreground bg-accent/30 p-4 text-sm">
+            <p className="mb-2 font-black">✅ E-post bekreftet!</p>
             <p className="text-foreground">
               Din e-postadresse er bekreftet. Fyll ut resten av informasjonen under for å fullføre
               påmeldingen til Barteløpet.
@@ -365,7 +383,10 @@ export function RegistrationForm() {
         {!needsCompletion && (
           <div className="space-y-4 pb-4">
             {oAuthError && (
-              <div className="rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">
+              <div
+                role="alert"
+                className="border-2 border-destructive bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive"
+              >
                 {oAuthError}
               </div>
             )}
@@ -373,37 +394,21 @@ export function RegistrationForm() {
             {/* Google Signup Button */}
             <Button
               onClick={() => handleOAuthLogin('google')}
-              variant="outline"
-              className="w-full"
+              variant="line"
+              size="lg"
+              className="w-full normal-case tracking-normal"
               type="button"
             >
-              <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
-                <path
-                  fill="#4285F4"
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                />
-              </svg>
+              <GoogleIcon className="mr-2 h-5 w-5" />
               Meld deg på med Google
             </Button>
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
+                <span className="w-full border-t border-foreground/25" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">
+                <span className="bg-card px-2 font-bold tracking-[0.14em] text-muted-foreground">
                   Eller fyll ut skjemaet under
                 </span>
               </div>
@@ -413,14 +418,19 @@ export function RegistrationForm() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="rounded-lg bg-destructive/10 px-4 py-3 text-destructive">{error}</div>
+            <div
+              role="alert"
+              className="border-2 border-destructive bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive"
+            >
+              {error}
+            </div>
           )}
 
           {prefillData && !needsCompletion && (
-            <div className="rounded-lg border border-primary bg-primary/10 p-4 text-sm">
+            <div className="border-2 border-foreground bg-accent/30 p-4 text-sm">
               <div className="mb-2 flex items-start justify-between gap-2">
                 <div className="flex-1">
-                  <p className="mb-1 font-semibold text-accent">✅ Logget inn med Google</p>
+                  <p className="mb-1 font-black">✅ Logget inn med Google</p>
                   <p className="text-foreground">
                     Vi har hentet ditt navn og e-post fra Google. Fyll ut resten av informasjonen
                     for å fullføre påmeldingen.
@@ -432,7 +442,7 @@ export function RegistrationForm() {
                   disabled={signingOut}
                   variant="ghost"
                   size="sm"
-                  className="text-accent hover:bg-primary/20 hover:text-accent/90"
+                  className="underline underline-offset-2 hover:bg-foreground hover:text-background"
                 >
                   Logg ut
                 </Button>
@@ -441,8 +451,8 @@ export function RegistrationForm() {
           )}
 
           {error && error.includes('tilgangsfeil') && (
-            <div className="rounded-lg border border-primary bg-primary/10 p-4 text-sm">
-              <p className="mb-2 font-semibold text-accent">🔓 Prøv å logge ut</p>
+            <div className="border-2 border-foreground bg-accent/30 p-4 text-sm">
+              <p className="mb-2 font-black">🔓 Prøv å logge ut</p>
               <p className="mb-3 text-foreground">
                 Det ser ut til at økten din er ugyldig. Klikk knappen under for å logge ut og prøve
                 igjen.
@@ -516,42 +526,30 @@ export function RegistrationForm() {
             />
           </div>
 
-          <fieldset className="space-y-3 rounded-lg border p-4">
-            <legend className="px-1 text-sm font-semibold">
+          <fieldset className="space-y-3">
+            <legend className="mb-3 text-sm font-semibold">
               Hvilke startnummer er du interessert i? *
             </legend>
-            {[
-              ['short', '0–10 km', '3 km, 5 km og 10 km'],
-              ['medium', '10–30 km', '10 miles og halvmaraton'],
-              ['long', '30+ km', 'Maraton og ultraløp'],
-            ].map(([slug, label, help]) => (
-              <label key={slug} className="flex cursor-pointer items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={interests.includes(slug)}
-                  onChange={() =>
-                    setInterests((current) =>
-                      current.includes(slug)
-                        ? current.filter((item) => item !== slug)
-                        : [...current, slug]
-                    )
-                  }
-                  className="h-4 w-4"
-                  disabled={loading}
-                />
-                <span className="text-sm">
-                  <strong>{label}</strong>
-                  <span className="ml-2 text-muted-foreground">{help}</span>
-                </span>
-              </label>
-            ))}
+            <CategoryPicker
+              selected={interests}
+              disabled={loading}
+              onToggle={(slug) =>
+                setInterests((current) =>
+                  current.includes(slug)
+                    ? current.filter((item) => item !== slug)
+                    : [...current, slug]
+                )
+              }
+            />
             <p className="text-xs text-muted-foreground">
-              Du kan endre valgene på Min side frem til registreringen stenger.
+              {interests.length === 0
+                ? 'Velg minst én kategori for å kunne samle lodd.'
+                : 'Du kan endre valgene på Min side frem til registreringen stenger.'}
             </p>
           </fieldset>
 
           <div className="space-y-3 pt-2">
-            <div className="flex items-start space-x-3 rounded-lg border bg-muted/50 p-4">
+            <div className="flex items-start space-x-3 border-2 border-foreground/20 bg-muted/50 p-4">
               <Checkbox
                 id="consent"
                 checked={consentAccepted}
@@ -568,7 +566,7 @@ export function RegistrationForm() {
                   <Link
                     href="/vilkar"
                     target="_blank"
-                    className="font-medium text-accent underline hover:text-accent/90 hover:underline"
+                    className="font-semibold underline decoration-secondary decoration-2 underline-offset-2 hover:decoration-foreground"
                   >
                     vilkårene for bruk
                   </Link>{' '}
@@ -576,7 +574,7 @@ export function RegistrationForm() {
                   <Link
                     href="/personvern"
                     target="_blank"
-                    className="font-medium text-accent underline hover:text-accent/90 hover:underline"
+                    className="font-semibold underline decoration-secondary decoration-2 underline-offset-2 hover:decoration-foreground"
                   >
                     personvernerklæringen
                   </Link>
@@ -593,6 +591,8 @@ export function RegistrationForm() {
 
           <Button
             type="submit"
+            variant="ink"
+            size="xl"
             className="w-full"
             disabled={loading || !consentAccepted || interests.length === 0}
           >

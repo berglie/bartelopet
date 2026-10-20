@@ -19,21 +19,26 @@ export async function get2026Overview() {
 
   try {
     const supabase = await createClient();
-    const [runsResult, entriesResult, prizesResult, editionResult] = await Promise.all([
-      supabase
-        .from('runs_public')
-        .select('*')
-        .eq('event_year', EVENT_YEAR_2026)
-        .order('run_date', { ascending: false }),
-      supabase.from('eligible_entries').select('category_slug').eq('event_year', EVENT_YEAR_2026),
-      supabase
-        .from('race_prizes')
-        .select('*')
-        .eq('event_year', EVENT_YEAR_2026)
-        .neq('status', 'draft')
-        .order('distance_km'),
-      supabase.from('event_editions').select('*').eq('event_year', EVENT_YEAR_2026).maybeSingle(),
-    ]);
+    const [runsResult, entriesResult, prizesResult, editionResult, registeredResult] =
+      await Promise.all([
+        supabase
+          .from('runs_public')
+          .select('*')
+          .eq('event_year', EVENT_YEAR_2026)
+          .order('run_date', { ascending: false }),
+        supabase.from('eligible_entries').select('category_slug').eq('event_year', EVENT_YEAR_2026),
+        supabase
+          .from('race_prizes')
+          .select('*')
+          .eq('event_year', EVENT_YEAR_2026)
+          .neq('status', 'draft')
+          .order('distance_km'),
+        supabase.from('event_editions').select('*').eq('event_year', EVENT_YEAR_2026).maybeSingle(),
+        supabase
+          .from('participants_safe')
+          .select('id', { count: 'exact', head: true })
+          .eq('event_year', EVENT_YEAR_2026),
+      ]);
 
     const runs = (runsResult.data || []).filter(
       (run) =>
@@ -77,6 +82,7 @@ export async function get2026Overview() {
         runners: new Set(runs.map((run) => run.participant_id)).size,
         kilometers: runs.reduce((sum, run) => sum + Number(run.distance_km), 0),
         donated: runs.reduce((sum, run) => sum + run.donation_amount_nok, 0),
+        registered: registeredResult.count ?? 0,
       },
       isMockData: false,
     };
