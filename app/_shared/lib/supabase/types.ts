@@ -1000,6 +1000,7 @@ export type Database = {
         Args: { p_event_year: number; p_publish: boolean };
         Returns: undefined;
       };
+      purge_contact_details: { Args: { p_event_year: number }; Returns: number };
       register_participant: {
         Args: {
           p_full_name: string;

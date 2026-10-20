@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardFooter, CardHeader } from '@/app/_shared/components/ui/card';
 import { Button } from '@/app/_shared/components/ui/button';
@@ -48,6 +48,15 @@ type Completion = {
 
 type CompletionWithImages = Completion;
 
+/** The viewer state for a shared link (?id=), limited to that participant's completions. */
+function initialViewer(completions: CompletionWithImages[], completionId?: string | null) {
+  const completion = completionId ? completions.find((c) => c.id === completionId) : undefined;
+  if (!completion) return null;
+  const userCompletions = completions.filter((c) => c.participant.id === completion.participant.id);
+  const index = userCompletions.findIndex((c) => c.id === completionId);
+  return { completions: userCompletions, index: index !== -1 ? index : 0 };
+}
+
 export function GalleryGridMulti({
   completions,
   userVoteIds,
@@ -60,19 +69,25 @@ export function GalleryGridMulti({
   const router = useRouter();
   const [votedIds, setVotedIds] = useState(userVoteIds);
   const [loading, setLoading] = useState<string | null>(null);
-  const [viewerOpen, setViewerOpen] = useState(false);
+  const [initialViewerState] = useState(() => initialViewer(completions, initialCompletionId));
+  const [viewerOpen, setViewerOpen] = useState(initialViewerState !== null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [currentParticipantId, setCurrentParticipantId] = useState<string | null>(null);
   const [openWithComments, setOpenWithComments] = useState(false);
-  const [completionsWithImages, setCompletionsWithImages] = useState<CompletionWithImages[]>([]);
-  const [loadingImages, setLoadingImages] = useState(true);
+  // Local copy for optimistic vote counts, reset whenever the server sends new completions.
+  const [completionsWithImages, setCompletionsWithImages] =
+    useState<CompletionWithImages[]>(completions);
+  const [syncedCompletions, setSyncedCompletions] = useState(completions);
+  if (completions !== syncedCompletions) {
+    setSyncedCompletions(completions);
+    setCompletionsWithImages(completions);
+  }
 
   // Track filtered completions for viewer (same user only)
-  const [viewerCompletions, setViewerCompletions] = useState<CompletionWithImages[]>([]);
-  const [viewerIndex, setViewerIndex] = useState(0);
-
-  // Track if we've already handled the initial completion ID
-  const hasHandledInitialCompletion = useRef(false);
+  const [viewerCompletions, setViewerCompletions] = useState<CompletionWithImages[]>(
+    initialViewerState?.completions ?? []
+  );
+  const [viewerIndex, setViewerIndex] = useState(initialViewerState?.index ?? 0);
 
   // Alert dialog states
   type AlertType = 'not-registered' | 'own-vote' | 'error' | null;
@@ -101,35 +116,6 @@ export function GalleryGridMulti({
     };
     fetchUser();
   }, []);
-
-  // Set completions directly since images are already fetched
-  useEffect(() => {
-    setCompletionsWithImages(completions);
-    setLoadingImages(false);
-  }, [completions]);
-
-  // Open viewer if initialCompletionId is provided (only once)
-  useEffect(() => {
-    if (
-      initialCompletionId &&
-      completionsWithImages.length > 0 &&
-      !hasHandledInitialCompletion.current
-    ) {
-      const completion = completionsWithImages.find((c) => c.id === initialCompletionId);
-      if (completion) {
-        // Filter to only this user's completions
-        const userCompletions = completionsWithImages.filter(
-          (c) => c.participant.id === completion.participant.id
-        );
-        const userIndex = userCompletions.findIndex((c) => c.id === initialCompletionId);
-
-        setViewerCompletions(userCompletions);
-        setViewerIndex(userIndex !== -1 ? userIndex : 0);
-        setViewerOpen(true);
-        hasHandledInitialCompletion.current = true;
-      }
-    }
-  }, [initialCompletionId, completionsWithImages]);
 
   const handleImageClick = useCallback(
     (index: number, withComments = false) => {
@@ -313,16 +299,7 @@ export function GalleryGridMulti({
   );
 
   const currentCompletion = viewerCompletions[viewerIndex] as
-    | (CompletionWithParticipant & { images: CompletionImage[] })
-    | undefined;
-
-  if (loadingImages) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-muted border-t-accent" />
-      </div>
-    );
-  }
+    (CompletionWithParticipant & { images: CompletionImage[] }) | undefined;
 
   return (
     <>

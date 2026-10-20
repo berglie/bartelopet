@@ -58,7 +58,7 @@ export function RunCard2026({
           )}
         </div>
         {run.comment && <p className="mt-3 text-sm">{run.comment}</p>}
-        {run.evidence_url?.startsWith('https://') && (
+        {run.evidence_url && /^https?:\/\//.test(run.evidence_url) && (
           <a
             href={run.evidence_url}
             target="_blank"

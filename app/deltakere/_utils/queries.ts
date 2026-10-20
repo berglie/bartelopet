@@ -164,10 +164,12 @@ export async function getParticipantDetail(
             .from('photo_comments')
             .select('*', { count: 'exact', head: true })
             .eq('completion_id', completion.id),
+          // Individual votes are private; the view exposes only the total.
           supabase
-            .from('photo_votes')
-            .select('*', { count: 'exact', head: true })
-            .eq('completion_id', completion.id),
+            .from('completions_with_counts')
+            .select('vote_count')
+            .eq('id', completion.id)
+            .maybeSingle(),
         ]);
 
         return {
@@ -178,7 +180,7 @@ export async function getParticipantDetail(
             duration_minutes: null, // duration_text exists but we need duration_minutes - set to null for now
             submission_comment: completion.comment || null,
             comment_count: commentCount.count || 0,
-            vote_count: voteCount.count || 0,
+            vote_count: voteCount.data?.vote_count ?? 0,
             images: images || [],
           },
         };

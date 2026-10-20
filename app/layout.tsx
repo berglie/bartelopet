@@ -1,3 +1,4 @@
+import { headers } from 'next/headers';
 import type { Metadata } from 'next';
 import { Barlow_Condensed, Inter } from 'next/font/google';
 import './globals.css';
@@ -91,11 +92,13 @@ export default async function RootLayout({
     data: { user },
   } = await supabase.auth.getUser();
   const { data: isAdmin } = user ? await supabase.rpc('is_event_admin') : { data: false };
+  const nonce = (await headers()).get('x-nonce') ?? undefined;
 
   return (
     <html lang="nb-NO" data-event-year="2026" suppressHydrationWarning>
       <head>
         <script
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html:
               "document.documentElement.dataset.eventYear=new URLSearchParams(location.search).get('year')==='2025'?'2025':'2026'",

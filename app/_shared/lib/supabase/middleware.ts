@@ -3,14 +3,19 @@ import { NextResponse, type NextRequest } from 'next/server';
 import type { Database } from './types';
 
 /**
- * Create a Supabase client for use in Middleware
+ * Create a Supabase client for use in Middleware.
+ * `extraRequestHeaders` (the CSP nonce) are passed on to the page on every response built here.
  */
-export async function updateSession(request: NextRequest) {
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  });
+export async function updateSession(
+  request: NextRequest,
+  extraRequestHeaders: Record<string, string> = {}
+) {
+  const nextResponse = () => {
+    const headers = new Headers(request.headers);
+    for (const [key, value] of Object.entries(extraRequestHeaders)) headers.set(key, value);
+    return NextResponse.next({ request: { headers } });
+  };
+  let response = nextResponse();
 
   const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -26,11 +31,7 @@ export async function updateSession(request: NextRequest) {
             value,
             ...options,
           });
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          });
+          response = nextResponse();
           response.cookies.set({
             name,
             value,
@@ -43,11 +44,7 @@ export async function updateSession(request: NextRequest) {
             value: '',
             ...options,
           });
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          });
+          response = nextResponse();
           response.cookies.set({
             name,
             value: '',

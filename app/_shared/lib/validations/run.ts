@@ -1,6 +1,9 @@
 import { z } from 'zod';
 import { MAX_RUN_KM, MIN_RUN_KM, roundedKm } from '@/app/_shared/types/event-2026';
 
+/** Plain http is only accepted for a local Supabase stack in development. */
+const LOCAL_HTTP = /^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?\//;
+
 const optionalText = (max: number) =>
   z
     .string()
@@ -27,7 +30,10 @@ export const runInputSchema = z.object({
     .trim()
     .max(2048)
     .url('Lenken må være en gyldig URL')
-    .refine((value) => value.startsWith('https://'), 'Lenken må starte med https://')
+    .refine(
+      (value) => value.startsWith('https://') || LOCAL_HTTP.test(value),
+      'Lenken må starte med https://'
+    )
     .optional()
     .nullable()
     .or(z.literal('')),

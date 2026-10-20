@@ -92,12 +92,14 @@ export async function togglePhotoVote(completionId: string) {
     }
 
     // Get updated vote count
-    const { count } = await supabase
-      .from('photo_votes')
-      .select('*', { count: 'exact', head: true })
-      .eq('completion_id', completionId);
+    // Individual votes are private; the view exposes only the total.
+    const { data: totals } = await supabase
+      .from('completions_with_counts')
+      .select('vote_count')
+      .eq('id', completionId)
+      .maybeSingle();
 
-    voteCount = count || 0;
+    voteCount = totals?.vote_count ?? 0;
 
     // Revalidate relevant paths
     revalidatePath('/galleri');

@@ -55,13 +55,12 @@ export function ManageImagesDialog({
   const [starConfirm, setStarConfirm] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Starts with loading = true; reopening keeps showing the current images meanwhile.
   const fetchImages = async () => {
-    setLoading(true);
-    setError(null);
-
     const result = await getPhotos(completionId);
     if (result.success && result.data) {
       setImages(result.data);
+      setError(null);
     } else {
       setError(result.error || 'Kunne ikke hente bilder');
     }
@@ -71,10 +70,21 @@ export function ManageImagesDialog({
 
   // Fetch images when dialog opens
   useEffect(() => {
-    if (isOpen) {
-      fetchImages();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (!isOpen) return;
+    let cancelled = false;
+    getPhotos(completionId).then((result) => {
+      if (cancelled) return;
+      if (result.success && result.data) {
+        setImages(result.data);
+        setError(null);
+      } else {
+        setError(result.error || 'Kunne ikke hente bilder');
+      }
+      setLoading(false);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [isOpen, completionId]);
 
   const handleAddImage = async (e: React.ChangeEvent<HTMLInputElement>) => {

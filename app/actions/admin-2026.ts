@@ -113,3 +113,17 @@ export async function annulDraw(resultId: string, declined: boolean): Promise<vo
   if (error) failDraw(error.message);
   redirect('/admin');
 }
+
+/**
+ * Deletes postal addresses and phone numbers for the year once prizes are delivered, as the
+ * privacy policy promises. Names, e-mail addresses and runs are kept.
+ */
+export async function purgeContactDetails(): Promise<void> {
+  const supabase = await adminClient();
+  const { data, error } = await supabase.rpc('purge_contact_details', {
+    p_event_year: EVENT_YEAR_2026,
+  });
+  if (error) failDraw(error.message);
+  refreshAdmin();
+  redirect(`/admin?slettet=${data ?? 0}`);
+}
