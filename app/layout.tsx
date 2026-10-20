@@ -25,10 +25,10 @@ const barlowCondensed = Barlow_Condensed({
 export const metadata: Metadata = {
   metadataBase: new URL('https://barteløpet.no'),
   title: {
-    default: 'Barteløpet - Virtuelt løp for mental helse',
+    default: 'Barteløpet – Løp i november for Prosjekt SUT',
     template: '%s | Barteløpet',
   },
-  description: 'Løp hvor du vil i november, doner fem kroner per kilometer og støtt Prosjekt SUT.',
+  description: 'Løp hvor du vil i november, samle premielodd og støtt Prosjekt SUT.',
   keywords: [
     'barteløpet',
     'Prosjekt SUT',
@@ -56,13 +56,13 @@ export const metadata: Metadata = {
     url: 'https://barteløpet.no',
     siteName: 'Barteløpet',
     title: 'Barteløpet 2026 – Hver kilometer teller',
-    description: 'Løp hvor du vil i november og støtt Prosjekt SUT med fem kroner per kilometer.',
+    description: 'Løp hvor du vil i november, samle premielodd og støtt Prosjekt SUT.',
     images: ['/opengraph-image'],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Barteløpet 2026 – Hver kilometer teller',
-    description: 'Løp hvor du vil i november og støtt Prosjekt SUT med fem kroner per kilometer.',
+    description: 'Løp hvor du vil i november, samle premielodd og støtt Prosjekt SUT.',
     images: ['/opengraph-image'],
   },
   robots: {

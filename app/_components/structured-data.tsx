@@ -19,7 +19,7 @@ export function StructuredData() {
     '@type': 'SportsEvent',
     name: 'Barteløpet 2026',
     description:
-      'Løp hvor du vil i november, doner fem kroner per kilometer til Prosjekt SUT og samle premielodd',
+      'Løp hvor du vil i november og samle premielodd. Gratis å delta, og gaver til Prosjekt SUT er frivillige.',
     eventStatus: 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/OnlineEventAttendanceMode',
     location: {

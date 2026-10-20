@@ -7,6 +7,7 @@ import {
   CATEGORY_META,
   CATEGORY_ORDER,
   qualifyingCategories,
+  ticketsForRun,
 } from '@/app/_shared/types/event-2026';
 import { formatDate } from '@/app/_shared/lib/utils/format';
 
@@ -39,7 +40,9 @@ export function Barteline({ runs }: BartelineProps) {
       summary.runs++;
       summary.kilometers += run.distance_km;
       for (const category of qualifyingCategories(run.distance_km)) {
-        if (run.interest_categories.includes(category)) summary.tickets[category]++;
+        if (run.interest_categories.includes(category)) {
+          summary.tickets[category] += ticketsForRun(run.distance_km);
+        }
       }
       summaries.set(run.participant_id, summary);
     }
@@ -153,10 +156,11 @@ export function Barteline({ runs }: BartelineProps) {
                       {run.distance_km.toLocaleString('nb-NO')} km
                     </span>
                     <span className="block text-muted-foreground">
-                      Lodd:{' '}
                       {categories.length > 0
-                        ? categories.map((category) => CATEGORY_META[category].range).join(', ')
-                        : 'ingen'}
+                        ? `${ticketsForRun(run.distance_km)} lodd i ${categories
+                            .map((category) => CATEGORY_META[category].range)
+                            .join(', ')}`
+                        : 'Ingen lodd'}
                     </span>
                     <span className="mt-1 block font-bold underline decoration-secondary decoration-2 underline-offset-2">
                       Trykk for å se turen

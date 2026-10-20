@@ -26,9 +26,15 @@ export function TermsOfService() {
 
         <h2>2. Beskrivelse av tjenesten</h2>
         <p>
-          Barteløpet er et virtuelt veldedighetsløp i november. Deltakere velger egne løpeturer,
-          donerer minst fem kroner per registrerte kilometer og samler lodd i valgte
-          startnummer-kategorier. Donasjonen bekreftes av deltakeren selv.
+          Barteløpet er et virtuelt veldedighetsløp i november. Det er gratis å delta. Deltakere
+          velger egne turer og får ett lodd per registrerte kilometer i valgte
+          startnummer-kategorier.
+        </p>
+        <p>
+          Vi oppfordrer deltakerne til å gi fem kroner per kilometer, men det er helt frivillig og
+          påvirker ikke trekningen. Gaver gis via innsamlingen på Spleis og går uavkortet til
+          Prosjekt SUT – et gratis treningsfellesskap drevet i samarbeid med A-larm Rogaland, Dale
+          fjelløpere og Sandnes Ultratrail. Barteløpet er ikke tilknyttet Movember Foundation.
         </p>
 
         <h2>3. Påmelding og brukerinformasjon</h2>
@@ -47,8 +53,7 @@ export function TermsOfService() {
         <h2>4. Deltakerforpliktelser</h2>
         <p>Som deltaker forplikter du deg til å:</p>
         <ul>
-          <li>Kun registrere turer som faktisk er gjennomført i november</li>
-          <li>Donere minst beløpet som vises før hver tur registreres</li>
+          <li>Kun registrere turer du selv har gått eller løpt i november, med riktig distanse</li>
           <li>Laste opp ærlige og korrekte opplysninger om gjennomføringen</li>
           <li>Ikke laste opp støtende, ulovlig eller upassende innhold</li>
           <li>Respektere andre deltakere</li>
@@ -69,8 +74,12 @@ export function TermsOfService() {
         <h2>6. Premier og levering</h2>
         <p>
           Donerte startnummer trekkes tilfeldig blant kvalifiserte lodd etter at perioden er
-          avsluttet. Hver deltaker kan maksimalt vinne ett startnummer. Arrangøren kan annullere og
-          gjennomføre en ny trekning dersom en vinner ikke kan motta premien.
+          avsluttet og påmeldingen er stengt. Lodd fås kun gjennom registrert aktivitet. Deltakelse
+          i trekningen er gratis, og om du gir til innsamlingen eller ikke påvirker ikke
+          vinnersjansen. Premiene trekkes fra lengst til kortest distanse, og hver deltaker vinner
+          maksimalt ett startnummer, med mindre alle gjenværende lodd i en trekning tilhører
+          tidligere vinnere. Dersom en vinner ikke kan motta premien, trekkes den på nytt uten denne
+          deltakeren. Se <Link href="/trekning">hvordan trekningen foregår</Link>.
         </p>
         <p>Vi er ikke ansvarlige for forsinkelser i leveransen som skyldes:</p>
         <ul>

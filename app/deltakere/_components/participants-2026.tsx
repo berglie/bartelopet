@@ -1,19 +1,47 @@
 import { createClient } from '@/app/_shared/lib/supabase/server';
+import { fetchAll } from '@/app/_shared/lib/supabase/fetch-all';
 import { Card, CardContent } from '@/app/_shared/components/ui/card';
 import { CATEGORY_META, CATEGORY_ORDER, EVENT_YEAR_2026 } from '@/app/_shared/types/event-2026';
 import { cn } from '@/app/_shared/lib/utils/cn';
 import { TerrainLines } from '@/app/_shared/components/terrain-lines';
 
+function sumTickets(
+  entries: { category_slug: string | null; tickets: number | null }[],
+  slug: string
+): number {
+  return entries
+    .filter((entry) => entry.category_slug === slug)
+    .reduce((sum, entry) => sum + (entry.tickets ?? 0), 0);
+}
+
 export async function Participants2026() {
   const supabase = await createClient();
   const [participantsResult, runsResult, entriesResult] = await Promise.all([
-    supabase
-      .from('participants_safe')
-      .select('id, full_name, bib_number')
-      .eq('event_year', EVENT_YEAR_2026)
-      .order('bib_number'),
-    supabase.from('runs_public').select('*').eq('event_year', EVENT_YEAR_2026),
-    supabase.from('eligible_entries').select('*').eq('event_year', EVENT_YEAR_2026),
+    fetchAll((from, to) =>
+      supabase
+        .from('participants_safe')
+        .select('id, full_name, bib_number')
+        .eq('event_year', EVENT_YEAR_2026)
+        .order('bib_number')
+        .range(from, to)
+    ),
+    fetchAll((from, to) =>
+      supabase
+        .from('runs_public')
+        .select('*')
+        .eq('event_year', EVENT_YEAR_2026)
+        .order('id')
+        .range(from, to)
+    ),
+    fetchAll((from, to) =>
+      supabase
+        .from('participant_ticket_totals')
+        .select('*')
+        .eq('event_year', EVENT_YEAR_2026)
+        .order('participant_id')
+        .order('category_slug')
+        .range(from, to)
+    ),
   ]);
 
   const rows = (participantsResult.data || []).map((participant) => {
@@ -25,10 +53,9 @@ export async function Participants2026() {
       ...participant,
       runs: runs.length,
       km: runs.reduce((sum, run) => sum + Number(run.distance_km || 0), 0),
-      donated: runs.reduce((sum, run) => sum + Number(run.donation_amount_nok || 0), 0),
-      short: entries.filter((entry) => entry.category_slug === 'short').length,
-      medium: entries.filter((entry) => entry.category_slug === 'medium').length,
-      long: entries.filter((entry) => entry.category_slug === 'long').length,
+      short: sumTickets(entries, 'short'),
+      medium: sumTickets(entries, 'medium'),
+      long: sumTickets(entries, 'long'),
     };
   });
 
@@ -68,7 +95,7 @@ export async function Participants2026() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[680px] text-left text-sm">
                 <caption className="sr-only">
-                  Påmeldte løpere med turer, kilometer, donasjoner og lodd per premiekategori
+                  Påmeldte løpere med turer, kilometer og lodd per premiekategori
                 </caption>
                 <thead className="border-b-2 border-foreground bg-foreground text-[11px] font-black uppercase tracking-[0.14em] text-background">
                   <tr>
@@ -80,9 +107,6 @@ export async function Participants2026() {
                     </th>
                     <th scope="col" className="p-4 text-right">
                       Km
-                    </th>
-                    <th scope="col" className="p-4 text-right">
-                      Donert
                     </th>
                     {CATEGORY_ORDER.map((slug) => (
                       <th key={slug} scope="col" className="p-4 text-center">
@@ -116,9 +140,6 @@ export async function Participants2026() {
                       <td className="p-4 text-right group-hover:bg-muted">{row.runs}</td>
                       <td className="p-4 text-right group-hover:bg-muted">
                         {row.km.toLocaleString('nb-NO', { maximumFractionDigits: 1 })}
-                      </td>
-                      <td className="whitespace-nowrap p-4 text-right group-hover:bg-muted">
-                        {row.donated.toLocaleString('nb-NO')} kr
                       </td>
                       {CATEGORY_ORDER.map((slug) => (
                         <td

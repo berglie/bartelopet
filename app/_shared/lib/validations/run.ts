@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { MAX_RUN_KM, MIN_RUN_KM, roundedKm } from '@/app/_shared/types/event-2026';
 
 const optionalText = (max: number) =>
   z
@@ -13,10 +14,10 @@ export const runInputSchema = z.object({
   run_date: z.iso.date('Velg en gyldig dato'),
   distance_km: z.coerce
     .number('Oppgi distansen i kilometer')
-    .positive('Distansen må være større enn 0')
-    .max(500, 'Distansen kan ikke være over 500 km'),
-  donation_confirmed: z.literal(true, {
-    error: 'Du må bekrefte at donasjonen er gjennomført',
+    .max(MAX_RUN_KM, `Distansen kan ikke være over ${MAX_RUN_KM} km`)
+    .refine((km) => roundedKm(km) >= MIN_RUN_KM, `Turen må være minst ${MIN_RUN_KM} km`),
+  run_confirmed: z.literal(true, {
+    error: 'Du må bekrefte at du har gått eller løpt turen selv',
   }),
   title: optionalText(100),
   duration_text: optionalText(50),

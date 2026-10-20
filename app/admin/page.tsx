@@ -12,37 +12,56 @@ import {
   saveEventSettings,
   setPrizeAvailability,
 } from '@/app/actions/admin-2026';
-import { EVENT_YEAR_2026 } from '@/app/_shared/types/event-2026';
+import { CATEGORY_META, EVENT_YEAR_2026 } from '@/app/_shared/types/event-2026';
+import { formatDate } from '@/app/_shared/lib/utils/format';
+import { ConfirmButton } from './_components/confirm-button';
 
-export default async function AdminPage() {
+export default async function AdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ feil?: string }>;
+}) {
+  const { feil } = await searchParams;
   const supabase = await createClient();
   const { data: isAdmin } = await supabase.rpc('is_event_admin');
   if (!isAdmin) notFound();
 
   const [editionResult, prizesResult, drawsResult, entriesResult] = await Promise.all([
     supabase.from('event_editions').select('*').eq('event_year', EVENT_YEAR_2026).single(),
-    supabase.from('race_prizes').select('*').eq('event_year', EVENT_YEAR_2026).order('distance_km'),
     supabase
-      .from('draw_results')
+      .from('race_prizes')
       .select('*')
       .eq('event_year', EVENT_YEAR_2026)
-      .is('annulled_at', null),
-    supabase.from('eligible_entries').select('category_slug').eq('event_year', EVENT_YEAR_2026),
+      .order('distance_km', { ascending: false }),
+    supabase.from('draw_results').select('*').eq('event_year', EVENT_YEAR_2026).order('drawn_at'),
+    supabase
+      .from('category_ticket_totals')
+      .select('category_slug, tickets')
+      .eq('event_year', EVENT_YEAR_2026),
   ]);
 
   const edition = editionResult.data;
   const prizes = prizesResult.data || [];
-  const draws = drawsResult.data || [];
+  const allDraws = drawsResult.data || [];
+  const draws = allDraws.filter((draw) => !draw.annulled_at);
+  const annulledDraws = allDraws.filter((draw) => draw.annulled_at);
+  const drawLocked = Boolean(edition?.registration_open || edition?.submissions_open);
+  // draw_race_prize() only accepts the longest prize still waiting to be drawn.
+  const nextDistance = Math.max(
+    0,
+    ...prizes.filter((prize) => prize.status === 'available').map((prize) => prize.distance_km)
+  );
   const entryCount = (slug: string) =>
-    (entriesResult.data || []).filter((entry) => entry.category_slug === slug).length;
+    (entriesResult.data || [])
+      .filter((entry) => entry.category_slug === slug)
+      .reduce((sum, entry) => sum + (entry.tickets ?? 0), 0);
 
-  const winnerIds = draws.map((draw) => draw.participant_id);
-  const { data: winners } = winnerIds.length
-    ? await supabase
-        .from('participants')
-        .select('id, full_name, email, phone_number')
-        .in('id', winnerIds)
-    : { data: [] };
+  const winnerIds = [...new Set(allDraws.map((draw) => draw.participant_id))];
+  const runIds = draws.map((draw) => draw.winning_run_id);
+  const [{ data: winners }, { data: winningRuns }] = await Promise.all([
+    supabase.from('participants').select('id, full_name, email, phone_number').in('id', winnerIds),
+    supabase.from('runs').select('id, run_date, distance_km').in('id', runIds),
+  ]);
 
   return (
     <div className="container mx-auto max-w-6xl px-4 py-12">
@@ -51,11 +70,20 @@ export default async function AdminPage() {
         <h1 className="text-4xl font-bold">Barteløpet 2026</h1>
       </div>
 
+      {feil && (
+        <div
+          role="alert"
+          className="mb-6 rounded-xl border-2 border-destructive bg-destructive/10 p-4 font-semibold text-destructive"
+        >
+          {feil}
+        </div>
+      )}
+
       <div className="mb-8 grid gap-4 sm:grid-cols-3">
         {[
-          ['Lodd 0–10', entryCount('short')],
-          ['Lodd 10–30', entryCount('medium')],
-          ['Lodd 30+', entryCount('long')],
+          [`Lodd ${CATEGORY_META.short.range}`, entryCount('short')],
+          [`Lodd ${CATEGORY_META.medium.range}`, entryCount('medium')],
+          [`Lodd ${CATEGORY_META.long.range}`, entryCount('long')],
         ].map(([label, value]) => (
           <Card key={label}>
             <CardContent className="p-5 text-center">
@@ -165,9 +193,21 @@ export default async function AdminPage() {
             <CardTitle>Premier og trekning</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Premiene trekkes fra lengst til kortest distanse. Hver deltaker vinner én premie, med
+              mindre alle som er igjen i potten allerede har vunnet.
+            </p>
+            {drawLocked && (
+              <p className="rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm">
+                Trekning er sperret til både påmelding og turregistrering er stengt.
+              </p>
+            )}
             {prizes.map((prize) => {
               const draw = draws.find((item) => item.prize_id === prize.id);
               const winner = winners?.find((item) => item.id === draw?.participant_id);
+              const winningRun = winningRuns?.find((item) => item.id === draw?.winning_run_id);
+              const history = annulledDraws.filter((item) => item.prize_id === prize.id);
+              const isNext = prize.status === 'available' && prize.distance_km === nextDistance;
               return (
                 <div key={prize.id} className="rounded-xl border p-4">
                   <div className="flex items-start justify-between gap-3">
@@ -182,7 +222,14 @@ export default async function AdminPage() {
                         {prize.status === 'available' ? (
                           <>
                             <form action={drawPrize.bind(null, prize.id)}>
-                              <Button size="sm">Trekk</Button>
+                              <ConfirmButton
+                                size="sm"
+                                disabled={drawLocked || !isNext}
+                                title={isNext ? undefined : 'Trekk de lengste løpene først'}
+                                confirmText={`Trekke vinner av ${prize.race_name} nå?`}
+                              >
+                                Trekk
+                              </ConfirmButton>
                             </form>
                             <form action={setPrizeAvailability.bind(null, prize.id, false)}>
                               <Button size="sm" variant="outline">
@@ -203,19 +250,53 @@ export default async function AdminPage() {
                   {draw && (
                     <div className="mt-3 rounded-lg bg-accent/10 p-3 text-sm">
                       <strong>Vinner: {winner?.full_name || draw.participant_id}</strong>
+                      {draws.filter((item) => item.participant_id === draw.participant_id).length >
+                        1 && <div>Har også vunnet en annen premie (ingen andre lodd igjen).</div>}
                       <div>
                         {winner?.email} {winner?.phone_number && `· ${winner.phone_number}`}
                       </div>
+                      {winningRun && (
+                        <div>
+                          Vinnerlodd: tur {formatDate(winningRun.run_date)} ·{' '}
+                          {winningRun.distance_km.toLocaleString('nb-NO')} km
+                        </div>
+                      )}
                       <div className="text-muted-foreground">
                         {draw.candidate_count} lodd i potten ·{' '}
                         {new Date(draw.drawn_at).toLocaleString('nb-NO')}
                       </div>
-                      <form action={annulDraw.bind(null, draw.id)} className="mt-2">
-                        <Button size="sm" variant="outline">
-                          Annuller trekning
-                        </Button>
-                      </form>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        <form action={annulDraw.bind(null, draw.id, true)}>
+                          <ConfirmButton
+                            size="sm"
+                            variant="outline"
+                            confirmText={`Registrere at ${winner?.full_name || 'vinneren'} takker nei? Premien kan trekkes på nytt uten denne deltakeren.`}
+                          >
+                            Vinner takket nei
+                          </ConfirmButton>
+                        </form>
+                        <form action={annulDraw.bind(null, draw.id, false)}>
+                          <ConfirmButton
+                            size="sm"
+                            variant="outline"
+                            confirmText="Annullere trekningen som feil? Vinneren blir med i potten igjen."
+                          >
+                            Annuller (feiltrekning)
+                          </ConfirmButton>
+                        </form>
+                      </div>
                     </div>
+                  )}
+                  {history.length > 0 && (
+                    <ul className="mt-3 space-y-1 text-xs text-muted-foreground">
+                      {history.map((item) => (
+                        <li key={item.id}>
+                          Annullert: {winners?.find((w) => w.id === item.participant_id)?.full_name}{' '}
+                          ({item.declined ? 'takket nei' : 'feiltrekning'}) ·{' '}
+                          {new Date(item.drawn_at).toLocaleString('nb-NO')}
+                        </li>
+                      ))}
+                    </ul>
                   )}
                 </div>
               );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createRun, updateRun } from '@/app/actions/runs';
 import { Button } from '@/app/_shared/components/ui/button';
@@ -8,7 +8,14 @@ import { Input } from '@/app/_shared/components/ui/input';
 import { Label } from '@/app/_shared/components/ui/label';
 import { Textarea } from '@/app/_shared/components/ui/textarea';
 import { Checkbox } from '@/app/_shared/components/ui/checkbox';
-import { donationForDistance } from '@/app/_shared/types/event-2026';
+import {
+  CATEGORY_META,
+  donationForDistance,
+  MAX_RUN_KM,
+  MIN_RUN_KM,
+  qualifyingCategories,
+  ticketsForRun,
+} from '@/app/_shared/types/event-2026';
 import type { Database } from '@/app/_shared/lib/supabase/types';
 import { createClient } from '@/app/_shared/lib/supabase/client';
 
@@ -28,10 +35,10 @@ export function RunForm2026({
   const [confirmed, setConfirmed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const donation = useMemo(
-    () => donationForDistance(Number.isFinite(Number(distance)) ? Number(distance) : 0),
-    [distance]
-  );
+  // Suggested gift for the last saved run. Shown after saving, never as a condition.
+  const [savedGift, setSavedGift] = useState<{ km: number; amount: number } | null>(null);
+  const distanceKm = Number(distance);
+  const tickets = distance && Number.isFinite(distanceKm) ? ticketsForRun(distanceKm) : 0;
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -39,6 +46,7 @@ export function RunForm2026({
     const formElement = event.currentTarget;
     setLoading(true);
     setError('');
+    setSavedGift(null);
     const form = new FormData(formElement);
     let evidenceUrl = String(form.get('evidence_url') || '');
     const evidenceFile = form.get('evidence_file');
@@ -74,7 +82,7 @@ export function RunForm2026({
     const payload = {
       run_date: String(form.get('run_date')),
       distance_km: Number(form.get('distance_km')),
-      donation_confirmed: confirmed as true,
+      run_confirmed: confirmed as true,
       title: String(form.get('title') || ''),
       duration_text: String(form.get('duration_text') || ''),
       comment: String(form.get('comment') || ''),
@@ -91,6 +99,7 @@ export function RunForm2026({
       formElement.reset();
       setDistance('');
       setConfirmed(false);
+      setSavedGift({ km: payload.distance_km, amount: donationForDistance(payload.distance_km) });
     }
     router.refresh();
   }
@@ -125,14 +134,23 @@ export function RunForm2026({
             id={`distance-${run?.id || 'new'}`}
             name="distance_km"
             type="number"
-            min="0.01"
-            max="500"
+            min={MIN_RUN_KM - 0.5}
+            max={MAX_RUN_KM}
             step="0.01"
             value={distance}
             onChange={(event) => setDistance(event.target.value)}
             required
             disabled={loading || disabled}
           />
+          {tickets > 0 && (
+            <p className="text-xs text-muted-foreground" aria-live="polite">
+              {tickets >= MIN_RUN_KM
+                ? `Gir ${tickets} lodd i hver valgt kategori av: ${qualifyingCategories(distanceKm)
+                    .map((slug) => CATEGORY_META[slug].range)
+                    .join(', ')}`
+                : `Turen må være minst ${MIN_RUN_KM} km`}
+            </p>
+          )}
         </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
@@ -202,25 +220,8 @@ export function RunForm2026({
         />
         <div className="text-sm">
           <label htmlFor={`confirmed-${run?.id || 'new'}`} className="cursor-pointer">
-            Jeg bekrefter at jeg har donert minst{' '}
-            <strong className="font-display text-lg font-black">
-              {donation.toLocaleString('nb-NO')} kr
-            </strong>{' '}
-            (5 kr per km).
+            Jeg bekrefter at jeg har gått eller løpt turen selv, og at distansen er riktig.
           </label>
-          {donationUrl && (
-            <>
-              {' '}
-              <a
-                href={donationUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold underline decoration-secondary decoration-2 underline-offset-2 hover:decoration-foreground"
-              >
-                Åpne innsamlingen
-              </a>
-            </>
-          )}
         </div>
       </div>
       <Button
@@ -228,10 +229,36 @@ export function RunForm2026({
         variant="ink"
         size="lg"
         className="w-full"
-        disabled={loading || disabled || !confirmed || donation < 1}
+        disabled={loading || disabled || !confirmed}
       >
         {loading ? 'Lagrer…' : run ? 'Lagre endringer' : 'Registrer tur'}
       </Button>
+      {savedGift && (
+        <div
+          role="status"
+          className="space-y-2 border-2 border-foreground bg-secondary/30 p-4 text-sm"
+        >
+          <p className="font-display text-xl font-black uppercase">Takk for turen!</p>
+          <p>
+            Barteløpet er gratis, men vi håper du vil gi 5 kr per km til Prosjekt SUT. Turen din på{' '}
+            {savedGift.km.toLocaleString('nb-NO')} km tilsvarer{' '}
+            <strong>{savedGift.amount.toLocaleString('nb-NO')} kr</strong>.
+          </p>
+          {donationUrl && (
+            <a
+              href={donationUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block font-semibold underline decoration-secondary decoration-2 underline-offset-2 hover:decoration-foreground"
+            >
+              Gi via Spleis
+            </a>
+          )}
+          <p className="text-xs text-muted-foreground">
+            Helt frivillig, og du får like mange lodd uansett.
+          </p>
+        </div>
+      )}
     </form>
   );
 }

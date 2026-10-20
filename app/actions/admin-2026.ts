@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 import { createClient } from '@/app/_shared/lib/supabase/server';
 import { categoryForPrize, EVENT_YEAR_2026 } from '@/app/_shared/types/event-2026';
 
@@ -15,6 +16,21 @@ function refreshAdmin() {
   revalidatePath('/admin');
   revalidatePath('/premier');
   revalidatePath('/');
+}
+
+const DRAW_ERRORS: Record<string, string> = {
+  'Close registration and run submissions before drawing':
+    'Steng påmelding og turregistrering før du trekker.',
+  'Longer prizes must be drawn first': 'Trekk de lengste løpene først.',
+  'No eligible entries are available': 'Ingen lodd igjen i potten for denne premien.',
+  'Prize is not available for drawing': 'Premien er ikke publisert eller er allerede trukket.',
+  'Prize has already been drawn': 'Premien er allerede trukket.',
+  'Draw not found or already annulled': 'Trekningen finnes ikke eller er allerede annullert.',
+};
+
+/** Shows draw errors as a banner on /admin instead of crashing the page mid-draw. */
+function failDraw(message: string): never {
+  redirect(`/admin?feil=${encodeURIComponent(DRAW_ERRORS[message] ?? message)}`);
 }
 
 export async function saveEventSettings(formData: FormData): Promise<void> {
@@ -32,12 +48,17 @@ export async function saveEventSettings(formData: FormData): Promise<void> {
     .eq('event_year', EVENT_YEAR_2026);
   if (error) throw new Error(error.message);
 
+  // Draws made while winners are published get published_at in draw_race_prize().
+  // Here we only publish what is still unpublished, so earlier timestamps survive re-saves.
   const publishWinners = formData.get('winners_published') === 'on';
-  const { error: publishError } = await supabase
+  const publishQuery = supabase
     .from('draw_results')
     .update({ published_at: publishWinners ? new Date().toISOString() : null })
     .eq('event_year', EVENT_YEAR_2026)
     .is('annulled_at', null);
+  const { error: publishError } = publishWinners
+    ? await publishQuery.is('published_at', null)
+    : await publishQuery;
   if (publishError) throw new Error(publishError.message);
   refreshAdmin();
 }
@@ -78,35 +99,19 @@ export async function setPrizeAvailability(prizeId: string, available: boolean):
 export async function drawPrize(prizeId: string): Promise<void> {
   const supabase = await adminClient();
   const { error } = await supabase.rpc('draw_race_prize', { p_prize_id: prizeId });
-  if (error) throw new Error(error.message);
   refreshAdmin();
+  if (error) failDraw(error.message);
+  redirect('/admin');
 }
 
-export async function annulDraw(resultId: string): Promise<void> {
+/** `declined` keeps the winner out of the redraw for this prize; use false for mistaken draws. */
+export async function annulDraw(resultId: string, declined: boolean): Promise<void> {
   const supabase = await adminClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error('Ikke innlogget');
-
-  const { data: result, error: findError } = await supabase
-    .from('draw_results')
-    .select('prize_id')
-    .eq('id', resultId)
-    .is('annulled_at', null)
-    .single();
-  if (findError) throw new Error(findError.message);
-
-  const { error } = await supabase
-    .from('draw_results')
-    .update({ annulled_at: new Date().toISOString(), annulled_by: user.id })
-    .eq('id', resultId);
-  if (error) throw new Error(error.message);
-
-  const { error: prizeError } = await supabase
-    .from('race_prizes')
-    .update({ status: 'available', updated_at: new Date().toISOString() })
-    .eq('id', result.prize_id);
-  if (prizeError) throw new Error(prizeError.message);
+  const { error } = await supabase.rpc('annul_draw', {
+    p_result_id: resultId,
+    p_declined: declined,
+  });
   refreshAdmin();
+  if (error) failDraw(error.message);
+  redirect('/admin');
 }

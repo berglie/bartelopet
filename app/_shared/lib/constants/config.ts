@@ -5,7 +5,7 @@
 export const config = {
   app: {
     name: 'Barteløpet',
-    description: 'Barfotløp for veldedighet',
+    description: 'Virtuelt veldedighetsløp i november for Prosjekt SUT',
     url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
   },
   supabase: {

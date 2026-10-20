@@ -116,6 +116,7 @@ export type Database = {
           annulled_at: string | null;
           annulled_by: string | null;
           candidate_count: number;
+          declined: boolean;
           drawn_at: string;
           drawn_by: string;
           event_year: number;
@@ -129,6 +130,7 @@ export type Database = {
           annulled_at?: string | null;
           annulled_by?: string | null;
           candidate_count: number;
+          declined?: boolean;
           drawn_at?: string;
           drawn_by: string;
           event_year: number;
@@ -142,6 +144,7 @@ export type Database = {
           annulled_at?: string | null;
           annulled_by?: string | null;
           candidate_count?: number;
+          declined?: boolean;
           drawn_at?: string;
           drawn_by?: string;
           event_year?: number;
@@ -309,7 +312,7 @@ export type Database = {
           created_at: string;
           distance_km: number;
           donation_amount_nok: number;
-          donation_confirmed_at: string;
+          donation_confirmed_at: string | null;
           duration_text: string | null;
           event_year: number;
           evidence_url: string | null;
@@ -324,7 +327,7 @@ export type Database = {
           created_at?: string;
           distance_km: number;
           donation_amount_nok: number;
-          donation_confirmed_at?: string;
+          donation_confirmed_at?: string | null;
           duration_text?: string | null;
           event_year: number;
           evidence_url?: string | null;
@@ -339,7 +342,7 @@ export type Database = {
           created_at?: string;
           distance_km?: number;
           donation_amount_nok?: number;
-          donation_confirmed_at?: string;
+          donation_confirmed_at?: string | null;
           duration_text?: string | null;
           event_year?: number;
           evidence_url?: string | null;
@@ -581,6 +584,24 @@ export type Database = {
           event_year: number | null;
           participant_id: string | null;
           run_id: string | null;
+          tickets: number | null;
+        };
+        Relationships: [];
+      };
+      participant_ticket_totals: {
+        Row: {
+          category_slug: string | null;
+          event_year: number | null;
+          participant_id: string | null;
+          tickets: number | null;
+        };
+        Relationships: [];
+      };
+      category_ticket_totals: {
+        Row: {
+          category_slug: string | null;
+          event_year: number | null;
+          tickets: number | null;
         };
         Relationships: [];
       };
@@ -699,6 +720,10 @@ export type Database = {
       };
     };
     Functions: {
+      annul_draw: {
+        Args: { p_result_id: string; p_declined: boolean };
+        Returns: Database['public']['Tables']['draw_results']['Row'];
+      };
       close_submission_window: { Args: never; Returns: undefined };
       draw_race_prize: {
         Args: { p_prize_id: string };

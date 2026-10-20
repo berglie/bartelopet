@@ -34,19 +34,19 @@ export async function Home2026() {
       number: '01',
       icon: Route,
       title: 'Finn din tur',
-      text: 'Løp der du er. En rolig runde, en klubbøkt eller et organisert løp – du velger.',
+      text: 'Løp eller gå der du er. En rolig runde, en klubbøkt eller et organisert løp – all bevegelse teller.',
     },
     {
       number: '02',
-      icon: HeartHandshake,
-      title: 'Gi per kilometer',
-      text: `Doner minst ${rate} kroner for hver kilometer. En tur på 30 km gir minst ${rate * 30} kroner.`,
+      icon: TicketCheck,
+      title: 'Samle lodd',
+      text: 'Registrer turen på Min side. Hver kilometer gir ett lodd i premiekategoriene du har valgt og kvalifisert deg til.',
     },
     {
       number: '03',
-      icon: TicketCheck,
-      title: 'Samle lodd',
-      text: 'Hver registrerte dagstur gir lodd i premiekategoriene du har valgt og kvalifisert deg til.',
+      icon: HeartHandshake,
+      title: 'Gi om du kan',
+      text: `Vi oppfordrer til ${rate} kroner per kilometer til Prosjekt SUT. Helt frivillig, og det påvirker ikke trekningen.`,
     },
   ];
 
@@ -54,12 +54,12 @@ export async function Home2026() {
     { label: 'Turer', value: stats.runs },
     { label: 'Løpere', value: stats.runners },
     { label: 'Kilometer', value: stats.kilometers, decimals: 1 },
-    { label: 'Kroner donert', value: stats.donated },
+    { label: 'Påmeldte', value: stats.registered },
   ];
 
   const tickerItems = [
     'Hver kilometer teller',
-    `${rate} kr per km`,
+    `Gi gjerne ${rate} kr per km`,
     'Hele november',
     'Løp hvor du vil',
     'Prosjekt SUT',
@@ -105,7 +105,7 @@ export async function Home2026() {
               Barteløpet · Hele november 2026
             </span>
             <span className="text-xs font-bold uppercase tracking-[0.18em] text-background/70">
-              Løp hvor du vil · {rate} kr / km
+              Løp hvor du vil · Gi gjerne {rate} kr / km
             </span>
           </div>
 
@@ -133,8 +133,8 @@ export async function Home2026() {
                 className="mt-8 max-w-2xl animate-fade-up text-xl leading-relaxed text-background/80 md:text-2xl"
                 style={{ animationDelay: '650ms' }}
               >
-                For noen betyr den enda mer. Løp din tur, doner per kilometer og bidra til
-                fellesskap, mestring og nye muligheter.
+                For noen betyr den enda mer. Løp din tur, gi det du kan og bidra til fellesskap,
+                mestring og nye muligheter.
               </p>
             </div>
 
@@ -224,9 +224,10 @@ export async function Home2026() {
             </p>
             <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground">
               Gruppen trener sammen i naturen, deltar på løp og avslutter gjerne med en prat og noe
-              å bite i. Ingen må dele sin egen historie. For noen er SUT forebyggende, for andre et
-              steg på veien ut av sykemelding og utenforskap og tilbake i arbeid. Prosjektet drives
-              i samarbeid med A-larm Rogaland, Dale fjelløpere og Sandnes Ultratrail.
+              å bite i. Ingen må dele sin egen historie. For noen er prosjektet forebyggende, for
+              andre et steg på veien ut av sykemelding og utenforskap og tilbake i arbeid.
+              Prosjektet drives i samarbeid med A-larm Rogaland, Dale fjelløpere og Sandnes
+              Ultratrail.
             </p>
             <div className="mt-8 grid gap-3 sm:grid-cols-2">
               {sutFeatures.map(({ icon: Icon, label }) => (
@@ -261,7 +262,8 @@ export async function Home2026() {
                   rel="noopener noreferrer"
                   className="group mt-3 inline-flex items-center gap-2 text-sm font-bold underline decoration-secondary decoration-2 underline-offset-4 hover:decoration-foreground"
                 >
-                  Gå til innsamlingen <ArrowUpRight className={cn('h-4 w-4', nudgeUpRight)} />
+                  Kan du ikke løpe? Støtt innsamlingen direkte{' '}
+                  <ArrowUpRight className={cn('h-4 w-4', nudgeUpRight)} />
                 </a>
               )}
             </div>
@@ -400,8 +402,8 @@ export async function Home2026() {
               <span className="block pt-[0.1em] text-secondary">åpner døra.</span>
             </h2>
             <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-              Velg løpene du drømmer om. Hver dagstur gir ett lodd i hver valgt kategori du har løpt
-              langt nok for.
+              Velg løpene du drømmer om. Hver kilometer gir ett lodd i hver valgt kategori turen er
+              lang nok til.
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Button asChild variant="ink" size="xl" className="group">

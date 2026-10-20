@@ -340,9 +340,9 @@ export function RegistrationForm() {
             <ol className="list-inside list-decimal space-y-1 text-sm text-muted-foreground">
               {!isOAuthUser && <li>Sjekk e-posten din og klikk på bekreftelseslenken</li>}
               {!isOAuthUser && <li>Du vil bli automatisk innlogget</li>}
-              <li>Løp en valgfri tur i november</li>
-              <li>Doner minst 5 kroner per kilometer</li>
-              <li>Registrer turen og samle lodd til valgte startnummer</li>
+              <li>Løp eller gå en valgfri tur i november</li>
+              <li>Registrer turen og samle ett lodd per kilometer</li>
+              <li>Gi gjerne 5 kroner per kilometer til Prosjekt SUT (frivillig)</li>
             </ol>
           </div>
 
