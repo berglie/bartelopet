@@ -72,6 +72,9 @@ export function Footer() {
               <Link href="/premier" className="hover:text-accent">
                 Premier
               </Link>
+              <Link href="/trekning" className="hover:text-accent">
+                Slik trekkes premiene
+              </Link>
               <a
                 href={PROJECT_SUT_URL}
                 target="_blank"

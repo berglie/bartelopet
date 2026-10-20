@@ -16,7 +16,7 @@ export async function generateMetadata({
   const isArchive = year === '2025';
   const description = isArchive
     ? 'Se deltakere og resultater fra Barteløpet 2025.'
-    : 'Følg løpere, kilometer, donasjoner og premielodd i Barteløpet 2026 for Prosjekt SUT.';
+    : 'Følg løpere, kilometer og premielodd i Barteløpet 2026 for Prosjekt SUT.';
 
   return {
     title: isArchive ? 'Deltakere 2025' : 'Løpere og lodd',

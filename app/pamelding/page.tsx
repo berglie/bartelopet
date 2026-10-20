@@ -15,13 +15,13 @@ const steps = [
   },
   {
     icon: HeartHandshake,
-    title: 'Løp og doner',
-    text: 'Velg din egen novembertur og doner minst 5 kroner per kilometer.',
+    title: 'Løp eller gå',
+    text: 'Velg din egen novembertur. Vi oppfordrer til 5 kroner per kilometer til Prosjekt SUT, men det er helt frivillig.',
   },
   {
     icon: TicketCheck,
     title: 'Registrer turen',
-    text: 'Legg turen på Min side og samle lodd i kategoriene du kvalifiserer til.',
+    text: 'Legg turen på Min side. Hver kilometer gir ett lodd i kategoriene du kvalifiserer til.',
   },
 ];
 

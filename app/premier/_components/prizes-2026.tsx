@@ -24,7 +24,7 @@ export async function Prizes2026() {
       .order('distance_km'),
     supabase
       .from('draw_results')
-      .select('prize_id, participant_id')
+      .select('prize_id, participant_id, candidate_count')
       .eq('event_year', EVENT_YEAR_2026)
       .is('annulled_at', null)
       .not('published_at', 'is', null),
@@ -49,6 +49,12 @@ export async function Prizes2026() {
             Løpeklubber og arrangører donerer startnummer. Hver premie trekkes blant kvalifiserte
             lodd.
           </p>
+          <Link
+            href="/trekning"
+            className="mt-4 inline-block border-b-2 border-foreground pb-0.5 font-bold uppercase tracking-wider hover:border-secondary"
+          >
+            Slik foregår trekningen
+          </Link>
         </div>
       </header>
 
@@ -119,6 +125,11 @@ export async function Prizes2026() {
                   {prize.status === 'drawn' && (
                     <div className="border-2 border-foreground bg-accent p-3 text-center font-black uppercase tracking-wide">
                       {winner?.full_name ? `Vinner: ${winner.full_name}` : 'Trukket'}
+                      {draw && (
+                        <span className="mt-1 block text-xs font-bold normal-case tracking-normal">
+                          Trukket blant {draw.candidate_count.toLocaleString('nb-NO')} lodd
+                        </span>
+                      )}
                     </div>
                   )}
                 </CardContent>

@@ -1,5 +1,6 @@
 import {
   qualifyingCategories,
+  ticketsForRun,
   type PublicRun,
   type TicketTotals,
 } from '@/app/_shared/types/event-2026';
@@ -250,7 +251,9 @@ function ticketTotals(runs: PublicRun[]): TicketTotals {
 
   for (const run of runs) {
     for (const category of qualifyingCategories(run.distance_km)) {
-      if (run.interest_categories.includes(category)) totals[category]++;
+      if (run.interest_categories.includes(category)) {
+        totals[category] += ticketsForRun(run.distance_km);
+      }
     }
   }
 
@@ -267,7 +270,6 @@ export function getMock2026Overview() {
       runs: runs.length,
       runners: new Set(runs.map((run) => run.participant_id)).size,
       kilometers: runs.reduce((sum, run) => sum + run.distance_km, 0),
-      donated: runs.reduce((sum, run) => sum + run.donation_amount_nok, 0),
       registered: 42,
     },
   };

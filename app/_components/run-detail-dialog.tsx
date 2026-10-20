@@ -9,7 +9,6 @@ import {
   Clock3,
   Footprints,
   Hash,
-  HeartHandshake,
   ImageIcon,
   MessageCircle,
   Route,
@@ -26,6 +25,7 @@ import {
   CATEGORY_META,
   CATEGORY_ORDER,
   qualifyingCategories,
+  ticketsForRun,
   type PublicRun,
   type TicketTotals,
 } from '@/app/_shared/types/event-2026';
@@ -176,9 +176,9 @@ export function RunDetailDialog({ run, summary, onOpenChange }: RunDetailDialogP
             />
             <RunFact icon={Clock3} label="Tid" value={run.duration_text || 'Ikke oppgitt'} />
             <RunFact
-              icon={HeartHandshake}
-              label="Donert"
-              value={`${run.donation_amount_nok.toLocaleString('nb-NO')} kr`}
+              icon={TicketCheck}
+              label="Lodd per kategori"
+              value={String(ticketsForRun(run.distance_km))}
             />
           </div>
 
@@ -197,7 +197,7 @@ export function RunDetailDialog({ run, summary, onOpenChange }: RunDetailDialogP
                     )}
                   >
                     <TicketCheck className="h-3.5 w-3.5" />
-                    {CATEGORY_META[category].range}
+                    {ticketsForRun(run.distance_km)} × {CATEGORY_META[category].range}
                   </span>
                 ))
               ) : (

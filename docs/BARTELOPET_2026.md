@@ -23,12 +23,29 @@ konverteres.
 ## Regler som håndheves i databasen
 
 - Maks én tur per deltaker og dato.
+- Distansen rundes av til nærmeste hele km (2,5 → 3, 2,4 → 2). Den avrundede distansen avgjør
+  lodd og kategorier.
+- Turen må være minst 3 km etter avrunding og maks 120 km (`MIN_RUN_KM`/`MAX_RUN_KM` i koden og
+  `validate_2026_run()` i databasen).
 - Dato må være innenfor arrangementsperioden og kan ikke være i fremtiden i `Europe/Oslo`.
-- Donasjon beregnes som `ceil(km × donasjonssats)`.
+- Gave er frivillig og aldri en betingelse for lodd (pengespilloven § 2 og Spleis' vilkår).
+  `donation_amount_nok` er bare et forslag, `ceil(km × donasjonssats)`, og vises ikke ved
+  siden av lodd.
 - 10 km kvalifiserer til kort, over 10 km til kort og mellom, og 30 km eller mer til alle tre.
-- Hver tur er ett lodd per valgt og kvalifisert kategori.
-- En deltaker kan bare ha én aktiv premiegevinst.
-- Annullerte trekninger beholdes i historikken, men sperrer ikke ny trekning.
+- Hver tur gir ett lodd per km i hver valgt og kvalifisert kategori. Trekningen gir hvert lodd
+  lik sjanse.
+- Loddsummer hentes fra `category_ticket_totals` og `participant_ticket_totals`, ikke ved å summere
+  `eligible_entries` i appen (API-et returnerer maks 1000 rader).
+- En deltaker vinner bare én premie, med mindre alle gjenværende lodd i potten tilhører
+  tidligere vinnere. Da trekkes premien blant dem.
+- Trekning er sperret så lenge påmelding eller turregistrering er åpen.
+- Premiene må trekkes fra lengst til kortest distanse.
+- Vinneren velges med `gen_random_uuid()` (PostgreSQLs sterke tilfeldighetskilde).
+- Annullerte trekninger beholdes i historikken. «Vinner takket nei» utelukker deltakeren fra ny
+  trekning av samme premie, mens «Annuller (feiltrekning)» legger deltakeren tilbake i potten.
+- Trekninger publiseres med en gang hvis «Publiser vinnere» allerede er på.
+
+Den offentlige forklaringen av trekningen ligger på `/trekning`.
 
 ## Årsarkiv
 

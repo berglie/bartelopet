@@ -232,7 +232,7 @@ export async function POST(request: NextRequest) {
                 </div>
                 <div class="footer">
                   <p>Dette er en automatisk bekreftelse fra Barteløpet</p>
-                  <p>© ${new Date().getFullYear()} ÅpenAid - Støtter mental helse gjennom Movember</p>
+                  <p>© ${new Date().getFullYear()} ÅpenAid · Barteløpet samler inn penger til Prosjekt SUT</p>
                 </div>
               </div>
             </body>

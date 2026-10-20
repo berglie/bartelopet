@@ -1,6 +1,7 @@
 import { createClient } from '@/app/_shared/lib/supabase/server';
+import { fetchAll } from '@/app/_shared/lib/supabase/fetch-all';
 import { getMock2026Overview } from '@/app/_shared/lib/mock/event-2026';
-import type { PublicRun, TicketTotals } from '@/app/_shared/types/event-2026';
+import { isCategorySlug, type PublicRun, type TicketTotals } from '@/app/_shared/types/event-2026';
 import { EVENT_YEAR_2026 } from '@/app/_shared/types/event-2026';
 
 export async function get2026Overview() {
@@ -21,12 +22,19 @@ export async function get2026Overview() {
     const supabase = await createClient();
     const [runsResult, entriesResult, prizesResult, editionResult, registeredResult] =
       await Promise.all([
+        fetchAll((from, to) =>
+          supabase
+            .from('runs_public')
+            .select('*')
+            .eq('event_year', EVENT_YEAR_2026)
+            .order('run_date', { ascending: false })
+            .order('id')
+            .range(from, to)
+        ),
         supabase
-          .from('runs_public')
-          .select('*')
-          .eq('event_year', EVENT_YEAR_2026)
-          .order('run_date', { ascending: false }),
-        supabase.from('eligible_entries').select('category_slug').eq('event_year', EVENT_YEAR_2026),
+          .from('category_ticket_totals')
+          .select('category_slug, tickets')
+          .eq('event_year', EVENT_YEAR_2026),
         supabase
           .from('race_prizes')
           .select('*')
@@ -54,9 +62,9 @@ export async function get2026Overview() {
 
     const tickets: TicketTotals = { short: 0, medium: 0, long: 0 };
     for (const entry of entriesResult.data || []) {
-      if (entry.category_slug === 'short') tickets.short++;
-      if (entry.category_slug === 'medium') tickets.medium++;
-      if (entry.category_slug === 'long') tickets.long++;
+      if (entry.category_slug && isCategorySlug(entry.category_slug)) {
+        tickets[entry.category_slug] += entry.tickets ?? 0;
+      }
     }
 
     const hasQueryError = [runsResult, entriesResult, prizesResult, editionResult].some(
@@ -81,7 +89,6 @@ export async function get2026Overview() {
         runs: runs.length,
         runners: new Set(runs.map((run) => run.participant_id)).size,
         kilometers: runs.reduce((sum, run) => sum + Number(run.distance_km), 0),
-        donated: runs.reduce((sum, run) => sum + run.donation_amount_nok, 0),
         registered: registeredResult.count ?? 0,
       },
       isMockData: false,

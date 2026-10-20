@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Check } from 'lucide-react';
 import { cn } from '@/app/_shared/lib/utils/cn';
 import {
@@ -57,6 +58,13 @@ export function CategoryPicker({ selected, onToggle, disabled }: CategoryPickerP
           </label>
         );
       })}
+      <p className="text-xs text-muted-foreground">
+        Loddene gjelder fullt ut i hver kategori du velger. Du kan vinne maks én premie, og de
+        lengste løpene trekkes først, så velg bare kategoriene du helst vil vinne i.{' '}
+        <Link href="/trekning" target="_blank" className="font-semibold underline">
+          Les mer
+        </Link>
+      </p>
     </div>
   );
 }

@@ -42,8 +42,7 @@ export function RunCard2026({
             </div>
             <div className="text-sm tabular-nums text-muted-foreground">
               {formatDate(run.run_date, { weekday: 'short', year: undefined })} ·{' '}
-              {run.distance_km.toLocaleString('nb-NO')} km ·{' '}
-              {run.donation_amount_nok.toLocaleString('nb-NO')} kr
+              {run.distance_km.toLocaleString('nb-NO')} km
             </div>
           </div>
           {canEdit && (

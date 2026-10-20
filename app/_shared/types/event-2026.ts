@@ -31,6 +31,13 @@ export interface TicketTotals {
 
 export const EVENT_YEAR_2026 = 2026;
 
+/**
+ * Run distance limits, checked against the rounded distance (see roundedKm), so 2.5 km counts
+ * as the official 3 km. Mirrored in validate_2026_run() in the database.
+ */
+export const MIN_RUN_KM = 3;
+export const MAX_RUN_KM = 120;
+
 export const CATEGORY_ORDER: DistanceCategorySlug[] = ['short', 'medium', 'long'];
 
 /**
@@ -43,7 +50,7 @@ export const CATEGORY_META: Record<
 > = {
   short: {
     name: 'Kort',
-    range: '0–10 km',
+    range: 'Opptil 10 km',
     examples: '3 km, 5 km og 10 km',
     solid: 'bg-accent text-accent-foreground',
     soft: 'bg-accent/40',
@@ -74,11 +81,25 @@ export function categoryForPrize(distanceKm: number): DistanceCategorySlug {
   return 'long';
 }
 
+/**
+ * Runs count in whole km, rounded to the nearest (2.5 → 3, 2.4 → 2). The rounded distance
+ * decides both categories and tickets. Mirrors ROUND() in the eligible_entries view.
+ */
+export function roundedKm(distanceKm: number): number {
+  return Math.round(distanceKm);
+}
+
 export function qualifyingCategories(distanceKm: number): DistanceCategorySlug[] {
+  const km = roundedKm(distanceKm);
   const categories: DistanceCategorySlug[] = ['short'];
-  if (distanceKm > 10) categories.push('medium');
-  if (distanceKm >= 30) categories.push('long');
+  if (km > 10) categories.push('medium');
+  if (km >= 30) categories.push('long');
   return categories;
+}
+
+/** One ticket per km, in every chosen category the run qualifies for. */
+export function ticketsForRun(distanceKm: number): number {
+  return roundedKm(distanceKm);
 }
 
 export function donationForDistance(distanceKm: number, rate = 5): number {

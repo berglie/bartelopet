@@ -65,8 +65,8 @@ export function PrivacyPolicy() {
             <strong>Varighet</strong> - hvor lang tid løpet tok (valgfritt)
           </li>
           <li>
-            <strong>Distanse, donasjonsbekreftelse og premieinteresser</strong> - for beregning av
-            donasjonsbeløp og kvalifiserte lodd
+            <strong>Distanse og premieinteresser</strong> - for beregning av kvalifiserte lodd og
+            foreslått gave
           </li>
         </ul>
 
@@ -188,7 +188,7 @@ export function PrivacyPolicy() {
           <li>Ditt fulle navn (eller visningsnavn hvis oppgitt)</li>
           <li>Bilder du laster opp</li>
           <li>Kommentarer du skriver</li>
-          <li>Dato, distanse, varighet og bekreftet donasjonsbeløp</li>
+          <li>Dato, distanse og varighet</li>
           <li>Valgte premiekategorier og antall kvalifiserte lodd</li>
           <li>Navn på publiserte vinnere</li>
         </ul>

@@ -25,7 +25,7 @@ export default async function DashboardPage() {
     .maybeSingle();
   if (!participant) redirect('/pamelding');
 
-  const [runsResult, interestsResult, entriesResult, editionResult] = await Promise.all([
+  const [runsResult, interestsResult, entriesResult, editionResult, potResult] = await Promise.all([
     supabase
       .from('runs')
       .select('*')
@@ -39,10 +39,14 @@ export default async function DashboardPage() {
       .eq('event_year', EVENT_YEAR_2026),
     supabase
       .from('eligible_entries')
-      .select('category_slug')
+      .select('category_slug, tickets')
       .eq('participant_id', participant.id)
       .eq('event_year', EVENT_YEAR_2026),
     supabase.from('event_editions').select('*').eq('event_year', EVENT_YEAR_2026).single(),
+    supabase
+      .from('category_ticket_totals')
+      .select('category_slug, tickets')
+      .eq('event_year', EVENT_YEAR_2026),
   ]);
 
   const runs = runsResult.data || [];
@@ -53,9 +57,15 @@ export default async function DashboardPage() {
     editionResult.data?.registration_open || editionResult.data?.submissions_open
   );
   const totalKm = runs.reduce((sum, run) => sum + run.distance_km, 0);
-  const totalDonation = runs.reduce((sum, run) => sum + run.donation_amount_nok, 0);
-  const ticketCount = (slug: string) =>
-    entries.filter((entry) => entry.category_slug === slug).length;
+  const sumTickets = (
+    rows: { category_slug: string | null; tickets: number | null }[],
+    slug?: string
+  ) =>
+    rows
+      .filter((entry) => !slug || entry.category_slug === slug)
+      .reduce((sum, entry) => sum + (entry.tickets ?? 0), 0);
+  const ticketCount = (slug: string) => sumTickets(entries, slug);
+  const potCount = (slug: string) => sumTickets(potResult.data || [], slug);
 
   async function signOut() {
     'use server';
@@ -84,7 +94,7 @@ export default async function DashboardPage() {
       </header>
 
       <main className="mx-auto max-w-[1200px] px-4 py-10 md:px-8 md:py-16">
-        <div className="mb-10 grid grid-cols-2 gap-3 md:grid-cols-4">
+        <div className="mb-10 grid grid-cols-3 gap-3">
           {[
             ['Turer', runs.length, 'bg-accent'],
             [
@@ -92,8 +102,7 @@ export default async function DashboardPage() {
               totalKm.toLocaleString('nb-NO', { maximumFractionDigits: 1 }),
               'bg-secondary',
             ],
-            ['Donert', `${totalDonation.toLocaleString('nb-NO')} kr`, 'bg-card'],
-            ['Lodd', entries.length, 'bg-foreground text-background'],
+            ['Lodd', sumTickets(entries), 'bg-foreground text-background'],
           ].map(([label, value, color]) => (
             <Card
               key={String(label)}
@@ -131,6 +140,9 @@ export default async function DashboardPage() {
                       <strong className="font-display block text-3xl tabular-nums">
                         {ticketCount(slug)}
                       </strong>
+                      <span className="block tabular-nums opacity-80">
+                        av {potCount(slug).toLocaleString('nb-NO')} i potten
+                      </span>
                       {CATEGORY_META[slug].range}
                     </div>
                   ))}
