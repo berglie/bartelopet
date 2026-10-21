@@ -57,6 +57,9 @@ export default async function DashboardPage() {
   const canEditInterests = Boolean(
     editionResult.data?.registration_open || editionResult.data?.submissions_open
   );
+  const period = editionResult.data
+    ? { start: editionResult.data.submissions_start, end: editionResult.data.submissions_end }
+    : undefined;
   const totalKm = runs.reduce((sum, run) => sum + run.distance_km, 0);
   const sumTickets = (
     rows: { category_slug: string | null; tickets: number | null }[],
@@ -174,7 +177,7 @@ export default async function DashboardPage() {
               </CardHeader>
               <CardContent className="pt-6">
                 {canEdit ? (
-                  <RunForm2026 donationUrl={editionResult.data?.donation_url} />
+                  <RunForm2026 donationUrl={editionResult.data?.donation_url} period={period} />
                 ) : (
                   <p className="border-2 border-dashed border-foreground p-4 text-sm">
                     Turregistreringen er stengt. Den åpner for novemberløp når arrangøren åpner
@@ -191,6 +194,7 @@ export default async function DashboardPage() {
                   run={run}
                   canEdit={canEdit}
                   donationUrl={editionResult.data?.donation_url}
+                  period={period}
                 />
               ))}
               {runs.length === 0 && (

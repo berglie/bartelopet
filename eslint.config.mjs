@@ -38,12 +38,22 @@ export default [
     },
   },
   {
+    // Playwright fixtures call `use()` and take `{}` when they need no other fixture.
+    files: ['e2e/**/*.ts'],
+    rules: {
+      'react-hooks/rules-of-hooks': 'off',
+      'no-empty-pattern': 'off',
+    },
+  },
+  {
     ignores: [
       '.next/**',
       'node_modules/**',
       'out/**',
       'dist/**',
       '.vercel/**',
+      'playwright-report/**',
+      'test-results/**',
       '.claude/**',
       '.claude-flow/**',
       '.hive-mind/**',

@@ -20,14 +20,22 @@ import type { Database } from '@/app/_shared/lib/supabase/types';
 
 type Run = Database['public']['Tables']['runs']['Row'];
 
+/** Submission period of the edition; the database rejects runs outside it. */
+export interface SubmissionPeriod {
+  start: string;
+  end: string;
+}
+
 export function RunForm2026({
   run,
   disabled = false,
   donationUrl,
+  period,
 }: {
   run?: Run;
   disabled?: boolean;
   donationUrl?: string | null;
+  period?: SubmissionPeriod;
 }) {
   const router = useRouter();
   const [distance, setDistance] = useState(run?.distance_km?.toString() || '');
@@ -110,8 +118,8 @@ export function RunForm2026({
             id={`run_date-${run?.id || 'new'}`}
             name="run_date"
             type="date"
-            min="2026-11-01"
-            max="2026-11-30"
+            min={period?.start ?? '2026-11-01'}
+            max={period?.end ?? '2026-11-30'}
             defaultValue={run?.run_date}
             required
             disabled={loading || disabled}
