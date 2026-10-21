@@ -161,7 +161,7 @@ export async function updateRun(runId: string, input: RunInput): Promise<ActionR
     .eq('id', runId)
     .eq('participant_id', participant.id)
     .maybeSingle();
-  const { error } = await supabase
+  const { data: updated, error } = await supabase
     .from('runs')
     .update({
       run_date: parsed.data.run_date,
@@ -172,9 +172,12 @@ export async function updateRun(runId: string, input: RunInput): Promise<ActionR
       evidence_url: parsed.data.evidence_url || null,
     })
     .eq('id', runId)
-    .eq('participant_id', participant.id);
+    .eq('participant_id', participant.id)
+    .select('id');
 
   if (error) return { success: false, error: runError(error) };
+  // RLS filters out closed runs without an error, so nothing was updated.
+  if (!updated?.length) return { success: false, error: RUN_ERRORS['Run submissions are closed'] };
 
   // A replaced photo is removed from storage, so old photos do not stay public.
   const oldPath = evidencePath(previous?.evidence_url, participant.id);
@@ -213,22 +216,25 @@ export async function updateDistanceInterests(categories: string[]): Promise<Act
   const { supabase, participant } = await currentParticipant();
   if (!participant) return { success: false, error: 'Du må være påmeldt i 2026' };
 
-  const { error: deleteError } = await supabase
-    .from('participant_distance_interests')
-    .delete()
-    .eq('participant_id', participant.id)
-    .eq('event_year', EVENT_YEAR_2026);
-  if (deleteError) return { success: false, error: runError(deleteError) };
-
-  const { error } = await supabase.from('participant_distance_interests').insert(
+  // Add the chosen categories first and remove the others after, so a failed write never
+  // leaves the participant without any categories.
+  const { error } = await supabase.from('participant_distance_interests').upsert(
     parsed.data.categories.map((category) => ({
       participant_id: participant.id,
       event_year: EVENT_YEAR_2026,
       category_slug: category,
-    }))
+    })),
+    { onConflict: 'participant_id,event_year,category_slug', ignoreDuplicates: true }
   );
-
   if (error) return { success: false, error: runError(error) };
+
+  const { error: deleteError } = await supabase
+    .from('participant_distance_interests')
+    .delete()
+    .eq('participant_id', participant.id)
+    .eq('event_year', EVENT_YEAR_2026)
+    .not('category_slug', 'in', `(${parsed.data.categories.join(',')})`);
+  if (deleteError) return { success: false, error: runError(deleteError) };
   refresh2026();
   return { success: true };
 }
