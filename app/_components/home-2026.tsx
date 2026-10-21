@@ -5,6 +5,7 @@ import {
   ArrowUpRight,
   CalendarDays,
   DoorOpen,
+  Download,
   Footprints,
   HeartHandshake,
   Mountain,
@@ -17,6 +18,7 @@ import { Barteline } from '@/app/_components/barteline';
 import { CountUp, Countdown, Reveal } from '@/app/_components/motion';
 import { Button } from '@/app/_shared/components/ui/button';
 import { get2026Overview } from '@/app/_shared/lib/queries/event-2026';
+import { RouteMap } from '@/app/_shared/components/route-map';
 import { TerrainLines } from '@/app/_shared/components/terrain-lines';
 import { PROJECT_SUT_URL } from '@/app/_shared/lib/constants/config';
 import { CATEGORY_META, CATEGORY_ORDER } from '@/app/_shared/types/event-2026';
@@ -178,7 +180,7 @@ export async function Home2026() {
               href="#prosjekt-sut"
               className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-background/70 transition-colors hover:text-accent"
             >
-              Se hvem du løper for <ArrowDown className="h-4 w-4 animate-bounce" />
+              Se hvem du løper for <ArrowDown className="h-4 w-4" />
             </a>
           </div>
         </div>
@@ -447,6 +449,44 @@ export async function Home2026() {
               );
             })}
           </div>
+        </div>
+      </section>
+
+      <section id="loypa" className="scroll-mt-24 border-t-2 border-foreground py-16 md:py-28">
+        <div className="mx-auto grid max-w-[1500px] gap-10 px-4 md:px-8 lg:grid-cols-[0.75fr_1.25fr] lg:items-center">
+          <Reveal>
+            <p className="trail-label">Fjorårets løype</p>
+            <h2 className="section-title mt-5">
+              11 km.
+              <span className="block pt-[0.1em] text-secondary">Stavanger sentrum.</span>
+            </h2>
+            <p className="mt-6 max-w-xl text-lg text-muted-foreground">
+              Vet du ikke hvor du skal løpe? Bryn deg på 2025-løypa gjennom Fargegaten, Gamle
+              Stavanger, Stavanger Øst og Eiganes. Den teller like mye som alle andre turer.
+            </p>
+            <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
+              <Button asChild variant="ink" size="xl" className="group">
+                <a
+                  href="https://www.strava.com/routes/3419817784051532462"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Strava-rute
+                  <ArrowUpRight className={cn('ml-2 h-4 w-4', nudgeUpRight)} />
+                </a>
+              </Button>
+              <Button asChild variant="line" size="xl">
+                <a href="/bartelopet-2025.gpx" download>
+                  <Download className="mr-2 h-4 w-4" />
+                  Last ned GPX
+                </a>
+              </Button>
+            </div>
+          </Reveal>
+
+          <Reveal from="right" delay={150}>
+            <RouteMap year={2025} variant="trail" lazy />
+          </Reveal>
         </div>
       </section>
 
