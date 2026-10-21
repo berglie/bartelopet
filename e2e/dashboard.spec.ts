@@ -1,0 +1,166 @@
+import path from 'node:path';
+import type { Page } from '@playwright/test';
+import { test, expect, alertBox, setCategory } from './support/fixtures';
+import { addRun, db } from './support/db';
+import { osloDate } from './support/env';
+
+const newRun = (page: Page) =>
+  page.locator('form').filter({ has: page.getByRole('button', { name: 'Registrer tur' }) });
+
+async function registerRun(
+  page: Page,
+  run: { date: string; km: string; title?: string; link?: string; photo?: string }
+) {
+  const form = newRun(page);
+  await form.getByLabel('Dato *').fill(run.date);
+  await form.getByLabel('Distanse i km *').fill(run.km);
+  if (run.title) await form.getByLabel('Navn på tur/løp').fill(run.title);
+  if (run.link) await form.getByLabel('Offentlig Strava-/aktivitetslenke').fill(run.link);
+  if (run.photo) await form.getByLabel('Eller last opp et bilde').setInputFiles(run.photo);
+  await form.getByRole('checkbox', { name: /Jeg bekrefter at jeg har gått/ }).check();
+  await form.getByRole('button', { name: 'Registrer tur' }).click();
+}
+
+/** The value of one of the three counters at the top of Min side. */
+const stat = (page: Page, label: string) =>
+  page.getByText(label, { exact: true }).locator('xpath=preceding-sibling::div[1]');
+
+const runCard = (page: Page, title: string) =>
+  page
+    .locator('.border-2')
+    .filter({ has: page.getByText(title, { exact: true }) })
+    .last();
+
+test.describe('runs', () => {
+  test('a registered run shows up with kilometres and tickets', async ({
+    participantPage: page,
+  }) => {
+    await expect(page.getByText('Ingen turer registrert ennå.', { exact: false })).toBeVisible();
+    await expect(stat(page, 'Turer')).toHaveText('0');
+
+    await registerRun(page, {
+      date: osloDate(-1),
+      km: '12',
+      title: 'Morgentur rundt Mosvatnet',
+      link: 'https://www.strava.com/activities/123',
+    });
+
+    await expect(page.getByText('Takk for turen!')).toBeVisible();
+    await expect(page.getByText(/tilsvarer\s+60 kr/)).toBeVisible();
+    await expect(page.getByText('Morgentur rundt Mosvatnet')).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Se aktivitet' })).toHaveAttribute(
+      'href',
+      'https://www.strava.com/activities/123'
+    );
+    await expect(stat(page, 'Turer')).toHaveText('1');
+    await expect(stat(page, 'Kilometer')).toHaveText('12');
+    // 12 km gives 12 tickets in "Opptil 10 km" and 12 in "10–30 km".
+    await expect(stat(page, 'Lodd')).toHaveText('24');
+  });
+
+  test('a run can be edited and deleted', async ({ participantPage: page, participant }) => {
+    await addRun(participant.participantId, { date: osloDate(-2), km: 5, title: 'Kort tur' });
+    await page.reload();
+    await expect(stat(page, 'Kilometer')).toHaveText('5');
+
+    const card = runCard(page, 'Kort tur');
+    await card.getByText('Rediger tur').click();
+    await card.getByLabel('Distanse i km *').fill('7.5');
+    await card.getByLabel('Navn på tur/løp').fill('Litt lengre tur');
+    await card.getByRole('checkbox', { name: /Jeg bekrefter/ }).check();
+    await card.getByRole('button', { name: 'Lagre endringer' }).click();
+
+    await expect(page.getByText('Litt lengre tur', { exact: true })).toBeVisible();
+    await expect(stat(page, 'Kilometer')).toHaveText('7,5');
+
+    page.once('dialog', (dialog) => dialog.accept());
+    await runCard(page, 'Litt lengre tur')
+      .getByRole('button', { name: 'Slett', exact: true })
+      .click();
+    await expect(page.getByText('Litt lengre tur', { exact: true })).toBeHidden();
+    await expect(stat(page, 'Turer')).toHaveText('0');
+  });
+
+  test('a photo can be uploaded as evidence', async ({ participantPage: page, participant }) => {
+    await registerRun(page, {
+      date: osloDate(-3),
+      km: '8',
+      title: 'Bildetur',
+      photo: path.join(__dirname, 'fixtures', 'run.jpg'),
+    });
+    await expect(page.getByText('Takk for turen!')).toBeVisible();
+
+    const { data } = await db()
+      .from('runs')
+      .select('evidence_url')
+      .eq('participant_id', participant.participantId)
+      .single();
+    expect(data?.evidence_url).toContain(`/run-evidence/${participant.participantId}/`);
+    const image = await page.request.get(data!.evidence_url!);
+    expect(image.headers()['content-type']).toBe('image/jpeg');
+  });
+
+  test('invalid runs are rejected with a clear message', async ({
+    participantPage: page,
+    participant,
+  }) => {
+    // Below the minimum the browser refuses to submit and the form explains why.
+    await registerRun(page, { date: osloDate(-1), km: '2.4' });
+    await expect(newRun(page).getByText('Turen må være minst 3 km')).toBeVisible();
+    const distance = newRun(page).getByLabel('Distanse i km *');
+    expect(await distance.evaluate((input: HTMLInputElement) => input.validity.valid)).toBe(false);
+    await expect(page.getByText('Takk for turen!')).toBeHidden();
+
+    await registerRun(page, { date: osloDate(1), km: '10' });
+    await expect(alertBox(page)).toHaveText('Du kan ikke registrere en tur frem i tid.');
+
+    await addRun(participant.participantId, { date: osloDate(-4), km: 10 });
+    await registerRun(page, { date: osloDate(-4), km: '6' });
+    await expect(alertBox(page)).toHaveText('Du har allerede registrert en tur på denne datoen');
+  });
+
+  test('the date picker follows the submission period', async ({ participantPage: page }) => {
+    const date = newRun(page).getByLabel('Dato *');
+    await expect(date).toHaveAttribute('min', osloDate(-14));
+    await expect(date).toHaveAttribute('max', osloDate(14));
+  });
+});
+
+test.describe('prize categories', () => {
+  test('changes are saved and kept after reload', async ({ participantPage: page }) => {
+    const save = page.getByRole('button', { name: 'Lagre valg' });
+    await expect(save).toBeDisabled();
+
+    await setCategory(page, 'long', false);
+    await expect(page.getByText('Ulagrede endringer')).toBeVisible();
+    await save.click();
+    await expect(page.getByText('Lagret', { exact: true })).toBeVisible();
+
+    await page.reload();
+    await expect(page.getByRole('checkbox', { name: /30\+ km/ })).not.toBeChecked();
+    await expect(page.getByRole('checkbox', { name: /Opptil 10 km/ })).toBeChecked();
+  });
+
+  test('at least one category must be chosen', async ({ participantPage: page }) => {
+    for (const category of ['short', 'medium', 'long'] as const) {
+      await setCategory(page, category, false);
+    }
+    await expect(page.getByText('Velg minst én kategori', { exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Lagre valg' })).toBeDisabled();
+  });
+
+  test('tickets only count in the chosen categories', async ({
+    participantPage: page,
+    participant,
+  }) => {
+    await addRun(participant.participantId, { date: osloDate(-1), km: 35 });
+    await page.reload();
+    await expect(stat(page, 'Lodd')).toHaveText('105');
+
+    await setCategory(page, 'short', false);
+    await page.getByRole('button', { name: 'Lagre valg' }).click();
+    await expect(page.getByText('Lagret', { exact: true })).toBeVisible();
+    await page.reload();
+    await expect(stat(page, 'Lodd')).toHaveText('70');
+  });
+});

@@ -281,7 +281,28 @@ git checkout -b fix/min-bugfiks
 pnpm lint       # Sjekk linting
 pnpm type-check # Sjekk typer
 pnpm build      # Sjekk at det bygger
+pnpm test:e2e   # Kjør ende-til-ende-testene (se under)
 ```
+
+#### Ende-til-ende-tester (Playwright)
+
+Testene i `e2e/` går gjennom påmelding, innlogging, Min side, oversiktene, admin og trekning i en
+ekte nettleser. De kjører mot en lokal Supabase i Docker, aldri mot prod.
+
+```bash
+pnpm e2e:db                       # Start lokal Supabase og kjør alle migrasjoner på nytt
+pnpm exec playwright install chromium  # Første gang
+pnpm test:e2e                     # Starter `next dev` på port 3100 og kjører testene
+pnpm test:e2e:ui                  # Samme, med Playwrights UI
+```
+
+- E-post (bekreftelses- og innloggingslenker) fanges av Mailpit på http://127.0.0.1:54324.
+- Testbrukere får adresser på `@example.test` og slettes før hver kjøring. Premier fra testene
+  starter med `E2E`.
+- `event-lifecycle.serial.spec.ts` stenger påmeldingen og trekker premier, så den kjører alene
+  til slutt og åpner arrangementet igjen etterpå.
+- Supabase CLI 2.109.1 er testet. `supabase/config.toml` bruker `auto_expose_new_tables = true` for
+  å gi samme tabelltilganger som prod-prosjektet. Nyere CLI-versjoner fjerner denne innstillingen.
 
 ### 4. Push til din fork
 
