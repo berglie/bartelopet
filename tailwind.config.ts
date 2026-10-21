@@ -119,7 +119,7 @@ const config: Config = {
         draw: 'draw 2.4s cubic-bezier(0.65, 0, 0.35, 1) both',
         drift: 'drift 18s ease-in-out infinite',
         float: 'float 6s ease-in-out infinite',
-        marquee: 'marquee 32s linear infinite',
+        marquee: 'marquee 64s linear infinite',
         tick: 'tick 0.35s cubic-bezier(0.16, 1, 0.3, 1) both',
         'spin-slow': 'spin 60s linear infinite',
       },
