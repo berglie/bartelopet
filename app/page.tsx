@@ -244,7 +244,7 @@ export default async function HomePage({
       </section>
 
       {/* Map Section - CENTERPIECE */}
-      <section className="border-b border-border/50 py-12 md:py-20">
+      <section id="loypa" className="scroll-mt-24 border-b border-border/50 py-12 md:py-20">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-6xl space-y-12">
             {/* Header */}
