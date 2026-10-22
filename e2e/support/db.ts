@@ -41,6 +41,17 @@ function anonClient(): SupabaseClient<Database> {
   });
 }
 
+/** A client signed in as the user, bound by RLS and the rules for participants. */
+export async function userClient(user: TestUser): Promise<SupabaseClient<Database>> {
+  const client = anonClient();
+  const { error } = await client.auth.signInWithPassword({
+    email: user.email,
+    password: user.password,
+  });
+  if (error) throw new Error(`Sign in: ${error.message}`);
+  return client;
+}
+
 /** Throws on a failed write. */
 function must(result: { error: { message: string } | null }, action: string): void {
   if (result.error) throw new Error(`${action}: ${result.error.message}`);

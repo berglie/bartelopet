@@ -42,7 +42,7 @@ export async function Home2026() {
       number: '02',
       icon: TicketCheck,
       title: 'Samle lodd',
-      text: 'Registrer turen på Min side. Hver kilometer gir ett lodd i premiekategoriene du har valgt og kvalifisert deg til.',
+      text: 'Registrer turen på Min side innen et døgn etter at du løp. Hver kilometer gir ett lodd i premiekategoriene du har valgt og kvalifisert deg til.',
     },
     {
       number: '03',

@@ -15,27 +15,23 @@ import {
   MIN_RUN_KM,
   qualifyingCategories,
   ticketsForRun,
+  type RunDateRange,
 } from '@/app/_shared/types/event-2026';
 import type { Database } from '@/app/_shared/lib/supabase/types';
 
 type Run = Database['public']['Tables']['runs']['Row'];
 
-/** Submission period of the edition; the database rejects runs outside it. */
-export interface SubmissionPeriod {
-  start: string;
-  end: string;
-}
-
 export function RunForm2026({
   run,
   disabled = false,
   donationUrl,
-  period,
+  dates,
 }: {
   run?: Run;
   disabled?: boolean;
   donationUrl?: string | null;
-  period?: SubmissionPeriod;
+  /** Dates open for registration (today and yesterday), from the server. */
+  dates: RunDateRange | null;
 }) {
   const router = useRouter();
   const [distance, setDistance] = useState(run?.distance_km?.toString() || '');
@@ -45,6 +41,8 @@ export function RunForm2026({
   // Suggested gift for the last saved run. Shown after saving, never as a condition.
   const [savedGift, setSavedGift] = useState<{ km: number; amount: number } | null>(null);
   const distanceKm = Number(distance);
+  // A new date or distance counts as a new registration, so older runs keep both.
+  const locked = !dates || Boolean(run && run.run_date < dates.min);
   const tickets = distance && Number.isFinite(distanceKm) ? ticketsForRun(distanceKm) : 0;
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -77,8 +75,9 @@ export function RunForm2026({
     }
 
     const payload = {
-      run_date: String(form.get('run_date')),
-      distance_km: Number(form.get('distance_km')),
+      // Disabled fields are left out of the form data, so a locked run keeps its own date.
+      run_date: String(form.get('run_date') || run?.run_date),
+      distance_km: Number(distance),
       run_confirmed: confirmed as true,
       title: String(form.get('title') || ''),
       duration_text: String(form.get('duration_text') || ''),
@@ -118,12 +117,17 @@ export function RunForm2026({
             id={`run_date-${run?.id || 'new'}`}
             name="run_date"
             type="date"
-            min={period?.start ?? '2026-11-01'}
-            max={period?.end ?? '2026-11-30'}
-            defaultValue={run?.run_date}
+            min={dates?.min}
+            max={dates?.max}
+            defaultValue={run?.run_date ?? dates?.max}
             required
-            disabled={loading || disabled}
+            disabled={loading || disabled || locked}
           />
+          <p className="text-xs text-muted-foreground">
+            {locked
+              ? 'Dato og distanse kan bare endres innen et døgn etter turen.'
+              : 'Registrer turen innen et døgn: i dag eller i går.'}
+          </p>
         </div>
         <div className="space-y-2">
           <Label htmlFor={`distance-${run?.id || 'new'}`}>Distanse i km *</Label>
@@ -137,7 +141,7 @@ export function RunForm2026({
             value={distance}
             onChange={(event) => setDistance(event.target.value)}
             required
-            disabled={loading || disabled}
+            disabled={loading || disabled || locked}
           />
           {tickets > 0 && (
             <p className="text-xs text-muted-foreground" aria-live="polite">

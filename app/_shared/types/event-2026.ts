@@ -37,6 +37,33 @@ export const EVENT_YEAR_2026 = 2026;
 export const MIN_RUN_KM = 3;
 export const MAX_RUN_KM = 120;
 
+/** Today's date (YYYY-MM-DD) in Norway. */
+export function osloToday(now = new Date()): string {
+  return new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Oslo' }).format(now);
+}
+
+/** Dates (YYYY-MM-DD) a run can be registered or changed for. */
+export interface RunDateRange {
+  min: string;
+  max: string;
+}
+
+/**
+ * Runs are registered within 24 hours. They have no time of day, so that means today or
+ * yesterday in Norway, inside the submission period. Null when no date is open.
+ * Mirrored in validate_2026_run() in the database.
+ */
+export function runDateRange(
+  today: string,
+  period: { start: string; end: string }
+): RunDateRange | null {
+  const yesterday = new Date(`${today}T12:00:00Z`);
+  yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+  const min = [yesterday.toISOString().slice(0, 10), period.start].sort()[1];
+  const max = [today, period.end].sort()[0];
+  return min <= max ? { min, max } : null;
+}
+
 export const CATEGORY_ORDER: DistanceCategorySlug[] = ['short', 'medium', 'long'];
 
 /**
