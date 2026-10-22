@@ -92,8 +92,16 @@ jobs:
       - name: Start local Supabase
         env:
           SUPABASE_INTERNAL_IMAGE_REGISTRY: ghcr.io
-        # Realtime is unused, and postgres-meta only serves Studio.
-        run: supabase start -x studio,edge-runtime,logflare,vector,imgproxy,pooler,realtime,postgres-meta
+        # Realtime is unused, and postgres-meta only serves Studio. ghcr.io still throttles at
+        # times and the CLI only retries for a few seconds, so retry with longer pauses. Images
+        # pulled by an earlier attempt are kept.
+        run: |
+          for attempt in 1 2 3 4 5; do
+            supabase start -x studio,edge-runtime,logflare,vector,imgproxy,pooler,realtime,postgres-meta && exit 0
+            echo "supabase start failed (attempt $attempt), retrying in $((attempt * 30))s"
+            sleep $((attempt * 30))
+          done
+          exit 1
 
       - name: Get Playwright version
         id: playwright
