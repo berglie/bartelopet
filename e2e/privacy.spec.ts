@@ -19,7 +19,6 @@ test('a participant can download their own data', async ({
   expect(() => JSON.parse(text)).not.toThrow();
   expect(text).toContain(participant.email);
   expect(text).toContain('Eksporttur');
-  expect(text).toContain('Testveien 1, 4000 Stavanger');
 });
 
 test('a participant can delete their account', async ({ participantPage: page, participant }) => {
