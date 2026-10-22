@@ -87,9 +87,9 @@ export default function KontaktPage() {
 
         <div className="container relative mx-auto px-4 py-16 md:py-20">
           <div className="mx-auto max-w-3xl space-y-4 text-center">
-            <div className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-4 py-2">
-              <Mail className="h-4 w-4 text-accent" />
-              <span className="text-sm font-medium text-accent">Kontakt oss</span>
+            <div className="inline-flex items-center gap-2 rounded-full border border-accent bg-accent px-4 py-2">
+              <Mail className="h-4 w-4 text-accent-foreground" />
+              <span className="text-sm font-medium text-accent-foreground">Kontakt oss</span>
             </div>
 
             <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
