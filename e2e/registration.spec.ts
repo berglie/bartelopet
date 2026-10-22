@@ -4,18 +4,9 @@ import { createUser, db, uniqueEmail, uniqueName } from './support/db';
 import { latestAuthLink } from './support/mail';
 import { EVENT_YEAR } from './support/env';
 
-async function fillForm(
-  page: Page,
-  values: { name?: string; email?: string; address?: string; phone?: string }
-) {
+async function fillForm(page: Page, values: { name?: string; email?: string }) {
   if (values.name !== undefined) await page.getByLabel('Fullt navn *').fill(values.name);
   if (values.email !== undefined) await page.getByLabel('E-postadresse *').fill(values.email);
-  await page
-    .getByLabel('Postadresse *', { exact: true })
-    .fill(values.address ?? 'Testveien 1, 4000 Stavanger');
-  if (values.phone !== undefined) {
-    await page.getByLabel('Telefonnummer (valgfritt)').fill(values.phone);
-  }
 }
 
 const consent = (page: Page) => page.getByRole('checkbox', { name: /Jeg har lest og aksepterer/ });
@@ -39,7 +30,7 @@ test.describe('registration by e-mail', () => {
     const name = uniqueName('Kari Nordmann');
 
     await page.goto('/pamelding');
-    await fillForm(page, { name, email, phone: '+47 123 45 678' });
+    await fillForm(page, { name, email });
     await setCategory(page, 'long', false);
     await consent(page).check();
     await submit(page).click();
@@ -112,7 +103,6 @@ test.describe('registration when already signed in', () => {
     await expect(page.getByLabel('E-postadresse *')).toHaveValue(user.email);
     await expect(page.getByLabel('Fullt navn *')).toHaveValue(user.fullName);
 
-    await fillForm(page, {});
     await consent(page).check();
     await submit(page).click();
 

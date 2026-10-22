@@ -195,8 +195,6 @@ For sikkerhetsspørsmål:
 I konteksten av denne applikasjonen er følgende felter klassifisert som PII og **MÅ IKKE** eksponeres i offentlige APIer eller klient-side kode:
 
 - `email` - E-postadresse
-- `postal_address` - Hjemme-/postadresse
-- `phone_number` - Telefonnummer
 - `user_id` - Supabase auth bruker-ID (kobler til autentiseringssystemet)
 
 ### Offentlig vs Privat Deltakerinformasjon
@@ -215,8 +213,6 @@ interface Participant {
   user_id: string | null; // ⚠️ PII
   email: string; // ⚠️ PII
   full_name: string;
-  postal_address: string; // ⚠️ PII
-  phone_number: string | null; // ⚠️ PII
   bib_number: number;
   has_completed: boolean;
   event_year: number;

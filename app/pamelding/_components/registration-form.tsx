@@ -116,8 +116,6 @@ export function RegistrationForm() {
     const email = String(formData.get('email') || '').trim();
     const registration: PendingRegistration = {
       full_name: String(formData.get('full_name') || '').trim(),
-      postal_address: String(formData.get('postal_address') || '').trim(),
-      phone_number: String(formData.get('phone_number') || '').trim() || null,
       interests,
     };
 
@@ -272,7 +270,7 @@ export function RegistrationForm() {
             ? 'E-posten din er bekreftet! Fullfør registreringen ved å fylle ut informasjonen under'
             : prefillData
               ? 'Fullfør registreringen din ved å fylle ut informasjonen under'
-              : 'Alle feltene må fylles ut bortsett fra telefonnummer'}
+              : 'Alle feltene må fylles ut'}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 pt-6">
@@ -406,31 +404,6 @@ export function RegistrationForm() {
                 ? 'E-post bekreftet av Google'
                 : 'Du vil motta innloggingslenke på denne adressen'}
             </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="postal_address">Postadresse *</Label>
-            <Input
-              id="postal_address"
-              name="postal_address"
-              required
-              placeholder="Gateveien 1, 4000 Stavanger"
-              disabled={loading}
-            />
-            <p className="text-sm text-muted-foreground">
-              Brukes kun dersom en eventuell premie må sendes
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="phone_number">Telefonnummer (valgfritt)</Label>
-            <Input
-              id="phone_number"
-              name="phone_number"
-              type="tel"
-              placeholder="12345678"
-              disabled={loading}
-            />
           </div>
 
           <fieldset className="space-y-3">

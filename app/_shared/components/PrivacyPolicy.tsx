@@ -15,7 +15,7 @@ export function PrivacyPolicy() {
       <article className="prose prose-zinc max-w-none dark:prose-invert prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-li:text-foreground">
         <h1 className="text-foreground">Personvernerklæring</h1>
         <p className="text-sm text-muted-foreground">
-          <em>Sist oppdatert: 20. oktober 2026</em>
+          <em>Sist oppdatert: 22. oktober 2026</em>
         </p>
 
         <h2>1. Innledning</h2>
@@ -40,22 +40,17 @@ export function PrivacyPolicy() {
         <h3>Obligatoriske opplysninger:</h3>
         <ul>
           <li>
-            <strong>Fullt navn</strong> - for identifikasjon og premiellevering
+            <strong>Fullt navn</strong> - for identifikasjon og premielevering
           </li>
           <li>
             <strong>E-postadresse</strong> - for innlogging og kommunikasjon
           </li>
-          <li>
-            <strong>Postadresse</strong> - for eventuell levering av premier
-          </li>
         </ul>
 
-        <h3>Valgfrie opplysninger:</h3>
-        <ul>
-          <li>
-            <strong>Telefonnummer</strong> - for enklere kontakt ved behov
-          </li>
-        </ul>
+        <p>
+          Premiene leveres digitalt, så vi ber ikke om postadresse eller telefonnummer. Vinnere
+          kontaktes på e-post.
+        </p>
 
         <h3>Informasjon du deler frivillig:</h3>
         <ul>
@@ -98,7 +93,8 @@ export function PrivacyPolicy() {
             <strong>Kontoadministrasjon</strong> - for å opprette og administrere din brukerkonto
           </li>
           <li>
-            <strong>Premielevering</strong> - for å kontakte vinnere og levere premier
+            <strong>Premielevering</strong> - for å kontakte vinnere på e-post og levere premier
+            digitalt
           </li>
           <li>
             <strong>Kommunikasjon</strong> - for å kontakte deg ved behov angående premielevering
@@ -140,12 +136,12 @@ export function PrivacyPolicy() {
             inn og melde deg på senere år
           </li>
           <li>
-            <strong>Postadresse og telefonnummer</strong> - slettes for alle deltakere når premiene
-            for året er levert
+            <strong>Postadresse og telefonnummer</strong> - samles ikke lenger inn. Det som ble
+            lagret fra tidligere år, er slettet
           </li>
           <li>
             <strong>Trekninger</strong> - beholdes for å dokumentere at trekningen var rettferdig.
-            Sletter en vinner kontoen sin, fjernes navn og kontaktinformasjon fra trekningen
+            Sletter en vinner kontoen sin, fjernes navn og e-postadresse fra trekningen
           </li>
         </ul>
         <p>
@@ -176,10 +172,6 @@ export function PrivacyPolicy() {
           <li>
             <strong>Google</strong> - kun hvis du velger å logge inn med Google
           </li>
-          <li>
-            <strong>Posten/logistikkpartner</strong> - kun for levering av fysiske premier (navn og
-            adresse)
-          </li>
         </ul>
         <p>
           Når du besøker sider med kart eller innebygd innhold, henter nettleseren din innhold
@@ -206,9 +198,9 @@ export function PrivacyPolicy() {
             <strong>Database-sikkerhet</strong> - Row Level Security (RLS) i Supabase
           </li>
           <li>
-            <strong>Tilgangskontroll</strong> - bare du ser kontaktinformasjonen din. Arrangørene
-            ser kontaktinformasjonen til vinnere for å levere premier, og arrangørtilgang kan
-            trekkes tilbake med umiddelbar virkning
+            <strong>Tilgangskontroll</strong> - bare du ser e-postadressen din. Arrangørene ser
+            e-postadressen til vinnere for å levere premier, og arrangørtilgang kan trekkes tilbake
+            med umiddelbar virkning
           </li>
           <li>
             <strong>Bilder uten posisjon</strong> - posisjonsdata (EXIF/GPS) fjernes fra bilder du
@@ -247,7 +239,7 @@ export function PrivacyPolicy() {
         <p>
           Du kan slette kontoen din selv under «Dine data» på Min side. Påmeldingen, turene, bildene
           og kontoen slettes da for alle år. Har du vunnet en premie, beholdes trekningen uten navn
-          og kontaktinformasjon.
+          og e-postadresse.
         </p>
 
         <h3>Rett til begrensning</h3>

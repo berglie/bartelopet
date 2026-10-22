@@ -173,8 +173,6 @@ export async function createParticipant(
   const rows = check(
     await client.rpc('register_participant', {
       p_full_name: user.fullName,
-      p_postal_address: 'Testveien 1, 4000 Stavanger',
-      p_phone_number: '',
       p_interests: options.interests ?? ['short', 'medium', 'long'],
     }),
     'Register participant'

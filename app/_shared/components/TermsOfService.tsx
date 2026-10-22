@@ -15,7 +15,7 @@ export function TermsOfService() {
       <article className="prose prose-zinc max-w-none dark:prose-invert prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-li:text-foreground">
         <h1 className="text-foreground">Vilkår for bruk</h1>
         <p className="text-sm text-muted-foreground">
-          <em>Sist oppdatert: 25. juli 2026</em>
+          <em>Sist oppdatert: 22. oktober 2026</em>
         </p>
 
         <h2>1. Aksept av vilkår</h2>
@@ -42,8 +42,6 @@ export function TermsOfService() {
         <ul>
           <li>Fullt navn</li>
           <li>E-postadresse</li>
-          <li>Postadresse (for levering av premie)</li>
-          <li>Telefonnummer (valgfritt)</li>
         </ul>
         <p>
           Du er ansvarlig for at informasjonen du oppgir er korrekt. Feil informasjon kan føre til
@@ -81,12 +79,10 @@ export function TermsOfService() {
           tidligere vinnere. Dersom en vinner ikke kan motta premien, trekkes den på nytt uten denne
           deltakeren. Se <Link href="/trekning">hvordan trekningen foregår</Link>.
         </p>
-        <p>Vi er ikke ansvarlige for forsinkelser i leveransen som skyldes:</p>
-        <ul>
-          <li>Feil postadresse</li>
-          <li>Postens forsinkelser</li>
-          <li>Force majeure</li>
-        </ul>
+        <p>
+          Premiene leveres digitalt. Vinnere kontaktes på e-postadressen de meldte seg på med, så
+          sørg for at den er riktig og at du følger med på innboksen etter trekningen.
+        </p>
 
         <h2>7. Ansvarsbegrensning</h2>
         <p>

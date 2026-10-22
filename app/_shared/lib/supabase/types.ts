@@ -283,8 +283,6 @@ export type Database = {
           full_name: string;
           has_completed: boolean;
           id: string;
-          phone_number: string | null;
-          postal_address: string;
           updated_at: string;
           user_id: string | null;
         };
@@ -297,8 +295,6 @@ export type Database = {
           full_name: string;
           has_completed?: boolean;
           id?: string;
-          phone_number?: string | null;
-          postal_address: string;
           updated_at?: string;
           user_id?: string | null;
         };
@@ -311,8 +307,6 @@ export type Database = {
           full_name?: string;
           has_completed?: boolean;
           id?: string;
-          phone_number?: string | null;
-          postal_address?: string;
           updated_at?: string;
           user_id?: string | null;
         };
@@ -1000,13 +994,10 @@ export type Database = {
         Args: { p_event_year: number; p_publish: boolean };
         Returns: undefined;
       };
-      purge_contact_details: { Args: { p_event_year: number }; Returns: number };
       register_participant: {
         Args: {
           p_full_name: string;
           p_interests: string[];
-          p_phone_number: string;
-          p_postal_address: string;
         };
         Returns: {
           new_bib_number: number;

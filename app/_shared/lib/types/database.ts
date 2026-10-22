@@ -6,8 +6,6 @@ export interface Participant {
   user_id: string | null;
   email: string;
   full_name: string;
-  postal_address: string;
-  phone_number: string | null;
   bib_number: number;
   has_completed: boolean;
   created_at: string;
@@ -99,8 +97,6 @@ export interface PhotoCommentWithParticipant extends PhotoComment {
 export type PhotoCommentInsert = Omit<PhotoComment, 'id' | 'created_at' | 'updated_at'>;
 
 // Update types (for updating records)
-export type ParticipantUpdate = Partial<Pick<Participant, 'postal_address' | 'phone_number'>>;
-
 export type CompletionUpdate = Partial<
   Pick<Completion, 'completed_date' | 'duration_text' | 'comment'>
 >;

@@ -6,7 +6,6 @@ import {
   cleanTestData,
   createParticipant,
   createUser,
-  db,
   openEvent,
   type TestParticipant,
 } from './support/db';
@@ -92,7 +91,6 @@ test('closing registration stops new sign-ups', async ({ adminPage, browser }) =
   const late = await createUser({ label: 'late' });
   await loginAs(page, late.email);
   await expect(page).toHaveURL(/\/pamelding$/);
-  await page.getByLabel('Postadresse *', { exact: true }).fill('Sentveien 2, 4000 Stavanger');
   await page.getByRole('checkbox', { name: /Jeg har lest og aksepterer/ }).check();
   await page.getByRole('button', { name: 'Meld meg på' }).click();
   await expect(alertBox(page)).toHaveText('Påmeldingen er stengt.');
@@ -138,19 +136,4 @@ test('published winners are shown on /premier', async ({ adminPage, browser }) =
   await page.reload();
   await expect(page.getByText(`Vinner: ${anna.fullName}`).first()).toBeVisible();
   await page.close();
-});
-
-test('contact details can be deleted after the event', async ({ adminPage: page }) => {
-  page.once('dialog', (dialog) => dialog.accept());
-  await page.getByRole('button', { name: 'Slett kontaktinformasjon' }).click();
-  await expect(page.getByRole('status')).toContainText(
-    /Postadresse og telefonnummer er slettet for \d+ deltakere\./
-  );
-
-  const { data } = await db()
-    .from('participants')
-    .select('postal_address, phone_number, email')
-    .eq('id', anna.participantId)
-    .single();
-  expect(data).toEqual({ postal_address: 'Slettet', phone_number: null, email: anna.email });
 });
