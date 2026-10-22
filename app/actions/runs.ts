@@ -33,8 +33,10 @@ async function currentParticipant() {
 
 const RUN_ERRORS: Record<string, string> = {
   'Run submissions are closed': 'Turregistreringen er stengt.',
-  'Run date is outside the submission period': 'Datoen er utenfor perioden for Barteløpet.',
+  'Run date is outside the submission period': 'Turen må være løpt i november.',
   'Run date cannot be in the future': 'Du kan ikke registrere en tur frem i tid.',
+  'Run must be registered within a day of the run':
+    'Turen må registreres innen et døgn: i dag eller i går.',
   'Run distance must be at least 3 km': 'Turen må være minst 3 km.',
   'Run distance must be at most 120 km': 'Turen kan ikke være over 120 km.',
 };

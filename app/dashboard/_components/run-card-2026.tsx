@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation';
 import { deleteRun } from '@/app/actions/runs';
 import { Button } from '@/app/_shared/components/ui/button';
 import { Card, CardContent } from '@/app/_shared/components/ui/card';
-import { RunForm2026, type SubmissionPeriod } from './run-form-2026';
+import { RunForm2026 } from './run-form-2026';
 import type { Database } from '@/app/_shared/lib/supabase/types';
 import { formatDate } from '@/app/_shared/lib/utils/format';
+import type { RunDateRange } from '@/app/_shared/types/event-2026';
 
 type Run = Database['public']['Tables']['runs']['Row'];
 
@@ -15,12 +16,12 @@ export function RunCard2026({
   run,
   canEdit,
   donationUrl,
-  period,
+  dates,
 }: {
   run: Run;
   canEdit: boolean;
   donationUrl?: string | null;
-  period?: SubmissionPeriod;
+  dates: RunDateRange | null;
 }) {
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
@@ -76,7 +77,7 @@ export function RunCard2026({
               Rediger tur
             </summary>
             <div className="mt-4">
-              <RunForm2026 run={run} donationUrl={donationUrl} period={period} />
+              <RunForm2026 run={run} donationUrl={donationUrl} dates={dates} />
             </div>
           </details>
         )}

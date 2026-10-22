@@ -27,7 +27,11 @@ konverteres.
   lodd og kategorier.
 - Turen må være minst 3 km etter avrunding og maks 120 km (`MIN_RUN_KM`/`MAX_RUN_KM` i koden og
   `validate_2026_run()` i databasen).
-- Dato må være innenfor arrangementsperioden og kan ikke være i fremtiden i `Europe/Oslo`.
+- Dato må være innenfor arrangementsperioden (1.–30. november) og kan ikke være i fremtiden i
+  `Europe/Oslo`.
+- Deltakere må registrere turen innen et døgn. Turer har bare dato, så det betyr i dag eller i
+  går. Dato og distanse kan bare endres så lenge turen er innenfor det samme vinduet. Service
+  role (seeding, rettelser fra arrangør) kan bruke tidligere datoer i perioden.
 - Gave er frivillig og aldri en betingelse for lodd (pengespilloven § 2 og Spleis' vilkår).
   `donation_amount_nok` er bare et forslag, `ceil(km × donasjonssats)`, og vises ikke ved
   siden av lodd.

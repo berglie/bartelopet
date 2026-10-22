@@ -1,18 +1,18 @@
 import path from 'node:path';
 import type { Page } from '@playwright/test';
 import { test, expect, alertBox, setCategory } from './support/fixtures';
-import { addRun, db } from './support/db';
-import { osloDate } from './support/env';
+import { addRun, db, userClient } from './support/db';
+import { EVENT_YEAR, osloDate } from './support/env';
 
 const newRun = (page: Page) =>
   page.locator('form').filter({ has: page.getByRole('button', { name: 'Registrer tur' }) });
 
 async function registerRun(
   page: Page,
-  run: { date: string; km: string; title?: string; link?: string; photo?: string }
+  run: { date?: string; km: string; title?: string; link?: string; photo?: string }
 ) {
   const form = newRun(page);
-  await form.getByLabel('Dato *').fill(run.date);
+  if (run.date) await form.getByLabel('Dato *').fill(run.date);
   await form.getByLabel('Distanse i km *').fill(run.km);
   if (run.title) await form.getByLabel('Navn på tur/løp').fill(run.title);
   if (run.link) await form.getByLabel('Offentlig Strava-/aktivitetslenke').fill(run.link);
@@ -59,7 +59,7 @@ test.describe('runs', () => {
   });
 
   test('a run can be edited and deleted', async ({ participantPage: page, participant }) => {
-    await addRun(participant.participantId, { date: osloDate(-2), km: 5, title: 'Kort tur' });
+    await addRun(participant.participantId, { date: osloDate(), km: 5, title: 'Kort tur' });
     await page.reload();
     await expect(stat(page, 'Kilometer')).toHaveText('5');
 
@@ -83,7 +83,6 @@ test.describe('runs', () => {
 
   test('a photo can be uploaded as evidence', async ({ participantPage: page, participant }) => {
     await registerRun(page, {
-      date: osloDate(-3),
       km: '8',
       title: 'Bildetur',
       photo: path.join(__dirname, 'fixtures', 'run.jpg'),
@@ -105,24 +104,46 @@ test.describe('runs', () => {
     participant,
   }) => {
     // Below the minimum the browser refuses to submit and the form explains why.
-    await registerRun(page, { date: osloDate(-1), km: '2.4' });
+    await registerRun(page, { km: '2.4' });
     await expect(newRun(page).getByText('Turen må være minst 3 km')).toBeVisible();
     const distance = newRun(page).getByLabel('Distanse i km *');
     expect(await distance.evaluate((input: HTMLInputElement) => input.validity.valid)).toBe(false);
     await expect(page.getByText('Takk for turen!')).toBeHidden();
 
-    await registerRun(page, { date: osloDate(1), km: '10' });
-    await expect(alertBox(page)).toHaveText('Du kan ikke registrere en tur frem i tid.');
-
-    await addRun(participant.participantId, { date: osloDate(-4), km: 10 });
-    await registerRun(page, { date: osloDate(-4), km: '6' });
+    await addRun(participant.participantId, { date: osloDate(), km: 10 });
+    await registerRun(page, { km: '6' });
     await expect(alertBox(page)).toHaveText('Du har allerede registrert en tur på denne datoen');
   });
 
-  test('the date picker follows the submission period', async ({ participantPage: page }) => {
+  test('runs are registered within a day', async ({ participantPage: page, participant }) => {
+    // The date picker offers yesterday and today, with today as the default.
     const date = newRun(page).getByLabel('Dato *');
-    await expect(date).toHaveAttribute('min', osloDate(-14));
-    await expect(date).toHaveAttribute('max', osloDate(14));
+    await expect(date).toHaveAttribute('min', osloDate(-1));
+    await expect(date).toHaveAttribute('max', osloDate());
+    await expect(date).toHaveValue(osloDate());
+
+    // The browser blocks older dates, so the server rule is checked straight against the database.
+    const client = await userClient(participant);
+    const { error } = await client.from('runs').insert({
+      participant_id: participant.participantId,
+      event_year: EVENT_YEAR,
+      run_date: osloDate(-2),
+      distance_km: 5,
+      donation_amount_nok: 25,
+    });
+    expect(error?.message).toBe('Run must be registered within a day of the run');
+
+    // An older run keeps its date and distance; the text can still change.
+    await addRun(participant.participantId, { date: osloDate(-2), km: 9, title: 'Gammel tur' });
+    await page.reload();
+    const card = runCard(page, 'Gammel tur');
+    await card.getByText('Rediger tur').click();
+    await expect(card.getByLabel('Dato *')).toBeDisabled();
+    await expect(card.getByLabel('Distanse i km *')).toBeDisabled();
+    await card.getByLabel('Navn på tur/løp').fill('Gammel tur, ny tittel');
+    await card.getByRole('checkbox', { name: /Jeg bekrefter/ }).check();
+    await card.getByRole('button', { name: 'Lagre endringer' }).click();
+    await expect(page.getByText('Gammel tur, ny tittel', { exact: true })).toBeVisible();
   });
 });
 

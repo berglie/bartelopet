@@ -3,7 +3,13 @@ import Link from 'next/link';
 import { createClient } from '@/app/_shared/lib/supabase/server';
 import { Button } from '@/app/_shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/_shared/components/ui/card';
-import { CATEGORY_META, CATEGORY_ORDER, EVENT_YEAR_2026 } from '@/app/_shared/types/event-2026';
+import {
+  CATEGORY_META,
+  CATEGORY_ORDER,
+  EVENT_YEAR_2026,
+  osloToday,
+  runDateRange,
+} from '@/app/_shared/types/event-2026';
 import { cn } from '@/app/_shared/lib/utils/cn';
 import { RunForm2026 } from './_components/run-form-2026';
 import { Interests2026 } from './_components/interests-2026';
@@ -57,9 +63,11 @@ export default async function DashboardPage() {
   const canEditInterests = Boolean(
     editionResult.data?.registration_open || editionResult.data?.submissions_open
   );
-  const period = editionResult.data
-    ? { start: editionResult.data.submissions_start, end: editionResult.data.submissions_end }
-    : undefined;
+  const edition = editionResult.data;
+  const dates = edition
+    ? runDateRange(osloToday(), { start: edition.submissions_start, end: edition.submissions_end })
+    : null;
+  const canRegister = canEdit && dates !== null;
   const totalKm = runs.reduce((sum, run) => sum + run.distance_km, 0);
   const sumTickets = (
     rows: { category_slug: string | null; tickets: number | null }[],
@@ -176,12 +184,12 @@ export default async function DashboardPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
-                {canEdit ? (
-                  <RunForm2026 donationUrl={editionResult.data?.donation_url} period={period} />
+                {canRegister ? (
+                  <RunForm2026 donationUrl={editionResult.data?.donation_url} dates={dates} />
                 ) : (
                   <p className="border-2 border-dashed border-foreground p-4 text-sm">
-                    Turregistreringen er stengt. Den åpner for novemberløp når arrangøren åpner
-                    perioden.
+                    Turregistreringen er stengt. Turer i november registreres innen et døgn etter at
+                    du løp.
                   </p>
                 )}
               </CardContent>
@@ -194,7 +202,7 @@ export default async function DashboardPage() {
                   run={run}
                   canEdit={canEdit}
                   donationUrl={editionResult.data?.donation_url}
-                  period={period}
+                  dates={dates}
                 />
               ))}
               {runs.length === 0 && (

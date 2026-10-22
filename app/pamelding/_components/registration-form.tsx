@@ -254,7 +254,7 @@ export function RegistrationForm() {
             <p className="font-semibold">Neste steg:</p>
             <ol className="list-inside list-decimal space-y-1 text-sm text-muted-foreground">
               <li>Løp eller gå en valgfri tur i november</li>
-              <li>Registrer turen og samle ett lodd per kilometer</li>
+              <li>Registrer turen innen et døgn og samle ett lodd per kilometer</li>
               <li>Gi gjerne 5 kroner per kilometer til Prosjekt SUT (frivillig)</li>
             </ol>
           </div>
