@@ -1,5 +1,22 @@
 // Image upload constants and validation rules
 
+/**
+ * Run photos (2026). The browser shrinks the photo before upload, because Vercel rejects request
+ * bodies over 4.5 MB whatever Next.js allows. The server re-encodes it again with sharp.
+ */
+export const RUN_PHOTO_LIMITS = {
+  // Largest photo the browser will try to shrink (phone photos are usually 2–10 MB).
+  MAX_ORIGINAL_BYTES: 25 * 1024 * 1024,
+  // Largest upload the server accepts, below Vercel's 4.5 MB body limit.
+  MAX_UPLOAD_BYTES: 4 * 1024 * 1024,
+  MAX_DIMENSION: 2048,
+} as const;
+
+/** Bytes as megabytes in Norwegian, e.g. "4" or "12,3". */
+export function formatMegabytes(bytes: number): string {
+  return (bytes / 1024 / 1024).toLocaleString('nb-NO', { maximumFractionDigits: 1 });
+}
+
 export const IMAGE_CONSTRAINTS = {
   // File count limits
   MAX_IMAGES_PER_COMPLETION: 10,

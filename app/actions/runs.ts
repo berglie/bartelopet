@@ -11,6 +11,7 @@ import {
   type RunInput,
 } from '@/app/_shared/lib/validations/run';
 import { donationForDistance, EVENT_YEAR_2026 } from '@/app/_shared/types/event-2026';
+import { formatMegabytes, RUN_PHOTO_LIMITS } from '@/app/_shared/lib/constants/images';
 
 type ActionResult<T = void> = { success: true; data?: T } | { success: false; error: string };
 
@@ -50,7 +51,6 @@ function runError(error: { code?: string; message: string }): string {
 }
 
 const EVIDENCE_BUCKET = 'run-evidence';
-const MAX_EVIDENCE_BYTES = 10 * 1024 * 1024;
 
 /** Storage path of an evidence image in our bucket, or null for external links. */
 function evidencePath(url: string | null | undefined, participantId: string): string | null {
@@ -73,8 +73,11 @@ export async function uploadRunEvidence(
   if (!(file instanceof File) || file.size === 0) {
     return { success: false, error: 'Velg et bilde' };
   }
-  if (file.size > MAX_EVIDENCE_BYTES) {
-    return { success: false, error: 'Bildet kan være maks 10 MB' };
+  if (file.size > RUN_PHOTO_LIMITS.MAX_UPLOAD_BYTES) {
+    return {
+      success: false,
+      error: `Bildet er for stort (${formatMegabytes(file.size)} MB). Maks ${formatMegabytes(RUN_PHOTO_LIMITS.MAX_UPLOAD_BYTES)} MB.`,
+    };
   }
 
   const { supabase, participant, userId } = await currentParticipant();
@@ -89,7 +92,10 @@ export async function uploadRunEvidence(
   try {
     image = await sharp(Buffer.from(await file.arrayBuffer()), { limitInputPixels: 50_000_000 })
       .rotate()
-      .resize(2048, 2048, { fit: 'inside', withoutEnlargement: true })
+      .resize(RUN_PHOTO_LIMITS.MAX_DIMENSION, RUN_PHOTO_LIMITS.MAX_DIMENSION, {
+        fit: 'inside',
+        withoutEnlargement: true,
+      })
       .jpeg({ quality: 85, mozjpeg: true })
       .toBuffer();
   } catch {

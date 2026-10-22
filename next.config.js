@@ -10,8 +10,9 @@ const nextConfig = {
   poweredByHeader: false,
   experimental: {
     serverActions: {
-      // Largest upload is a 10 MB run photo (re-encoded on the server).
-      bodySizeLimit: '11mb',
+      // Vercel rejects request bodies over 4.5 MB whatever this says. Run photos are shrunk in
+      // the browser to at most 4 MB first (RUN_PHOTO_LIMITS), then re-encoded on the server.
+      bodySizeLimit: '4.5mb',
     },
   },
   // Turbopack configuration (Next.js 16+)
