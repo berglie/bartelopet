@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { checkRateLimit, getClientIp } from '@/app/_shared/lib/utils/rate-limit';
 import { securityLogger } from '@/app/_shared/lib/utils/security-logger';
 
 const contactSchema = z.object({
@@ -85,28 +84,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Rate limiting check - prevent spam/abuse
-    const clientIp = getClientIp(request);
-    const rateLimitResult = await checkRateLimit('contact', clientIp);
-
-    if (!rateLimitResult.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'For mange forsøk. Vennligst prøv igjen senere.',
-        },
-        {
-          status: 429,
-          headers: {
-            'X-RateLimit-Limit': rateLimitResult.limit.toString(),
-            'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
-            'X-RateLimit-Reset': rateLimitResult.reset.toString(),
-            'Retry-After': Math.ceil((rateLimitResult.reset - Date.now()) / 1000).toString(),
-          },
-        }
-      );
-    }
-
+    // Rate limited per IP by a Vercel Firewall rule (POST /api/kontakt), not in code.
     const body = await request.json();
 
     // Validate input

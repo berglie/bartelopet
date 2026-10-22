@@ -19,7 +19,7 @@ export async function exportUserData(): Promise<ActionResponse<Record<string, un
   } = await supabase.auth.getUser();
   if (!user) return { success: false, error: 'Du må være innlogget for å laste ned dataene dine' };
 
-  const limit = await checkRateLimit('account', user.id);
+  const limit = await checkRateLimit('account', supabase);
   if (!limit.success) return { success: false, error: 'For mange forsøk. Prøv igjen senere.' };
 
   const { data, error } = await supabase.rpc('export_my_data');
@@ -47,7 +47,7 @@ export async function deleteUserAccount(confirmationText: string): Promise<Actio
   } = await supabase.auth.getUser();
   if (!user) return { success: false, error: 'Du må være innlogget for å slette kontoen' };
 
-  const limit = await checkRateLimit('account', user.id);
+  const limit = await checkRateLimit('account', supabase);
   if (!limit.success) return { success: false, error: 'For mange forsøk. Prøv igjen senere.' };
 
   const { data: participants } = await supabase

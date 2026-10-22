@@ -81,8 +81,9 @@ beskyttelsen. Se `20261020000002_security_hardening.sql`.
 - Content-Security-Policy settes i `proxy.ts` med en ny nonce per forespørsel og `'strict-dynamic'`
   (`app/_shared/lib/security/csp.ts`). Inline-skript uten nonce blokkeres. Egne inline-skript må få
   `nonce` fra `headers().get('x-nonce')`, slik som i `app/layout.tsx`.
-- Rate limiting (Upstash) feiler lukket i produksjon. Uten `UPSTASH_REDIS_REST_URL` og
-  `UPSTASH_REDIS_REST_TOKEN` avvises kontaktskjema, opplastinger og konto-eksport/-sletting.
+- Rate limiting for innloggede handlinger telles per bruker i `rate_limits` via
+  `check_rate_limit()` og slipper forespørselen gjennom hvis sjekken feiler. Kontaktskjemaet
+  begrenses per IP av en regel i Vercel Firewall, ikke i koden.
 - Endre aldri policyer for hånd i dashboardet. Legg endringen i en ny migrasjon. Migrasjonen
   fjerner ukjente policyer på `participants`, men andre tabeller ryddes ikke automatisk.
 

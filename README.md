@@ -88,8 +88,7 @@ docs/                   # Drift- og utgivelsesdokumentasjon
 ```
 
 **Tech stack:** Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS · Radix UI ·
-Supabase (Postgres, auth med magic link og Google, storage, RLS) · Zod · Upstash Redis
-(rate limiting) · Resend (kontaktskjema) · Mapbox/MapLibre (2025-ruten).
+Supabase (Postgres, auth med magic link og Google, storage, RLS) · Zod · Resend (kontaktskjema) · Mapbox/MapLibre (2025-ruten).
 
 ## 🗄️ Database (2026)
 

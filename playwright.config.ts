@@ -6,9 +6,6 @@ const isCI = Boolean(process.env.CI);
 
 /**
  * End-to-end tests against `next dev` and a local Supabase stack (`pnpm e2e:db`).
- *
- * Dev mode, not `next start`: without Redis the rate limiter blocks uploads in production
- * builds, and the tests should not need a bypass in the app.
  */
 export default defineConfig({
   testDir: './e2e',
@@ -55,7 +52,7 @@ export default defineConfig({
     url: BASE_URL,
     reuseExistingServer: !isCI,
     timeout: 180_000,
-    // Set explicitly so nothing from .env.local (production Supabase, Redis, Resend) is used.
+    // Set explicitly so nothing from .env.local (production Supabase, Resend) is used.
     // Next.js keeps variables that are already set, also empty ones.
     env: {
       NEXT_PUBLIC_SUPABASE_URL: supabase.url,
@@ -63,8 +60,6 @@ export default defineConfig({
       NEXT_PUBLIC_APP_URL: BASE_URL,
       NEXT_PUBLIC_MAPBOX_TOKEN: '',
       BARTELOPET_USE_MOCK_DATA: 'false',
-      UPSTASH_REDIS_REST_URL: '',
-      UPSTASH_REDIS_REST_TOKEN: '',
       RESEND_API_KEY: '',
       CONTACT_FORM_ADMIN_EMAIL: 'admin@example.test',
     },
