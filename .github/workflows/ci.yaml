@@ -89,6 +89,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # ghcr.io throttles the large postgres image on every attempt, so take it from Docker Hub
+      # and tag it with the name the CLI expects. The version follows the pinned CLI above.
+      - name: Pull Postgres image from Docker Hub
+        run: |
+          docker pull supabase/postgres:17.6.1.143
+          docker tag supabase/postgres:17.6.1.143 ghcr.io/supabase/postgres:17.6.1.143
+
       - name: Start local Supabase
         env:
           SUPABASE_INTERNAL_IMAGE_REGISTRY: ghcr.io
