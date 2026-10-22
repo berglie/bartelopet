@@ -5,8 +5,6 @@ export interface Participant {
   updated_at: string;
   email: string;
   full_name: string;
-  postal_address: string;
-  phone_number: string | null;
   bib_number: number;
   has_completed: boolean;
   event_year: number; // Event year this participant registered for
@@ -16,8 +14,6 @@ export interface Participant {
 export interface ParticipantCreate {
   email: string;
   full_name: string;
-  postal_address: string;
-  phone_number?: string;
   bib_number: number;
   event_year?: number; // Optional, defaults to current event year
   user_id?: string | null;
@@ -25,8 +21,6 @@ export interface ParticipantCreate {
 
 export interface ParticipantUpdate {
   full_name?: string;
-  postal_address?: string;
-  phone_number?: string;
   email?: string;
 }
 

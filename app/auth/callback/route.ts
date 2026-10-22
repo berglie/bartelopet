@@ -71,7 +71,7 @@ async function finishLogin(
   const result = await registerParticipant(supabase, pending);
   if ('error' in result) return NextResponse.redirect(new URL('/pamelding', origin));
 
-  // The address and phone number now live in participants; drop the copy in auth metadata.
+  // The registration now lives in participants; drop the copy in auth metadata.
   await supabase.auth.updateUser({ data: { registration: null } });
   return NextResponse.redirect(new URL('/dashboard', origin));
 }

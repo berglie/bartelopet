@@ -36,8 +36,6 @@ type Completion = {
     user_id: string | null;
     email: string;
     full_name: string;
-    postal_address: string;
-    phone_number: string | null;
     bib_number: number;
     has_completed: boolean;
     created_at: string;
