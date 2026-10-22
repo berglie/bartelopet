@@ -1,5 +1,6 @@
 import path from 'node:path';
 import type { Page } from '@playwright/test';
+import sharp from 'sharp';
 import { test, expect, alertBox, setCategory } from './support/fixtures';
 import { addRun, db, userClient } from './support/db';
 import { EVENT_YEAR, osloDate } from './support/env';
@@ -9,7 +10,13 @@ const newRun = (page: Page) =>
 
 async function registerRun(
   page: Page,
-  run: { date?: string; km: string; title?: string; link?: string; photo?: string }
+  run: {
+    date?: string;
+    km: string;
+    title?: string;
+    link?: string;
+    photo?: string | { name: string; mimeType: string; buffer: Buffer };
+  }
 ) {
   const form = newRun(page);
   if (run.date) await form.getByLabel('Dato *').fill(run.date);
@@ -97,6 +104,63 @@ test.describe('runs', () => {
     expect(data?.evidence_url).toContain(`/run-evidence/${participant.participantId}/`);
     const image = await page.request.get(data!.evidence_url!);
     expect(image.headers()['content-type']).toBe('image/jpeg');
+  });
+
+  test('a large phone photo is shrunk before upload', async ({
+    participantPage: page,
+    participant,
+  }) => {
+    // Noise does not compress, so this is far above Vercel's 4.5 MB request limit.
+    const buffer = await sharp({
+      create: {
+        width: 6000,
+        height: 4000,
+        channels: 3,
+        background: '#000',
+        noise: { type: 'gaussian', mean: 128, sigma: 60 },
+      },
+    })
+      .jpeg({ quality: 95 })
+      .toBuffer();
+    expect(buffer.length).toBeGreaterThan(4.5 * 1024 * 1024);
+
+    const uploads: number[] = [];
+    page.on('request', (request) => {
+      if (request.method() === 'POST' && request.headers()['next-action']) {
+        uploads.push(request.postDataBuffer()?.length ?? 0);
+      }
+    });
+
+    await registerRun(page, {
+      km: '9',
+      title: 'Stort bilde',
+      photo: { name: 'stort.jpg', mimeType: 'image/jpeg', buffer },
+    });
+    await expect(page.getByText('Takk for turen!')).toBeVisible();
+    expect(Math.max(...uploads)).toBeLessThan(4 * 1024 * 1024);
+
+    const { data } = await db()
+      .from('runs')
+      .select('evidence_url')
+      .eq('participant_id', participant.participantId)
+      .single();
+    expect(data?.evidence_url).toContain(`/run-evidence/${participant.participantId}/`);
+    const image = await sharp(
+      await (await page.request.get(data!.evidence_url!)).body()
+    ).metadata();
+    expect(Math.max(image.width!, image.height!)).toBeLessThanOrEqual(2048);
+  });
+
+  test('a photo over the size limit is rejected with the limit in the message', async ({
+    participantPage: page,
+  }) => {
+    await registerRun(page, {
+      km: '9',
+      photo: { name: 'enormt.jpg', mimeType: 'image/jpeg', buffer: Buffer.alloc(26 * 1024 * 1024) },
+    });
+    await expect(alertBox(page)).toHaveText('Bildet er 26 MB. Velg et bilde på maks 25 MB.');
+    await expect(page.getByText('Takk for turen!')).toBeHidden();
+    await expect(newRun(page).getByRole('button', { name: 'Registrer tur' })).toBeEnabled();
   });
 
   test('invalid runs are rejected with a clear message', async ({

@@ -18,8 +18,40 @@ import {
   type RunDateRange,
 } from '@/app/_shared/types/event-2026';
 import type { Database } from '@/app/_shared/lib/supabase/types';
+import { formatMegabytes, RUN_PHOTO_LIMITS } from '@/app/_shared/lib/constants/images';
+import { shrinkImage } from '@/app/_shared/lib/utils/shrink-image';
 
 type Run = Database['public']['Tables']['runs']['Row'];
+
+const MAX_ORIGINAL_MB = formatMegabytes(RUN_PHOTO_LIMITS.MAX_ORIGINAL_BYTES);
+const MAX_UPLOAD_MB = formatMegabytes(RUN_PHOTO_LIMITS.MAX_UPLOAD_BYTES);
+
+/** Shrinks the photo to fit the upload limit, or explains in Norwegian why it cannot. */
+async function preparePhoto(file: File): Promise<{ file: File } | { error: string }> {
+  if (!file.type.startsWith('image/')) {
+    return { error: 'Filen må være et bilde (JPEG, PNG eller WebP).' };
+  }
+  if (file.size > RUN_PHOTO_LIMITS.MAX_ORIGINAL_BYTES) {
+    return {
+      error: `Bildet er ${formatMegabytes(file.size)} MB. Velg et bilde på maks ${MAX_ORIGINAL_MB} MB.`,
+    };
+  }
+
+  const shrunk = await shrinkImage(file, RUN_PHOTO_LIMITS.MAX_DIMENSION);
+  if (!shrunk) {
+    // The browser could not read it; small files can still go to the server as they are.
+    if (file.size <= RUN_PHOTO_LIMITS.MAX_UPLOAD_BYTES) return { file };
+    return {
+      error: `Bildet kunne ikke forminskes i nettleseren, og er for stort til å lastes opp som det er (${formatMegabytes(file.size)} MB, maks ${MAX_UPLOAD_MB} MB). Bruk JPEG, PNG eller WebP, eller ta et skjermbilde av aktiviteten.`,
+    };
+  }
+  if (shrunk.size > RUN_PHOTO_LIMITS.MAX_UPLOAD_BYTES) {
+    return {
+      error: `Bildet er for stort selv etter forminsking (${formatMegabytes(shrunk.size)} MB, maks ${MAX_UPLOAD_MB} MB). Prøv et annet bilde.`,
+    };
+  }
+  return { file: new File([shrunk], 'tur.jpg', { type: 'image/jpeg' }) };
+}
 
 export function RunForm2026({
   run,
@@ -56,48 +88,61 @@ export function RunForm2026({
     let evidenceUrl = String(form.get('evidence_url') || '');
     const evidenceFile = form.get('evidence_file');
 
-    if (evidenceFile instanceof File && evidenceFile.size > 0) {
-      if (!evidenceFile.type.startsWith('image/') || evidenceFile.size > 10 * 1024 * 1024) {
-        setError('Bildet må være en bildefil på maksimalt 10 MB');
-        setLoading(false);
+    try {
+      if (evidenceFile instanceof File && evidenceFile.size > 0) {
+        const photo = await preparePhoto(evidenceFile);
+        if ('error' in photo) {
+          setError(photo.error);
+          return;
+        }
+        // Uploaded through the server, which re-encodes the photo without location data (EXIF).
+        const upload = new FormData();
+        upload.append('file', photo.file);
+        let uploaded: Awaited<ReturnType<typeof uploadRunEvidence>>;
+        try {
+          uploaded = await uploadRunEvidence(upload);
+        } catch {
+          // A body over Vercel's limit is rejected before the action runs, so it throws here.
+          setError(
+            `Opplastingen av bildet feilet. Bildet kan være maks ${formatMegabytes(RUN_PHOTO_LIMITS.MAX_UPLOAD_BYTES)} MB etter forminsking. Prøv igjen, eller velg et annet bilde.`
+          );
+          return;
+        }
+        if (!uploaded.success || !uploaded.data) {
+          setError(uploaded.success ? 'Opplastingen feilet. Prøv igjen.' : uploaded.error);
+          return;
+        }
+        evidenceUrl = uploaded.data.url;
+      }
+
+      const payload = {
+        // Disabled fields are left out of the form data, so a locked run keeps its own date.
+        run_date: String(form.get('run_date') || run?.run_date),
+        distance_km: Number(distance),
+        run_confirmed: confirmed as true,
+        title: String(form.get('title') || ''),
+        duration_text: String(form.get('duration_text') || ''),
+        comment: String(form.get('comment') || ''),
+        evidence_url: evidenceUrl,
+      };
+
+      const result = run ? await updateRun(run.id, payload) : await createRun(payload);
+      if (!result.success) {
+        setError(result.error);
         return;
       }
-      // Uploaded through the server, which removes location data (EXIF) from the photo.
-      const upload = new FormData();
-      upload.append('file', evidenceFile);
-      const uploaded = await uploadRunEvidence(upload);
-      if (!uploaded.success || !uploaded.data) {
-        setError(uploaded.success ? 'Opplastingen feilet. Prøv igjen.' : uploaded.error);
-        setLoading(false);
-        return;
+      if (!run) {
+        formElement.reset();
+        setDistance('');
+        setConfirmed(false);
+        setSavedGift({ km: payload.distance_km, amount: donationForDistance(payload.distance_km) });
       }
-      evidenceUrl = uploaded.data.url;
+      router.refresh();
+    } catch {
+      setError('Noe gikk galt under lagringen. Sjekk nettforbindelsen og prøv igjen.');
+    } finally {
+      setLoading(false);
     }
-
-    const payload = {
-      // Disabled fields are left out of the form data, so a locked run keeps its own date.
-      run_date: String(form.get('run_date') || run?.run_date),
-      distance_km: Number(distance),
-      run_confirmed: confirmed as true,
-      title: String(form.get('title') || ''),
-      duration_text: String(form.get('duration_text') || ''),
-      comment: String(form.get('comment') || ''),
-      evidence_url: evidenceUrl,
-    };
-
-    const result = run ? await updateRun(run.id, payload) : await createRun(payload);
-    setLoading(false);
-    if (!result.success) {
-      setError(result.error);
-      return;
-    }
-    if (!run) {
-      formElement.reset();
-      setDistance('');
-      setConfirmed(false);
-      setSavedGift({ km: payload.distance_km, amount: donationForDistance(payload.distance_km) });
-    }
-    router.refresh();
   }
 
   return (
@@ -200,7 +245,8 @@ export function RunForm2026({
           disabled={loading || disabled}
         />
         <p className="text-xs text-muted-foreground">
-          Valgfritt og offentlig. Maks 10 MB. Posisjonsdata fjernes fra bildet.
+          Valgfritt og offentlig. Maks {MAX_ORIGINAL_MB} MB. Bildet forminskes før opplasting, og
+          posisjonsdata fjernes.
         </p>
       </div>
       <div className="space-y-2">
