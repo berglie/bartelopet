@@ -549,6 +549,27 @@ export type Database = {
           },
         ];
       };
+      rate_limits: {
+        Row: {
+          bucket: string;
+          count: number;
+          user_id: string;
+          window_start: string;
+        };
+        Insert: {
+          bucket: string;
+          count?: number;
+          user_id: string;
+          window_start?: string;
+        };
+        Update: {
+          bucket?: string;
+          count?: number;
+          user_id?: string;
+          window_start?: string;
+        };
+        Relationships: [];
+      };
       runs: {
         Row: {
           comment: string | null;
@@ -957,6 +978,10 @@ export type Database = {
           isOneToOne: true;
           isSetofReturn: false;
         };
+      };
+      check_rate_limit: {
+        Args: { p_bucket: string; p_max: number; p_window_seconds: number };
+        Returns: { allowed: boolean; remaining: number; reset_at: string }[];
       };
       close_submission_window: { Args: never; Returns: undefined };
       delete_my_account: { Args: never; Returns: undefined };

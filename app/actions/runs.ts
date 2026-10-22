@@ -80,7 +80,7 @@ export async function uploadRunEvidence(
   const { supabase, participant, userId } = await currentParticipant();
   if (!participant || !userId) return { success: false, error: 'Du må være påmeldt i 2026' };
 
-  const limit = await checkRateLimit('upload', userId);
+  const limit = await checkRateLimit('upload', supabase);
   if (!limit.success) {
     return { success: false, error: 'For mange opplastinger. Prøv igjen om en stund.' };
   }

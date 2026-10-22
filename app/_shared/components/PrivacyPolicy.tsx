@@ -166,10 +166,6 @@ export function PrivacyPolicy() {
             melding)
           </li>
           <li>
-            <strong>Upstash</strong> - begrenser antall forsøk per IP-adresse eller bruker for å
-            hindre misbruk
-          </li>
-          <li>
             <strong>Google</strong> - kun hvis du velger å logge inn med Google
           </li>
         </ul>

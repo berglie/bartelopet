@@ -87,7 +87,7 @@ export async function uploadCompletionImages(
     }
 
     // Rate limiting check for uploads
-    const rateLimitResult = await checkRateLimit('upload', user.id);
+    const rateLimitResult = await checkRateLimit('upload', supabase);
     if (!rateLimitResult.success) {
       return {
         success: false,

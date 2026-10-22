@@ -42,7 +42,7 @@ Do not raise `Important` findings for formatting, naming preferences, or issues 
 Pay special attention to:
 
 - server actions in `app/actions/`: every mutation must check the signed-in user, and admin actions must check `is_event_admin()` on the server
-- API routes in `app/api/` and rate limiting via `app/_shared/lib/utils/rate-limit.ts`
+- API routes in `app/api/` and per-user rate limiting via `app/_shared/lib/utils/rate-limit.ts` (the contact form is limited by a Vercel Firewall rule)
 - `proxy.ts`: protected paths, session refresh, and the Content-Security-Policy nonce
 - new migrations in `supabase/migrations/`: a new table without `ENABLE ROW LEVEL SECURITY` and policies in the same migration is `Important`
 - views exposed to `anon`/`authenticated` must use `security_invoker` and must not expose personal data columns

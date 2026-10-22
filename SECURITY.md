@@ -108,9 +108,9 @@ Barteløpet implementerer flere sikkerhetslag:
 
 ### Rate Limiting
 
-- Redis-basert rate limiting via Upstash
-- Beskytter API-endepunkter mot spam og brute-force
-- IP-basert begrensning
+- Innloggede handlinger (opplasting, kommentarer, eksport og sletting av konto) begrenses per
+  bruker i databasen med `check_rate_limit()`
+- Kontaktskjemaet (`POST /api/kontakt`) begrenses per IP med en regel i Vercel Firewall
 
 ### Sikkerhetshoder
 

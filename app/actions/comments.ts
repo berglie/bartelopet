@@ -133,7 +133,7 @@ export async function addComment(
     }
 
     // Rate limiting check for comments
-    const rateLimitResult = await checkRateLimit('comment', user.id);
+    const rateLimitResult = await checkRateLimit('comment', supabase);
     if (!rateLimitResult.success) {
       return {
         success: false,
