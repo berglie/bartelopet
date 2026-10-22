@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { Calendar, ExternalLink, Gift } from 'lucide-react';
 import { createClient } from '@/app/_shared/lib/supabase/server';
@@ -12,6 +13,12 @@ import {
 import { TerrainLines } from '@/app/_shared/components/terrain-lines';
 import { cn } from '@/app/_shared/lib/utils/cn';
 import { formatDate } from '@/app/_shared/lib/utils/format';
+
+/** Logos for donors, keyed by race_prizes.donor_name. Files live in public/images/sponsors. */
+const DONOR_LOGOS: Record<string, string> = {
+  'Sandnes Ultra Trail': '/images/sponsors/sandnes-ultra-trail.webp',
+  'Dale Fjelløpere': '/images/sponsors/dale-fjellopere.webp',
+};
 
 export async function Prizes2026() {
   const supabase = await createClient();
@@ -112,9 +119,18 @@ export async function Prizes2026() {
                     <span className="text-xl uppercase">km</span>
                   </div>
                   {prize.donor_name && (
-                    <p className="border-l-4 border-secondary pl-3 text-muted-foreground">
-                      Donert av {prize.donor_name}
-                    </p>
+                    <div className="flex items-center gap-3 border-l-4 border-secondary pl-3 text-muted-foreground">
+                      {DONOR_LOGOS[prize.donor_name] && (
+                        <Image
+                          src={DONOR_LOGOS[prize.donor_name]}
+                          alt=""
+                          width={48}
+                          height={48}
+                          className="h-12 w-12 shrink-0 object-contain"
+                        />
+                      )}
+                      <p>Donert av {prize.donor_name}</p>
+                    </div>
                   )}
                   {prize.race_date && (
                     <p className="flex items-center gap-2 text-muted-foreground">
