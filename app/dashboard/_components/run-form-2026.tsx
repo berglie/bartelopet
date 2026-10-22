@@ -102,9 +102,9 @@ export function RunForm2026({
         try {
           uploaded = await uploadRunEvidence(upload);
         } catch {
-          // A body over Vercel's limit is rejected before the action runs, so it throws here.
+          // Network errors and bodies rejected by Vercel both throw here, so name both causes.
           setError(
-            `Opplastingen av bildet feilet. Bildet kan være maks ${formatMegabytes(RUN_PHOTO_LIMITS.MAX_UPLOAD_BYTES)} MB etter forminsking. Prøv igjen, eller velg et annet bilde.`
+            `Opplastingen av bildet feilet. Sjekk nettforbindelsen og prøv igjen. Hvis det fortsatt feiler, velg et annet bilde (maks ${formatMegabytes(RUN_PHOTO_LIMITS.MAX_UPLOAD_BYTES)} MB etter forminsking).`
           );
           return;
         }
