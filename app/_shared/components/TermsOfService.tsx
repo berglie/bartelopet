@@ -31,6 +31,11 @@ export function TermsOfService() {
           startnummer-kategorier.
         </p>
         <p>
+          Du bestemmer selv hvor du går eller løper. Som et forslag deler vi også 2025-løypen, en 11
+          km lang rute gjennom Stavanger sentrum (heretter «den foreslåtte løypen»). Den er ikke
+          merket eller tilrettelagt, og turer der teller like mye som alle andre turer.
+        </p>
+        <p>
           Vi oppfordrer deltakerne til å gi fem kroner per kilometer, men det er helt frivillig og
           påvirker ikke trekningen. Gaver gis via innsamlingen på Spleis og går uavkortet til
           Prosjekt SUT – et gratis treningsfellesskap drevet i samarbeid med A-larm Rogaland, Dale
@@ -86,25 +91,29 @@ export function TermsOfService() {
 
         <h2>7. Ansvarsbegrensning</h2>
         <p>
-          Barteløpet er et uorganisert løp der hver deltaker løper på eget ansvar. Ved å delta
-          aksepterer du at:
+          Barteløpet er ikke et organisert løp. Alle turer du går eller løper i forbindelse med
+          Barteløpet, enten du velger ruten selv eller bruker den foreslåtte løypen, gjennomfører du
+          på eget ansvar. Ved å delta aksepterer du at:
         </p>
         <ul>
           <li>Du deltar på eget ansvar og for egen regning og risiko</li>
-          <li>Du er selv fullt ut ansvarlig for din egen sikkerhet under hele arrangementet</li>
           <li>
-            Du har nødvendig helsemessig tilstand for å gjennomføre løpet og har konsultert lege ved
-            tvil
+            Du er selv fullt ut ansvarlig for din egen sikkerhet på alle turene du gjennomfører
+          </li>
+          <li>
+            Du har nødvendig helsemessig tilstand for å gjennomføre turene du velger, og har
+            konsultert lege ved tvil
           </li>
           <li>
             Arrangøren ikke er ansvarlig for skader, uhell, tap, personskade, død eller annet som
-            oppstår i forbindelse med løpet
+            oppstår i forbindelse med turene dine
           </li>
         </ul>
 
         <h3>7.1 Trafikksikkerhet og påkjørselsrisiko</h3>
         <p>
-          Løypen går gjennom områder med biltrafikk, og deltakerne løper i mørke og under varierende
+          Turene du velger, inkludert den foreslåtte løypen gjennom Stavanger sentrum, kan gå
+          gjennom områder med biltrafikk, og deltakerne løper ofte i mørke og under varierende
           værforhold. Du erkjenner og aksepterer uttrykkelig at:
         </p>
         <ul>
@@ -133,15 +142,18 @@ export function TermsOfService() {
 
         <h3>7.2 Løping i mørke og varierende forhold</h3>
         <p>
-          Løpet gjennomføres i november måned, ofte i mørke, ved dårlig vær og under utfordrende
-          forhold. Du aksepterer at:
+          Barteløpet foregår i november, og turene dine vil ofte gjennomføres i mørke, ved dårlig
+          vær og under utfordrende forhold. Du aksepterer at:
         </p>
         <ul>
           <li>Risikoen for fall, snubling, kollisjoner og andre ulykker er forhøyet i mørke</li>
           <li>Underlaget kan være vått, glatt, isete eller på annen måte vanskelig</li>
           <li>Sikten kan være redusert på grunn av mørke, tåke, regn eller snø</li>
-          <li>Du må selv vurdere om forholdene er forsvarlige og eventuelt avbryte løpet</li>
-          <li>Arrangøren ikke inspiserer eller godkjenner løypeforhold, vær eller lysforhold</li>
+          <li>Du må selv vurdere om forholdene er forsvarlige og eventuelt avbryte turen</li>
+          <li>
+            Arrangøren ikke inspiserer eller godkjenner forholdene på turene du velger eller på den
+            foreslåtte løypen, og heller ikke vær eller lysforhold
+          </li>
           <li>
             Arrangøren ikke er ansvarlig for skader som oppstår som følge av værforhold, mørke eller
             underlagsforhold
@@ -151,7 +163,7 @@ export function TermsOfService() {
         <h3>7.3 Generelt ansvarsfraskrivelse</h3>
         <p>Arrangøren fraskriver seg uttrykkelig ethvert ansvar for:</p>
         <ul>
-          <li>Personskade, alvorlig personskade eller død som følge av deltakelse i løpet</li>
+          <li>Personskade, alvorlig personskade eller død som følge av turer du gjennomfører</li>
           <li>Trafikkulykker, påkjørsler av kjøretøy, syklister eller andre trafikanter</li>
           <li>Fall, snubling, kollisjoner med faste gjenstander eller andre deltakere</li>
           <li>
@@ -163,7 +175,7 @@ export function TermsOfService() {
           <li>Følgeskader, økonomiske tap eller andre indirekte skader</li>
         </ul>
         <p>
-          Ved å delta i løpet bekrefter du at du har lest, forstått og akseptert denne
+          Ved å delta i Barteløpet bekrefter du at du har lest, forstått og akseptert denne
           ansvarsbegrensningen, og at du frivillig påtar deg all risiko forbundet med deltakelse i
           arrangementet.
         </p>
