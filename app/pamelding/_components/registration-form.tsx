@@ -487,10 +487,7 @@ export function RegistrationForm() {
                   </Link>
                   . Jeg samtykker til at mine opplysninger behandles i henhold til
                   personvernerklæringen.{' '}
-                  <span className="mt-2 block">
-                    Premier vil bli utlevert i starten av desember. Arrangøren fratar ansvar fra at
-                    utlevering kan ta lengre tid.
-                  </span>
+                  <span className="mt-2 block">Premiene deles ut etter at november er over.</span>
                 </Label>
               </div>
             </div>
