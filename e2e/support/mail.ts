@@ -18,7 +18,7 @@ export async function messagesTo(email: string): Promise<MailpitSummary[]> {
   return result.messages;
 }
 
-/** Waits for the newest e-mail to `email` and returns the Supabase verification link in it. */
+/** Waits for the newest e-mail to `email` and returns the app's /auth/callback link in it. */
 export async function latestAuthLink(email: string): Promise<string> {
   let messageId = '';
   await expect
@@ -29,7 +29,7 @@ export async function latestAuthLink(email: string): Promise<string> {
     .not.toBe('');
 
   const message = await mailpit<{ Text: string }>(`/message/${messageId}`);
-  const link = message.Text.match(/https?:\/\/\S+\/auth\/v1\/verify\?[^\s)\]>]+/)?.[0];
-  if (!link) throw new Error(`No verification link in e-mail to ${email}:\n${message.Text}`);
-  return link;
+  const link = message.Text.match(/https?:\/\/\S+\/auth\/callback\?[^\s)\]>]+/)?.[0];
+  if (!link) throw new Error(`No login link in e-mail to ${email}:\n${message.Text}`);
+  return link.replaceAll('&amp;', '&');
 }

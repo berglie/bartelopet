@@ -100,8 +100,11 @@ export async function GET(request: Request) {
   type OtpType = (typeof allowedTypes)[number];
 
   if (token_hash && type && (allowedTypes as readonly string[]).includes(type)) {
+    // 'magiclink' and 'signup' are deprecated. They only match one kind of token, so a login link
+    // for a user who never confirmed their e-mail fails as 'magiclink'. 'email' matches both.
+    const otpType = type === 'magiclink' || type === 'signup' ? 'email' : (type as OtpType);
     const supabase = await createClient();
-    const { error } = await supabase.auth.verifyOtp({ type: type as OtpType, token_hash });
+    const { error } = await supabase.auth.verifyOtp({ type: otpType, token_hash });
 
     if (error) {
       console.error('Auth verification error:', error.code ?? error.name);

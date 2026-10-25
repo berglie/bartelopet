@@ -1,5 +1,5 @@
 import { test, expect, alertBox, loginAs } from './support/fixtures';
-import { uniqueEmail } from './support/db';
+import { db, uniqueEmail } from './support/db';
 import { latestAuthLink, messagesTo } from './support/mail';
 
 test.describe('login', () => {
@@ -14,6 +14,24 @@ test.describe('login', () => {
     await page.goto(await latestAuthLink(participant.email));
     await expect(page).toHaveURL(/\/dashboard$/);
     await expect(page.getByText(`Min side · Startnummer #${participant.bibNumber}`)).toBeVisible();
+  });
+
+  test('an address that was never confirmed can log in with the e-mailed link', async ({
+    page,
+  }) => {
+    // Someone who signed up but never clicked the confirmation link. Supabase sends a
+    // confirmation token instead of a login token, which the old 'magiclink' type did not find.
+    const email = uniqueEmail('unconfirmed');
+    const { error } = await db().auth.admin.createUser({ email, email_confirm: false });
+    if (error) throw new Error(`Create user: ${error.message}`);
+
+    await page.goto('/login');
+    await page.getByLabel(/E-post/).fill(email);
+    await page.getByRole('button', { name: /Send innloggingslenke/ }).click();
+    await expect(page.getByText(`Vi har sendt en innloggingslenke til ${email}`)).toBeVisible();
+
+    await page.goto(await latestAuthLink(email));
+    await expect(page).toHaveURL(/\/pamelding$/);
   });
 
   test('an unknown address gets the same answer and no e-mail', async ({ page }) => {
