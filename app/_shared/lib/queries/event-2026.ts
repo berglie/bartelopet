@@ -49,7 +49,7 @@ export async function get2026Overview() {
             .select(PUBLIC_RUN_COLUMNS)
             .eq('event_year', EVENT_YEAR_2026)
             .order('run_date', { ascending: false })
-            .order('id')
+            .order('submitted_order', { ascending: false })
             .range(from, to)
         ),
         supabase
