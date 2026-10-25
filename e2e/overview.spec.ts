@@ -73,6 +73,33 @@ test('/deltakere groups runners by days out and lists the latest runs', async ({
   await expect(dialog).toContainText('7 registrerte turer');
 });
 
+test('Siste turer lists runs from the same day in the order they were registered', async ({
+  page,
+}) => {
+  const first = await createParticipant({ fullName: uniqueName('Tidlig') });
+  const second = await createParticipant({ fullName: uniqueName('Sein') });
+  await addRun(first.participantId, {
+    date: osloDate(0),
+    km: 5,
+    title: `Morgen ${first.fullName}`,
+  });
+  await addRun(second.participantId, {
+    date: osloDate(0),
+    km: 5,
+    title: `Kveld ${second.fullName}`,
+  });
+
+  await page.goto('/deltakere');
+  const titles = await page
+    .getByRole('region', { name: 'Siste turer' })
+    .getByRole('button')
+    .allTextContents();
+  const later = titles.findIndex((text) => text.includes(`Kveld ${second.fullName}`));
+  const earlier = titles.findIndex((text) => text.includes(`Morgen ${first.fullName}`));
+  expect(later).toBeGreaterThanOrEqual(0);
+  expect(earlier).toBeGreaterThan(later);
+});
+
 test('runs appear on the bartelinje on the front page', async ({ page }) => {
   const runner = await createParticipant({ fullName: uniqueName('Prikk') });
   await addRun(runner.participantId, { date: osloDate(-1), km: 14, title: 'Tur til Dalsnuten' });

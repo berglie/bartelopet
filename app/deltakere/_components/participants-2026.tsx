@@ -41,7 +41,7 @@ export async function Participants2026() {
         .select(PUBLIC_RUN_COLUMNS)
         .eq('event_year', EVENT_YEAR_2026)
         .order('run_date', { ascending: false })
-        .order('id')
+        .order('submitted_order', { ascending: false })
         .range(from, to)
     ),
     fetchAll((from, to) =>
@@ -84,7 +84,8 @@ export async function Participants2026() {
     };
   });
   const totalKm = allRuns.reduce((sum, run) => sum + run.distance_km, 0);
-  // Runs arrive newest first; the summary always exists for a participant with runs.
+  // Runs arrive newest first: by date, then by when they were registered (runs have no time).
+  // The summary always exists for a participant with runs.
   const recentRuns = allRuns.slice(0, RECENT_RUNS_SHOWN).map((run) => ({
     run,
     summary: summaries.get(run.participant_id)!,
