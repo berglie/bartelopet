@@ -10,7 +10,7 @@ import {
   HeartHandshake,
   Mountain,
   Route,
-  ShieldCheck,
+  Sprout,
   TicketCheck,
   Users,
 } from 'lucide-react';
@@ -71,8 +71,8 @@ export async function Home2026() {
   const sutFeatures = [
     { icon: Users, label: 'Tilhørighet gjennom trening' },
     { icon: Footprints, label: 'Mestring i eget tempo' },
-    { icon: ShieldCheck, label: 'Rusfritt og trygt miljø' },
-    { icon: DoorOpen, label: 'Gratis, uten bindingstid' },
+    { icon: Sprout, label: 'Ingen krav til form eller erfaring' },
+    { icon: DoorOpen, label: 'Gratis og lav terskel' },
   ];
 
   const heroLines = [
@@ -107,7 +107,7 @@ export async function Home2026() {
               Barteløpet · Hele november 2026
             </span>
             <span className="text-xs font-bold uppercase tracking-[0.18em] text-background/70">
-              Løp hvor du vil · Gi gjerne {rate} kr / km
+              Løp hvor du vil · Doner om du kan
             </span>
           </div>
 
@@ -502,6 +502,20 @@ export async function Home2026() {
                 ? 'Meld deg på og registrer turene dine på Min side.'
                 : 'Meld deg på nå. Turene registrerer du når november starter.'}
             </p>
+            {donationUrl && (
+              <p className="mt-4 max-w-xl text-foreground/75">
+                Vil eller kan du ikke løpe? Det er like kjekt om du støtter Prosjekt SUT med en
+                donasjon.{' '}
+                <a
+                  href={donationUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group inline-flex items-center gap-1 font-bold text-foreground underline decoration-2 underline-offset-4 hover:decoration-secondary"
+                >
+                  Doner på Spleis <ArrowUpRight className={cn('h-4 w-4', nudgeUpRight)} />
+                </a>
+              </p>
+            )}
           </Reveal>
           <Reveal delay={150} className="shrink-0">
             <Button asChild variant="ink" size="xl" className="group">
