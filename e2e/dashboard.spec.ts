@@ -168,8 +168,8 @@ test.describe('runs', () => {
     participant,
   }) => {
     // Below the minimum the browser refuses to submit and the form explains why.
-    await registerRun(page, { km: '2.4' });
-    await expect(newRun(page).getByText('Turen må være minst 3 km')).toBeVisible();
+    await registerRun(page, { km: '0.4' });
+    await expect(newRun(page).getByText('Turen må være minst 1 km')).toBeVisible();
     const distance = newRun(page).getByLabel('Distanse i km *');
     expect(await distance.evaluate((input: HTMLInputElement) => input.validity.valid)).toBe(false);
     await expect(page.getByText('Takk for turen!')).toBeHidden();

@@ -31,10 +31,10 @@ export interface TicketTotals {
 export const EVENT_YEAR_2026 = 2026;
 
 /**
- * Run distance limits, checked against the rounded distance (see roundedKm), so 2.5 km counts
- * as the official 3 km. Mirrored in validate_2026_run() in the database.
+ * Run distance limits, checked against the rounded distance (see roundedKm), so 0.5 km counts
+ * as the official 1 km. Mirrored in validate_2026_run() in the database.
  */
-export const MIN_RUN_KM = 3;
+export const MIN_RUN_KM = 1;
 export const MAX_RUN_KM = 120;
 
 /** Today's date (YYYY-MM-DD) in Norway. */
@@ -77,7 +77,7 @@ export const CATEGORY_META: Record<
   short: {
     name: 'Kort',
     range: 'Opptil 10 km',
-    examples: '3 km, 5 km og 10 km',
+    examples: '1 km, 5 km og 10 km',
     solid: 'bg-accent text-accent-foreground',
     soft: 'bg-accent/40',
   },
