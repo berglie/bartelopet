@@ -36,14 +36,14 @@ export async function Home2026() {
     {
       number: '01',
       icon: Route,
-      title: 'Finn din tur',
-      text: 'Løp eller gå der du er. En rolig runde, en klubbøkt eller et organisert løp – all bevegelse teller.',
+      title: 'Hver tur teller',
+      text: 'Løp eller gå der du er, når det passer deg i november. En rolig runde, en klubbøkt eller et organisert løp – all bevegelse fra 1 km teller.',
     },
     {
       number: '02',
       icon: TicketCheck,
       title: 'Samle lodd',
-      text: 'Registrer turen på Min side innen et døgn etter at du løp. Hver kilometer gir ett lodd i premiekategoriene du har valgt og kvalifisert deg til.',
+      text: 'Registrer turene dine på Min side, én per dag, samme dag eller dagen etter. Hver kilometer gir ett lodd i premiekategoriene du har valgt, og alle turene dine i november teller.',
     },
     {
       number: '03',
@@ -61,7 +61,9 @@ export async function Home2026() {
   ];
 
   const tickerItems = [
+    'Hver tur teller',
     'Hver kilometer teller',
+    'Fra 1 km',
     `Gi gjerne ${rate} kr per km`,
     'Hele november',
     'Løp hvor du vil',
