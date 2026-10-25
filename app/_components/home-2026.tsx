@@ -138,8 +138,9 @@ export async function Home2026() {
                 className="mt-8 max-w-2xl animate-fade-up text-xl leading-relaxed text-background/80 md:text-2xl"
                 style={{ animationDelay: '650ms' }}
               >
-                For noen betyr den enda mer. Løp din tur, gi det du kan og bidra til fellesskap,
-                mestring og nye muligheter.
+                For noen betyr den enda mer. Hver tur du registrerer i november gir nye lodd. Løp
+                når det passer deg, gi det du kan og bidra til fellesskap, mestring og nye
+                muligheter.
               </p>
             </div>
 
