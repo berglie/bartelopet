@@ -30,7 +30,7 @@ Movember Foundation.
 | Steg                   | Beskrivelse                                                                                                       |
 | ---------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | **1. Meld deg på** 📝  | Gratis påmelding. Velg premiekategoriene du vil være med i: Kort (opptil 10 km), Mellom (10–30 km), Lang (30+ km) |
-| **2. Løp eller gå** 🏃 | Én tur per dag i november, minst 3 km. All bevegelse teller                                                       |
+| **2. Løp eller gå** 🏃 | Én tur per dag i november, minst 1 km. All bevegelse teller                                                       |
 | **3. Registrer** 🎟️    | Hver kilometer gir ett lodd i hver valgt kategori turen er lang nok til                                           |
 | **4. Gi om du kan** 💜 | Frivillig gave via Spleis. Gaver påvirker ikke trekningen                                                         |
 | **5. Trekning** 🏆     | Etter november trekkes startnumrene, lengste løp først, én premie per deltaker                                    |

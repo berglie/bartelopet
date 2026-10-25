@@ -188,7 +188,7 @@ export function RunForm2026({
             required
             disabled={loading || disabled || locked}
           />
-          {tickets > 0 && (
+          {distanceKm > 0 && (
             <p className="text-xs text-muted-foreground" aria-live="polite">
               {tickets >= MIN_RUN_KM
                 ? `Gir ${tickets} lodd i hver valgt kategori av: ${qualifyingCategories(distanceKm)

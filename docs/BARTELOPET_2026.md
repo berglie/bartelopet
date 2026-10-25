@@ -25,7 +25,7 @@ konverteres.
 - Maks én tur per deltaker og dato.
 - Distansen rundes av til nærmeste hele km (2,5 → 3, 2,4 → 2). Den avrundede distansen avgjør
   lodd og kategorier.
-- Turen må være minst 3 km etter avrunding og maks 120 km (`MIN_RUN_KM`/`MAX_RUN_KM` i koden og
+- Turen må være minst 1 km etter avrunding og maks 120 km (`MIN_RUN_KM`/`MAX_RUN_KM` i koden og
   `validate_2026_run()` i databasen).
 - Dato må være innenfor arrangementsperioden (1.–30. november) og kan ikke være i fremtiden i
   `Europe/Oslo`.
