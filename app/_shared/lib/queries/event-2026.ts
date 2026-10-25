@@ -5,8 +5,24 @@ import { isCategorySlug, type PublicRun, type TicketTotals } from '@/app/_shared
 import { EVENT_YEAR_2026 } from '@/app/_shared/types/event-2026';
 
 /** Columns the public pages need. Keep in sync with PublicRun; never select('*') here. */
-const PUBLIC_RUN_COLUMNS =
+export const PUBLIC_RUN_COLUMNS =
   'id, participant_id, full_name, bib_number, run_date, distance_km, title, duration_text, comment, evidence_url, interest_categories';
+
+type RunsPublicRow = Partial<Record<keyof PublicRun, unknown>>;
+
+/** Drops view rows with missing columns (the view types every column as nullable). */
+export function toPublicRuns(rows: RunsPublicRow[] | null): PublicRun[] {
+  return (rows || []).filter(
+    (run) =>
+      run.id &&
+      run.participant_id &&
+      run.full_name &&
+      run.bib_number !== null &&
+      run.run_date &&
+      run.distance_km !== null &&
+      Array.isArray(run.interest_categories)
+  ) as PublicRun[];
+}
 
 export async function get2026Overview() {
   // Mock data is for local development only, so a stray env var cannot show fake data in prod.
@@ -52,16 +68,7 @@ export async function get2026Overview() {
           .eq('event_year', EVENT_YEAR_2026),
       ]);
 
-    const runs = (runsResult.data || []).filter(
-      (run) =>
-        run.id &&
-        run.participant_id &&
-        run.full_name &&
-        run.bib_number !== null &&
-        run.run_date &&
-        run.distance_km !== null &&
-        Array.isArray(run.interest_categories)
-    ) as PublicRun[];
+    const runs = toPublicRuns(runsResult.data);
 
     const tickets: TicketTotals = { short: 0, medium: 0, long: 0 };
     for (const entry of entriesResult.data || []) {

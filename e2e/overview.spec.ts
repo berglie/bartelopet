@@ -24,6 +24,55 @@ test('runners, kilometres and tickets are listed on /deltakere', async ({ page }
   ).toHaveText(['0', '0', '0', '0', '0']);
 });
 
+test('the table on /deltakere sorts by km, highest first', async ({ page }) => {
+  const runner = await createParticipant({ fullName: uniqueName('Sortert') });
+  await addRun(runner.participantId, { date: osloDate(-1), km: 12 });
+
+  await page.goto('/deltakere');
+  const table = page.getByRole('table');
+  await table.getByRole('button', { name: 'Km' }).click();
+  await expect(table.getByRole('columnheader', { name: 'Km' })).toHaveAttribute(
+    'aria-sort',
+    'descending'
+  );
+
+  const km = (await table.locator('tbody tr td:nth-of-type(2)').allTextContents()).map((text) =>
+    Number(text.replace(/\s/g, '').replace(',', '.'))
+  );
+  expect(km.length).toBeGreaterThan(1);
+  expect(km).toEqual([...km].sort((a, b) => b - a));
+});
+
+test('/deltakere groups runners by days out and lists the latest runs', async ({ page }) => {
+  const runner = await createParticipant({ fullName: uniqueName('Hverdagsløper') });
+  for (let day = 1; day <= 7; day++) {
+    await addRun(runner.participantId, {
+      date: osloDate(-day),
+      km: 3,
+      title: day === 1 ? 'Kveldstur i regnet' : undefined,
+    });
+  }
+
+  await page.goto('/deltakere');
+  const daysOut = page.getByRole('region', { name: 'Ofte slår langt.' });
+  await expect(
+    daysOut
+      .getByRole('listitem')
+      .filter({ hasText: /^7\s*dager/ })
+      .filter({ hasText: runner.fullName })
+  ).toBeVisible();
+
+  await expect(page.getByRole('progressbar')).toBeVisible();
+
+  await page
+    .getByRole('region', { name: 'Siste turer' })
+    .getByRole('button', { name: /Kveldstur i regnet/ })
+    .click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toContainText(runner.fullName);
+  await expect(dialog).toContainText('7 registrerte turer');
+});
+
 test('runs appear on the bartelinje on the front page', async ({ page }) => {
   const runner = await createParticipant({ fullName: uniqueName('Prikk') });
   await addRun(runner.participantId, { date: osloDate(-1), km: 14, title: 'Tur til Dalsnuten' });

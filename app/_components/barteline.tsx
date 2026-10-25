@@ -1,12 +1,13 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { RunDetailDialog, type RunnerSummary } from '@/app/_components/run-detail-dialog';
+import { RunDetailDialog } from '@/app/_components/run-detail-dialog';
 import type { PublicRun } from '@/app/_shared/types/event-2026';
 import {
   CATEGORY_META,
   CATEGORY_ORDER,
   qualifyingCategories,
+  summarizeRunners,
   ticketsForRun,
 } from '@/app/_shared/types/event-2026';
 import { formatDate } from '@/app/_shared/lib/utils/format';
@@ -27,28 +28,7 @@ const DOT_SPACING = 0.035;
 
 export function Barteline({ runs }: BartelineProps) {
   const [selectedRun, setSelectedRun] = useState<PublicRun | null>(null);
-  const runnerSummaries = useMemo(() => {
-    const summaries = new Map<string, RunnerSummary>();
-
-    for (const run of runs) {
-      const summary = summaries.get(run.participant_id) || {
-        runs: 0,
-        kilometers: 0,
-        tickets: { short: 0, medium: 0, long: 0 },
-      };
-
-      summary.runs++;
-      summary.kilometers += run.distance_km;
-      for (const category of qualifyingCategories(run.distance_km)) {
-        if (run.interest_categories.includes(category)) {
-          summary.tickets[category] += ticketsForRun(run.distance_km);
-        }
-      }
-      summaries.set(run.participant_id, summary);
-    }
-
-    return summaries;
-  }, [runs]);
+  const runnerSummaries = useMemo(() => summarizeRunners(runs), [runs]);
   const maximum = Math.max(
     50,
     Math.ceil(Math.max(0, ...runs.map((run) => run.distance_km)) / 10) * 10

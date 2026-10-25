@@ -27,15 +27,9 @@ import {
   qualifyingCategories,
   ticketsForRun,
   type PublicRun,
-  type TicketTotals,
+  type RunnerSummary,
 } from '@/app/_shared/types/event-2026';
 import { cn } from '@/app/_shared/lib/utils/cn';
-
-export interface RunnerSummary {
-  runs: number;
-  kilometers: number;
-  tickets: TicketTotals;
-}
 
 interface RunDetailDialogProps {
   run: PublicRun | null;
@@ -91,7 +85,7 @@ export function RunDetailDialog({ run, summary, onOpenChange }: RunDetailDialogP
             {run.full_name}
           </DialogTitle>
           <DialogDescription className="text-sm text-background/75">
-            Løperens totalsummer og den valgte turen fra bartelinjen.
+            Løperens totalsummer og den valgte turen.
           </DialogDescription>
         </DialogHeader>
 
@@ -139,7 +133,7 @@ export function RunDetailDialog({ run, summary, onOpenChange }: RunDetailDialogP
 
         <article className="space-y-5 p-5 sm:p-7">
           <div>
-            <p className="eyebrow text-[11px]">Valgt fra bartelinjen</p>
+            <p className="eyebrow text-[11px]">Valgt tur</p>
             <h3 className="font-display mt-2 text-3xl font-black uppercase leading-none sm:text-4xl">
               {run.title || 'Løpetur'}
             </h3>

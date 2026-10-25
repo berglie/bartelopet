@@ -131,3 +131,50 @@ export function ticketsForRun(distanceKm: number): number {
 export function donationForDistance(distanceKm: number, rate = 5): number {
   return Math.ceil(distanceKm * rate);
 }
+
+export interface RunnerSummary {
+  runs: number;
+  kilometers: number;
+  tickets: TicketTotals;
+}
+
+/** Totals per participant: runs, km and tickets in the categories they chose. */
+export function summarizeRunners(runs: PublicRun[]): Map<string, RunnerSummary> {
+  const summaries = new Map<string, RunnerSummary>();
+
+  for (const run of runs) {
+    const summary = summaries.get(run.participant_id) || {
+      runs: 0,
+      kilometers: 0,
+      tickets: { short: 0, medium: 0, long: 0 },
+    };
+
+    summary.runs++;
+    summary.kilometers += run.distance_km;
+    for (const category of qualifyingCategories(run.distance_km)) {
+      if (run.interest_categories.includes(category)) {
+        summary.tickets[category] += ticketsForRun(run.distance_km);
+      }
+    }
+    summaries.set(run.participant_id, summary);
+  }
+
+  return summaries;
+}
+
+/**
+ * The shared goal: how far from Stavanger the field's total km would take us.
+ * Road distances, rounded. Sorted from nearest to farthest.
+ */
+export const COMMUNITY_GOAL_STOPS = [
+  { place: 'Bergen', km: 210 },
+  { place: 'Oslo', km: 550 },
+  { place: 'Nordkapp', km: 2600 },
+] as const;
+
+/** Days of November 2026 that have started in Norway, from 0 before the event to 30 after. */
+export function novemberDaysElapsed(today = osloToday()): number {
+  if (today < '2026-11-01') return 0;
+  if (today > '2026-11-30') return 30;
+  return Number(today.slice(8, 10));
+}
