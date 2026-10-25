@@ -1,9 +1,19 @@
 import { createClient } from '@/app/_shared/lib/supabase/server';
 import { fetchAll } from '@/app/_shared/lib/supabase/fetch-all';
+import { PUBLIC_RUN_COLUMNS, toPublicRuns } from '@/app/_shared/lib/queries/event-2026';
 import { Card, CardContent } from '@/app/_shared/components/ui/card';
-import { CATEGORY_META, CATEGORY_ORDER, EVENT_YEAR_2026 } from '@/app/_shared/types/event-2026';
-import { cn } from '@/app/_shared/lib/utils/cn';
+import {
+  EVENT_YEAR_2026,
+  novemberDaysElapsed,
+  summarizeRunners,
+} from '@/app/_shared/types/event-2026';
 import { TerrainLines } from '@/app/_shared/components/terrain-lines';
+import { CommunityGoal } from '@/app/_components/community-goal';
+import { DaysActive } from './days-active';
+import { ParticipantsTable, type ParticipantRow } from './participants-table';
+import { RecentRuns } from './recent-runs';
+
+const RECENT_RUNS_SHOWN = 8;
 
 function sumTickets(
   entries: { category_slug: string | null; tickets: number | null }[],
@@ -28,8 +38,9 @@ export async function Participants2026() {
     fetchAll((from, to) =>
       supabase
         .from('runs_public')
-        .select('*')
+        .select(PUBLIC_RUN_COLUMNS)
         .eq('event_year', EVENT_YEAR_2026)
+        .order('run_date', { ascending: false })
         .order('id')
         .range(from, to)
     ),
@@ -44,20 +55,40 @@ export async function Participants2026() {
     ),
   ]);
 
-  const rows = (participantsResult.data || []).map((participant) => {
-    const runs = (runsResult.data || []).filter((run) => run.participant_id === participant.id);
+  const allRuns = toPublicRuns(runsResult.data);
+  const summaries = summarizeRunners(allRuns);
+  const daysOut = new Map<string, Set<string>>();
+  for (const run of allRuns) {
+    daysOut.set(
+      run.participant_id,
+      (daysOut.get(run.participant_id) || new Set()).add(run.run_date)
+    );
+  }
+
+  const participants = (participantsResult.data || []).filter(
+    (participant): participant is { id: string; full_name: string; bib_number: number } =>
+      Boolean(participant.id && participant.full_name) && participant.bib_number !== null
+  );
+  const rows: ParticipantRow[] = participants.map((participant) => {
     const entries = (entriesResult.data || []).filter(
       (entry) => entry.participant_id === participant.id
     );
+    const summary = summaries.get(participant.id);
     return {
       ...participant,
-      runs: runs.length,
-      km: runs.reduce((sum, run) => sum + Number(run.distance_km || 0), 0),
+      runs: summary?.runs ?? 0,
+      km: summary?.kilometers ?? 0,
       short: sumTickets(entries, 'short'),
       medium: sumTickets(entries, 'medium'),
       long: sumTickets(entries, 'long'),
     };
   });
+  const totalKm = allRuns.reduce((sum, run) => sum + run.distance_km, 0);
+  // Runs arrive newest first; the summary always exists for a participant with runs.
+  const recentRuns = allRuns.slice(0, RECENT_RUNS_SHOWN).map((run) => ({
+    run,
+    summary: summaries.get(run.participant_id)!,
+  }));
 
   return (
     <div>
@@ -71,99 +102,52 @@ export async function Participants2026() {
             Løpere
             <span className="block text-accent">og lodd.</span>
           </h1>
-          <p className="mt-6 max-w-xl text-lg text-background/75">
-            En levende oversikt over kilometer, bidrag og kvalifiseringer gjennom november.
-          </p>
+          <div className="mt-6 grid gap-10 lg:grid-cols-[1fr_minmax(320px,0.8fr)] lg:items-end">
+            <p className="max-w-xl text-lg text-background/75">
+              En levende oversikt over kilometer, bidrag og kvalifiseringer gjennom november.
+            </p>
+            <CommunityGoal kilometers={totalKm} />
+          </div>
         </div>
       </header>
 
-      <div className="mx-auto max-w-[1500px] px-4 py-12 md:px-8 md:py-20">
-        <div className="mb-6 flex items-end justify-between gap-4">
-          <div>
-            <p className="eyebrow">Startfeltet</p>
-            <h2 className="font-display mt-2 text-4xl font-black uppercase md:text-5xl">
-              {rows.length > 0 ? `${rows.length} påmeldte` : 'Startfeltet fylles'}
-            </h2>
-          </div>
-          <p className="hidden max-w-sm text-right text-sm text-muted-foreground sm:block">
-            Tallene oppdateres når nye turer blir registrert.
-          </p>
-        </div>
+      <div className="mx-auto max-w-[1500px] space-y-16 px-4 py-12 md:space-y-24 md:px-8 md:py-20">
+        <DaysActive
+          runners={rows.map((row) => ({ ...row, days: daysOut.get(row.id)?.size ?? 0 }))}
+          daysElapsed={novemberDaysElapsed()}
+        />
 
-        <Card className="overflow-hidden border-2 border-foreground shadow-[7px_7px_0_hsl(var(--foreground))]">
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[680px] text-left text-sm">
-                <caption className="sr-only">
-                  Påmeldte løpere med turer, kilometer og lodd per premiekategori
-                </caption>
-                <thead className="border-b-2 border-foreground bg-foreground text-[11px] font-black uppercase tracking-[0.14em] text-background">
-                  <tr>
-                    <th scope="col" className="sticky left-0 z-10 bg-foreground p-4">
-                      Løper
-                    </th>
-                    <th scope="col" className="p-4 text-right">
-                      Turer
-                    </th>
-                    <th scope="col" className="p-4 text-right">
-                      Km
-                    </th>
-                    {CATEGORY_ORDER.map((slug) => (
-                      <th key={slug} scope="col" className="p-4 text-center">
-                        <span
-                          className={cn(
-                            'inline-block border border-background/40 px-2 py-0.5',
-                            CATEGORY_META[slug].solid
-                          )}
-                        >
-                          {CATEGORY_META[slug].range.replace(' km', '')}
-                        </span>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map((row) => (
-                    <tr
-                      key={row.id}
-                      className="group border-b border-foreground/25 tabular-nums last:border-0"
-                    >
-                      <th
-                        scope="row"
-                        className="sticky left-0 z-10 bg-card p-4 text-left font-bold group-hover:bg-muted"
-                      >
-                        <span className="mr-3 inline-flex min-w-12 justify-center bg-foreground px-2 py-1 font-mono text-xs text-background">
-                          #{row.bib_number}
-                        </span>
-                        {row.full_name}
-                      </th>
-                      <td className="p-4 text-right group-hover:bg-muted">{row.runs}</td>
-                      <td className="p-4 text-right group-hover:bg-muted">
-                        {row.km.toLocaleString('nb-NO', { maximumFractionDigits: 1 })}
-                      </td>
-                      {CATEGORY_ORDER.map((slug) => (
-                        <td
-                          key={slug}
-                          className={cn(
-                            'p-4 text-center font-black group-hover:bg-muted',
-                            row[slug] === 0 && 'font-normal text-muted-foreground'
-                          )}
-                        >
-                          {row[slug]}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        <RecentRuns items={recentRuns} />
+
+        <section aria-labelledby="startfeltet">
+          <div className="mb-6 flex items-end justify-between gap-4">
+            <div>
+              <p className="eyebrow">Startfeltet</p>
+              <h2
+                id="startfeltet"
+                className="font-display mt-2 text-4xl font-black uppercase md:text-5xl"
+              >
+                {rows.length > 0 ? `${rows.length} påmeldte` : 'Startfeltet fylles'}
+              </h2>
             </div>
-            {rows.length === 0 && (
-              <p className="p-12 text-center text-muted-foreground">
-                Ingen påmeldte ennå. De første startnumrene dukker opp her.
-              </p>
-            )}
-          </CardContent>
-        </Card>
+            <p className="hidden max-w-sm text-right text-sm text-muted-foreground sm:block">
+              Tallene oppdateres når nye turer blir registrert.
+            </p>
+          </div>
+
+          <Card className="overflow-hidden border-2 border-foreground shadow-[7px_7px_0_hsl(var(--foreground))]">
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <ParticipantsTable rows={rows} />
+              </div>
+              {rows.length === 0 && (
+                <p className="p-12 text-center text-muted-foreground">
+                  Ingen påmeldte ennå. De første startnumrene dukker opp her.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </section>
       </div>
     </div>
   );

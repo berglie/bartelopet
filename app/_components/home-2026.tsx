@@ -15,6 +15,7 @@ import {
   Users,
 } from 'lucide-react';
 import { Barteline } from '@/app/_components/barteline';
+import { CommunityGoal } from '@/app/_components/community-goal';
 import { CountUp, Countdown, Reveal } from '@/app/_components/motion';
 import { Button } from '@/app/_shared/components/ui/button';
 import { get2026Overview } from '@/app/_shared/lib/queries/event-2026';
@@ -386,6 +387,10 @@ export async function Home2026() {
                 Linjen fylles fra 1. november – første tur får første prikk.
               </p>
             </div>
+          )}
+
+          {hasRuns && (
+            <CommunityGoal kilometers={stats.kilometers} showTotal={false} className="mb-8" />
           )}
 
           <Reveal delay={150}>
