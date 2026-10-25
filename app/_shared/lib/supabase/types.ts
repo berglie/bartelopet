@@ -928,6 +928,7 @@ export type Database = {
           interest_categories: string[] | null;
           participant_id: string | null;
           run_date: string | null;
+          submitted_order: number | null;
           title: string | null;
         };
         Relationships: [
