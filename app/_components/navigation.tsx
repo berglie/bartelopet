@@ -171,6 +171,16 @@ export function Navigation({ isAuthenticated = false, isAdmin = false }: Navigat
               </Link>
             )}
 
+            {!isAuthenticated && (
+              <Link
+                href="/login"
+                aria-current={pathname === '/login' ? 'page' : undefined}
+                className="border-b-2 border-transparent py-1 text-xs font-bold uppercase tracking-[0.12em] transition-colors hover:border-secondary aria-[current=page]:border-foreground"
+              >
+                Logg inn
+              </Link>
+            )}
+
             <Button asChild variant="cta" size="sm" className="h-10 px-4">
               <Link href={primaryAction.href}>{primaryAction.label}</Link>
             </Button>
@@ -216,6 +226,17 @@ export function Navigation({ isAuthenticated = false, isAdmin = false }: Navigat
                 className="font-display border-b border-foreground/20 py-3 text-2xl font-black uppercase"
               >
                 Admin
+              </Link>
+            )}
+            {!isAuthenticated && (
+              <Link
+                href="/login"
+                onClick={() => setMenuOpen(false)}
+                aria-current={pathname === '/login' ? 'page' : undefined}
+                className="font-display flex items-center justify-between border-b border-foreground/20 py-3 text-2xl font-black uppercase aria-[current=page]:text-secondary-ink"
+              >
+                Logg inn
+                <ArrowRight className="h-5 w-5" />
               </Link>
             )}
             {showYearSelector && (
