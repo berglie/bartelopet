@@ -62,12 +62,7 @@ export async function Home2026() {
     { label: 'Påmeldte', value: stats.registered },
   ];
 
-  const tickerItems = [
-    'Hele november',
-    'Fra 1 km',
-    'Løp hvor du vil',
-    `Gi gjerne ${rate} kr per km`,
-  ];
+  const tickerItems = ['Hele november', 'Fra 1 km', 'Løp hvor du vil', 'For Prosjekt SUT'];
 
   const sutFeatures = [
     { icon: Users, label: 'Rusfritt miljø med plass til alle' },
