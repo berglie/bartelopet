@@ -96,7 +96,14 @@ export function RunForm2026({
   // A new date or distance counts as a new registration, so older runs keep both.
   const locked = !dates || Boolean(run && run.run_date < dates.min);
   const tickets = distance && Number.isFinite(distanceKm) ? ticketsForRun(distanceKm) : 0;
-  const openDates = run ? [] : freeDates(dates, takenDates);
+  // Runs saved here, by date. takenDates and totalKm only include them once router.refresh()
+  // lands, so until then they are counted from this instead.
+  const [savedRuns, setSavedRuns] = useState<Record<string, number>>({});
+  const pendingRuns = Object.entries(savedRuns).filter(([date]) => !takenDates.includes(date));
+  const knownKm = totalKm + pendingRuns.reduce((sum, [, km]) => sum + km, 0);
+  const openDates = run
+    ? []
+    : freeDates(dates, [...takenDates, ...pendingRuns.map(([date]) => date)]);
   // After saving, the thanks replaces the fields until the participant asks for another run.
   const [showFields, setShowFields] = useState(true);
 
@@ -160,10 +167,10 @@ export function RunForm2026({
         formElement.reset();
         setDistance('');
         setConfirmed(false);
-        // totalKm is from before this run; the refresh below brings the new total.
         // Rounded so float sums like 0.1 + 0.2 do not add a krone.
-        const km = Math.round((totalKm + payload.distance_km) * 100) / 100;
+        const km = Math.round((knownKm + payload.distance_km) * 100) / 100;
         setSavedGift({ km, amount: donationForDistance(km) });
+        setSavedRuns((runs) => ({ ...runs, [payload.run_date]: payload.distance_km }));
         setShowFields(false);
       }
       router.refresh();
