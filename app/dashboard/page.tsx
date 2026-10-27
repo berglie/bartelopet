@@ -185,7 +185,12 @@ export default async function DashboardPage() {
               </CardHeader>
               <CardContent className="pt-6">
                 {canRegister ? (
-                  <RunForm2026 donationUrl={editionResult.data?.donation_url} dates={dates} />
+                  <RunForm2026
+                    donationUrl={editionResult.data?.donation_url}
+                    dates={dates}
+                    takenDates={runs.map((run) => run.run_date)}
+                    totalKm={totalKm}
+                  />
                 ) : (
                   <p className="border-2 border-dashed border-foreground p-4 text-sm">
                     Turregistreringen er stengt. Turer i november registreres innen et døgn etter at
