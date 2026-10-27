@@ -14,7 +14,6 @@ async function registerRun(
     date?: string;
     km: string;
     title?: string;
-    link?: string;
     photo?: string | { name: string; mimeType: string; buffer: Buffer };
   }
 ) {
@@ -22,8 +21,7 @@ async function registerRun(
   if (run.date) await form.getByLabel('Dato *').fill(run.date);
   await form.getByLabel('Distanse i km *').fill(run.km);
   if (run.title) await form.getByLabel('Navn på tur/løp').fill(run.title);
-  if (run.link) await form.getByLabel('Offentlig Strava-/aktivitetslenke').fill(run.link);
-  if (run.photo) await form.getByLabel('Eller last opp et bilde').setInputFiles(run.photo);
+  if (run.photo) await form.getByLabel('Bilde fra turen').setInputFiles(run.photo);
   await form.getByRole('checkbox', { name: /Jeg bekrefter at jeg har gått/ }).check();
   await form.getByRole('button', { name: 'Registrer tur' }).click();
 }
@@ -49,16 +47,11 @@ test.describe('runs', () => {
       date: osloDate(-1),
       km: '12',
       title: 'Morgentur rundt Mosvatnet',
-      link: 'https://www.strava.com/activities/123',
     });
 
     await expect(page.getByText('Takk for turen!')).toBeVisible();
-    await expect(page.getByText(/tilsvarer\s+60 kr/)).toBeVisible();
+    await expect(page.getByText(/tilsvarer det\s+60 kr/)).toBeVisible();
     await expect(page.getByText('Morgentur rundt Mosvatnet')).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Se aktivitet' })).toHaveAttribute(
-      'href',
-      'https://www.strava.com/activities/123'
-    );
     await expect(stat(page, 'Turer')).toHaveText('1');
     await expect(stat(page, 'Kilometer')).toHaveText('12');
     // 12 km gives 12 tickets in "Opptil 10 km" and 12 in "10–30 km".

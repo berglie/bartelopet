@@ -128,6 +128,9 @@ export function ticketsForRun(distanceKm: number): number {
   return roundedKm(distanceKm);
 }
 
+/** Fixed gift suggested to those whose kilometres add up to less, so one short run is no limit. */
+export const SUGGESTED_GIFT_NOK = 150;
+
 export function donationForDistance(distanceKm: number, rate = 5): number {
   return Math.ceil(distanceKm * rate);
 }

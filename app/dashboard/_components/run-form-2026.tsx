@@ -14,11 +14,13 @@ import {
   MAX_RUN_KM,
   MIN_RUN_KM,
   qualifyingCategories,
+  SUGGESTED_GIFT_NOK,
   ticketsForRun,
   type RunDateRange,
 } from '@/app/_shared/types/event-2026';
 import type { Database } from '@/app/_shared/lib/supabase/types';
 import { formatMegabytes, RUN_PHOTO_LIMITS } from '@/app/_shared/lib/constants/images';
+import { SPLEIS_PROJECT_URL } from '@/app/_shared/lib/constants/config';
 import { shrinkImage } from '@/app/_shared/lib/utils/shrink-image';
 
 type Run = Database['public']['Tables']['runs']['Row'];
@@ -53,29 +55,50 @@ async function preparePhoto(file: File): Promise<{ file: File } | { error: strin
   return { file: new File([shrunk], 'tur.jpg', { type: 'image/jpeg' }) };
 }
 
+/** The open dates without a run yet, latest first. One run per date is allowed. */
+function freeDates(dates: RunDateRange | null, taken: string[]): string[] {
+  if (!dates) return [];
+  const free: string[] = [];
+  const day = new Date(`${dates.max}T12:00:00Z`);
+  for (let date = dates.max; date >= dates.min; date = day.toISOString().slice(0, 10)) {
+    if (!taken.includes(date)) free.push(date);
+    day.setUTCDate(day.getUTCDate() - 1);
+  }
+  return free;
+}
+
 export function RunForm2026({
   run,
   disabled = false,
   donationUrl,
   dates,
+  takenDates = [],
+  totalKm = 0,
 }: {
   run?: Run;
   disabled?: boolean;
   donationUrl?: string | null;
   /** Dates open for registration (today and yesterday), from the server. */
   dates: RunDateRange | null;
+  /** Dates the participant already has a run on. Only used for new runs. */
+  takenDates?: string[];
+  /** Kilometres in the participant's saved runs. Only used for new runs. */
+  totalKm?: number;
 }) {
   const router = useRouter();
   const [distance, setDistance] = useState(run?.distance_km?.toString() || '');
   const [confirmed, setConfirmed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  // Suggested gift for the last saved run. Shown after saving, never as a condition.
+  // Suggested gift for all runs so far, counted when saving. Shown after saving, never as a condition.
   const [savedGift, setSavedGift] = useState<{ km: number; amount: number } | null>(null);
   const distanceKm = Number(distance);
   // A new date or distance counts as a new registration, so older runs keep both.
   const locked = !dates || Boolean(run && run.run_date < dates.min);
   const tickets = distance && Number.isFinite(distanceKm) ? ticketsForRun(distanceKm) : 0;
+  const openDates = run ? [] : freeDates(dates, takenDates);
+  // After saving, the thanks replaces the fields until the participant asks for another run.
+  const [showFields, setShowFields] = useState(true);
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -85,7 +108,8 @@ export function RunForm2026({
     setError('');
     setSavedGift(null);
     const form = new FormData(formElement);
-    let evidenceUrl = String(form.get('evidence_url') || '');
+    // No link field any more: keep the saved link or photo unless a new photo replaces it.
+    let evidenceUrl = run?.evidence_url ?? '';
     const evidenceFile = form.get('evidence_file');
 
     try {
@@ -121,7 +145,8 @@ export function RunForm2026({
         distance_km: Number(distance),
         run_confirmed: confirmed as true,
         title: String(form.get('title') || ''),
-        duration_text: String(form.get('duration_text') || ''),
+        // No longer asked for, but older runs keep the time they were saved with.
+        duration_text: run?.duration_text ?? '',
         comment: String(form.get('comment') || ''),
         evidence_url: evidenceUrl,
       };
@@ -135,7 +160,11 @@ export function RunForm2026({
         formElement.reset();
         setDistance('');
         setConfirmed(false);
-        setSavedGift({ km: payload.distance_km, amount: donationForDistance(payload.distance_km) });
+        // totalKm is from before this run; the refresh below brings the new total.
+        // Rounded so float sums like 0.1 + 0.2 do not add a krone.
+        const km = Math.round((totalKm + payload.distance_km) * 100) / 100;
+        setSavedGift({ km, amount: donationForDistance(km) });
+        setShowFields(false);
       }
       router.refresh();
     } catch {
@@ -143,6 +172,54 @@ export function RunForm2026({
     } finally {
       setLoading(false);
     }
+  }
+
+  const thanks = savedGift && (
+    <div role="status" className="space-y-2 border-2 border-foreground bg-accent/40 p-4 text-sm">
+      <p className="font-display text-xl font-black uppercase">Takk for turen!</p>
+      <p>
+        Så langt i november har du gått eller løpt{' '}
+        {savedGift.km.toLocaleString('nb-NO', { maximumFractionDigits: 2 })} km. Med 5 kr per km
+        tilsvarer det <strong>{savedGift.amount.toLocaleString('nb-NO')} kr</strong> til Prosjekt
+        SUT.
+        {savedGift.amount < SUGGESTED_GIFT_NOK &&
+          ` Du kan også gi et fast beløp, for eksempel ${SUGGESTED_GIFT_NOK} kr.`}
+      </p>
+      <Button asChild variant="ink" className="w-full sm:w-auto">
+        <a href={donationUrl || SPLEIS_PROJECT_URL} target="_blank" rel="noopener noreferrer">
+          Gi via Spleis
+        </a>
+      </Button>
+      <p className="text-xs text-muted-foreground">
+        Helt frivillig, og du får like mange lodd uansett.
+      </p>
+    </div>
+  );
+
+  if (!run && (!showFields || openDates.length === 0)) {
+    return (
+      <div className="space-y-4">
+        {thanks}
+        {openDates.length > 0 ? (
+          <Button
+            type="button"
+            variant="line"
+            className="w-full"
+            onClick={() => {
+              setSavedGift(null);
+              setShowFields(true);
+            }}
+          >
+            Registrer en tur til
+          </Button>
+        ) : (
+          <p className="border-2 border-dashed border-foreground p-4 text-sm">
+            Du har registrert tur for alle datoene som er åpne nå. Neste tur kan registreres i
+            morgen.
+          </p>
+        )}
+      </div>
+    );
   }
 
   return (
@@ -164,7 +241,7 @@ export function RunForm2026({
             type="date"
             min={dates?.min}
             max={dates?.max}
-            defaultValue={run?.run_date ?? dates?.max}
+            defaultValue={run?.run_date ?? openDates[0] ?? dates?.max}
             required
             disabled={loading || disabled || locked}
           />
@@ -199,44 +276,19 @@ export function RunForm2026({
           )}
         </div>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor={`title-${run?.id || 'new'}`}>Navn på tur/løp</Label>
-          <Input
-            id={`title-${run?.id || 'new'}`}
-            name="title"
-            maxLength={100}
-            defaultValue={run?.title || ''}
-            placeholder="F.eks. 3-Sjøersløpet"
-            disabled={loading || disabled}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor={`duration-${run?.id || 'new'}`}>Tid</Label>
-          <Input
-            id={`duration-${run?.id || 'new'}`}
-            name="duration_text"
-            maxLength={50}
-            defaultValue={run?.duration_text || ''}
-            placeholder="F.eks. 1:05:23"
-            disabled={loading || disabled}
-          />
-        </div>
-      </div>
       <div className="space-y-2">
-        <Label htmlFor={`evidence-${run?.id || 'new'}`}>Offentlig Strava-/aktivitetslenke</Label>
+        <Label htmlFor={`title-${run?.id || 'new'}`}>Navn på tur/løp</Label>
         <Input
-          id={`evidence-${run?.id || 'new'}`}
-          name="evidence_url"
-          type="url"
-          defaultValue={run?.evidence_url || ''}
-          placeholder="https://..."
+          id={`title-${run?.id || 'new'}`}
+          name="title"
+          maxLength={100}
+          defaultValue={run?.title || ''}
+          placeholder="F.eks. 3-Sjøersløpet"
           disabled={loading || disabled}
         />
-        <p className="text-xs text-muted-foreground">Valgfritt. Lenken blir synlig for alle.</p>
       </div>
       <div className="space-y-2">
-        <Label htmlFor={`evidence-file-${run?.id || 'new'}`}>Eller last opp et bilde</Label>
+        <Label htmlFor={`evidence-file-${run?.id || 'new'}`}>Bilde fra turen</Label>
         <Input
           id={`evidence-file-${run?.id || 'new'}`}
           name="evidence_file"
@@ -245,8 +297,8 @@ export function RunForm2026({
           disabled={loading || disabled}
         />
         <p className="text-xs text-muted-foreground">
-          Valgfritt og offentlig. Maks {MAX_ORIGINAL_MB} MB. Bildet forminskes før opplasting, og
-          posisjonsdata fjernes.
+          Valgfritt og offentlig. Et skjermbilde fra Strava eller klokka går fint. Maks{' '}
+          {MAX_ORIGINAL_MB} MB. Bildet forminskes før opplasting, og posisjonsdata fjernes.
         </p>
       </div>
       <div className="space-y-2">
@@ -282,32 +334,6 @@ export function RunForm2026({
       >
         {loading ? 'Lagrer…' : run ? 'Lagre endringer' : 'Registrer tur'}
       </Button>
-      {savedGift && (
-        <div
-          role="status"
-          className="space-y-2 border-2 border-foreground bg-secondary/30 p-4 text-sm"
-        >
-          <p className="font-display text-xl font-black uppercase">Takk for turen!</p>
-          <p>
-            Barteløpet er gratis, men vi håper du vil gi 5 kr per km til Prosjekt SUT. Turen din på{' '}
-            {savedGift.km.toLocaleString('nb-NO')} km tilsvarer{' '}
-            <strong>{savedGift.amount.toLocaleString('nb-NO')} kr</strong>.
-          </p>
-          {donationUrl && (
-            <a
-              href={donationUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block font-semibold underline decoration-secondary decoration-2 underline-offset-2 hover:decoration-foreground"
-            >
-              Gi via Spleis
-            </a>
-          )}
-          <p className="text-xs text-muted-foreground">
-            Helt frivillig, og du får like mange lodd uansett.
-          </p>
-        </div>
-      )}
     </form>
   );
 }
