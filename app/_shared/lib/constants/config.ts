@@ -26,5 +26,8 @@ export const config = {
 
 export const PROJECT_SUT_URL = 'https://www.sandnesultratrail.com/prosjekt-sut';
 
+/** The Spleis campaign that also sells the 2025 trophies as rewards. */
+export const SPLEIS_PROJECT_URL = 'https://www.spleis.no/project/522938';
+
 /** The photo gallery, votes and comments belong to the 2025 edition (completions schema). */
 export const GALLERY_EVENT_YEAR = 2025;

@@ -23,7 +23,7 @@ import { Button } from '@/app/_shared/components/ui/button';
 import { get2026Overview } from '@/app/_shared/lib/queries/event-2026';
 import { RouteMap } from '@/app/_shared/components/route-map';
 import { TerrainLines } from '@/app/_shared/components/terrain-lines';
-import { PROJECT_SUT_URL } from '@/app/_shared/lib/constants/config';
+import { PROJECT_SUT_URL, SPLEIS_PROJECT_URL } from '@/app/_shared/lib/constants/config';
 import { CATEGORY_META, CATEGORY_ORDER } from '@/app/_shared/types/event-2026';
 import { cn } from '@/app/_shared/lib/utils/cn';
 
@@ -63,6 +63,11 @@ export async function Home2026() {
   ];
 
   const tickerItems = ['Hele november', 'Fra 1 km', 'Løp hvor du vil', 'For Prosjekt SUT'];
+
+  const trophies = [
+    { name: 'Liten pokal', price: '150 kr', size: 'Høyde 3 cm' },
+    { name: 'Stor pokal', price: '250 kr', size: 'Høyde 5 cm' },
+  ];
 
   const sutFeatures = [
     { icon: Users, label: 'Rusfritt miljø med plass til alle' },
@@ -503,12 +508,64 @@ export async function Home2026() {
                 </a>
               </Button>
             </div>
+            <Link
+              href="/hvordan"
+              className="group mt-6 inline-flex items-center gap-2 text-sm font-bold underline decoration-secondary decoration-2 underline-offset-4 hover:decoration-foreground"
+            >
+              Slik bruker du ruten på Strava eller GPS-klokka
+              <ArrowRight className={cn('h-4 w-4', nudgeRight)} />
+            </Link>
           </Reveal>
 
           <Reveal from="right" delay={150}>
             <RouteMap year={2025} variant="trail" lazy />
           </Reveal>
         </div>
+
+        <Reveal className="mx-auto mt-14 max-w-[1500px] px-4 md:mt-20 md:px-8">
+          <div className="grid overflow-hidden border-2 border-foreground bg-card shadow-[8px_8px_0_hsl(var(--foreground))] md:grid-cols-[1.1fr_1fr]">
+            <div className="relative aspect-[3/2] border-b-2 border-foreground md:aspect-auto md:min-h-[380px] md:border-b-0 md:border-r-2">
+              <Image
+                src="/images/pokal-illustrasjon.jpg"
+                alt="Illustrasjon av en stor og en liten pokal formet etter 2025-løypa, merket Barteløpet 2025"
+                fill
+                sizes="(max-width: 768px) 100vw, 55vw"
+                className="object-cover"
+              />
+            </div>
+            <div className="flex flex-col justify-center p-7 md:p-10">
+              <p className="trail-label w-fit">Fjorårets pokal</p>
+              <h3 className="font-display mt-5 text-4xl font-black uppercase leading-[0.95] md:text-5xl">
+                Ta med deg løypa hjem.
+              </h3>
+              <p className="mt-4 max-w-xl leading-relaxed text-muted-foreground">
+                Pokalen er formet etter GPS-sporet fra 2025-løypa og merket Barteløpet 2025. Løp
+                løypa i november og sikre deg et unikt minne. Inntektene går til Prosjekt SUT.
+              </p>
+              <dl className="mt-6 grid max-w-md grid-cols-2 gap-3">
+                {trophies.map((trophy) => (
+                  <div key={trophy.name} className="border-2 border-foreground p-4">
+                    <dt className="text-xs font-black uppercase tracking-[0.15em]">
+                      {trophy.name}
+                    </dt>
+                    <dd className="font-display mt-1 text-3xl font-black">{trophy.price}</dd>
+                    <dd className="text-sm text-muted-foreground">{trophy.size}</dd>
+                  </div>
+                ))}
+              </dl>
+              <Button asChild variant="ink" size="xl" className="group mt-8 w-fit">
+                <a href={SPLEIS_PROJECT_URL} target="_blank" rel="noopener noreferrer">
+                  Kjøp pokal på Spleis
+                  <ArrowUpRight className={cn('ml-2 h-4 w-4', nudgeUpRight)} />
+                </a>
+              </Button>
+              <p className="mt-4 text-xs text-muted-foreground">
+                Bildet er en AI-generert illustrasjon, og utseendet kan avvike noe. Begrenset
+                antall.
+              </p>
+            </div>
+          </div>
+        </Reveal>
       </section>
 
       <section className="relative overflow-hidden border-t-2 border-foreground bg-accent">
