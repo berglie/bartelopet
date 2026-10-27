@@ -55,6 +55,8 @@ const nextConfig = {
   },
   images: {
     qualities: [100, 75],
+    // A local Supabase (127.0.0.1) is a private IP, which the optimizer refuses by default.
+    dangerouslyAllowLocalIP: ['localhost', '127.0.0.1'].includes(supabaseUrl.hostname),
     remotePatterns: [
       {
         protocol: supabaseUrl.protocol.replace(':', ''),
