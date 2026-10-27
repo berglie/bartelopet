@@ -172,6 +172,33 @@ test.describe('runs', () => {
     await expect(alertBox(page)).toHaveText('Du har allerede registrert en tur på denne datoen');
   });
 
+  test('the thanks replaces the form until another free date is chosen', async ({
+    participantPage: page,
+  }) => {
+    // Today is suggested first. Saving shows the thanks with the total and the fixed suggestion.
+    await registerRun(page, { km: '5' });
+    const thanks = page.getByRole('status').filter({ hasText: 'Takk for turen!' });
+    await expect(thanks).toContainText(/har du gått eller løpt\s+5 km/);
+    await expect(thanks).toContainText(/tilsvarer det\s+25 kr/);
+    await expect(thanks).toContainText('for eksempel 150 kr');
+    await expect(thanks.getByRole('link', { name: 'Gi via Spleis' })).toBeVisible();
+    await expect(newRun(page)).toBeHidden();
+
+    // Yesterday is still free, and is suggested straight away, before the page has refreshed.
+    await page.getByRole('button', { name: 'Registrer en tur til' }).click();
+    await expect(newRun(page).getByLabel('Dato *')).toHaveValue(osloDate(-1));
+    await registerRun(page, { km: '30' });
+
+    // The total covers both runs, so the fixed suggestion is no longer needed.
+    await expect(thanks).toContainText(/har du gått eller løpt\s+35 km/);
+    await expect(thanks).toContainText(/tilsvarer det\s+175 kr/);
+    await expect(thanks).not.toContainText('150 kr');
+    await expect(page.getByRole('button', { name: 'Registrer en tur til' })).toBeHidden();
+    await expect(
+      page.getByText('Du har registrert tur for alle datoene som er åpne nå.')
+    ).toBeVisible();
+  });
+
   test('runs are registered within a day', async ({ participantPage: page, participant }) => {
     // The date picker offers yesterday and today, with today as the default.
     const date = newRun(page).getByLabel('Dato *');
