@@ -191,37 +191,8 @@ export async function Home2026() {
       >
         <div className="mx-auto grid max-w-[1500px] gap-12 px-4 md:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
           <Reveal from="left" className="order-last lg:order-none">
-            <div className="group relative min-h-[360px] overflow-hidden border-2 border-foreground bg-foreground text-background shadow-[8px_8px_0_hsl(var(--foreground))] transition-shadow duration-300 hover:shadow-[14px_14px_0_hsl(var(--secondary))] md:min-h-[560px] lg:h-[min(calc(100svh-10rem),780px)]">
-              <Image
-                src="/images/prosjekt-sut/sut-hodelykter.jpg"
-                alt="Løpere fra Prosjekt SUT med hodelykter på vei ned et berg i mørket"
-                fill
-                sizes="(max-width: 1024px) 100vw, 45vw"
-                className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-              />
-              <div
-                aria-hidden="true"
-                className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent"
-              />
-              <div className="relative flex h-full min-h-[360px] flex-col justify-between p-7 md:min-h-[560px] md:p-12">
-                <div className="flex items-center justify-between">
-                  <span className="trail-label bg-accent text-foreground">Lokalt initiativ</span>
-                  <Mountain
-                    className="h-10 w-10 animate-float text-accent md:h-12 md:w-12"
-                    strokeWidth={1.5}
-                  />
-                </div>
-                <div>
-                  <p className="font-display text-5xl font-black uppercase leading-[0.9] text-white md:text-7xl">
-                    Ingen
-                    <br />
-                    går alene.
-                  </p>
-                  <div className="mt-6 h-2 w-28 origin-left bg-secondary transition-transform duration-500 group-hover:scale-x-[2.2] md:mt-8" />
-                </div>
-              </div>
-            </div>
-            <div className="mt-10 max-w-2xl border-l-4 border-secondary pl-5">
+            <SutPhotoCard className="hidden lg:block" />
+            <div className="max-w-2xl border-l-4 border-secondary pl-5 lg:mt-10">
               <p className="text-xs font-black uppercase tracking-[0.18em]">Hvor går pengene?</p>
               <p className="mt-2 leading-relaxed text-muted-foreground">
                 Alle donasjoner samles inn på Spleis og går uavkortet til Prosjekt SUT. Pengene
@@ -256,6 +227,7 @@ export async function Home2026() {
               Prosjekt
               <span className="block text-secondary">SUT</span>
             </h2>
+            <SutPhotoCard className="mt-8 lg:hidden" />
             <p className="mt-8 max-w-2xl text-xl leading-relaxed md:text-2xl">
               Et trygt treningsfellesskap for deg som trenger litt ekstra samhold – enten
               utfordringene handler om psykisk helse, rus eller andre sosiale og helsemessige
@@ -584,6 +556,48 @@ const liftCard =
 const nudgeRight = 'transition-transform duration-300 group-hover:translate-x-1.5';
 const nudgeUpRight =
   'transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1';
+/** Headlamp photo with the "Ingen går alene" overlay. Rendered twice so it can sit under the
+ * heading on mobile and beside the text on desktop; the hidden copy's lazy image is not fetched. */
+function SutPhotoCard({ className }: { className?: string }) {
+  return (
+    <div
+      className={cn(
+        'group relative min-h-[360px] overflow-hidden border-2 border-foreground bg-foreground text-background shadow-[8px_8px_0_hsl(var(--foreground))] transition-shadow duration-300 hover:shadow-[14px_14px_0_hsl(var(--secondary))] md:min-h-[560px] lg:h-[min(calc(100svh-10rem),780px)]',
+        className
+      )}
+    >
+      <Image
+        src="/images/prosjekt-sut/sut-hodelykter.jpg"
+        alt="Løpere fra Prosjekt SUT med hodelykter på vei ned et berg i mørket"
+        fill
+        sizes="(max-width: 1024px) 100vw, 45vw"
+        className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent"
+      />
+      <div className="relative flex h-full min-h-[360px] flex-col justify-between p-7 md:min-h-[560px] md:p-12">
+        <div className="flex items-center justify-between">
+          <span className="trail-label bg-accent text-foreground">Lokalt initiativ</span>
+          <Mountain
+            className="h-10 w-10 animate-float text-accent md:h-12 md:w-12"
+            strokeWidth={1.5}
+          />
+        </div>
+        <div>
+          <p className="font-display text-5xl font-black uppercase leading-[0.9] text-white md:text-7xl">
+            Ingen
+            <br />
+            går alene.
+          </p>
+          <div className="mt-6 h-2 w-28 origin-left bg-secondary transition-transform duration-500 group-hover:scale-x-[2.2] md:mt-8" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const featureTile =
   'group flex items-center gap-3 border-2 border-foreground bg-card p-4 transition-[transform,box-shadow] duration-300 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_hsl(var(--foreground))]';
 
