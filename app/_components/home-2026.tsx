@@ -523,14 +523,24 @@ export async function Home2026() {
         </div>
 
         <Reveal className="mx-auto mt-14 max-w-[1500px] px-4 md:mt-20 md:px-8">
-          <div className="grid overflow-hidden border-2 border-foreground bg-card shadow-[8px_8px_0_hsl(var(--foreground))] md:grid-cols-[1.1fr_1fr]">
-            <div className="relative aspect-[3/2] border-b-2 border-foreground md:aspect-auto md:min-h-[380px] md:border-b-0 md:border-r-2">
+          <div className="grid overflow-hidden border-2 border-foreground bg-card shadow-[8px_8px_0_hsl(var(--foreground))] lg:grid-cols-[1.1fr_1fr]">
+            <div className="relative aspect-[3/2] overflow-hidden border-b-2 border-foreground lg:aspect-auto lg:min-h-[380px] lg:border-b-0 lg:border-r-2">
+              {/* Blurred copy fills the cell so the sharp image can be shown whole, measurements
+                  included, whatever the cell's aspect ratio. Same src and sizes, so one download. */}
+              <Image
+                src="/images/pokal-illustrasjon.jpg"
+                alt=""
+                aria-hidden="true"
+                fill
+                sizes="(max-width: 1024px) 100vw, 55vw"
+                className="scale-110 object-cover blur-xl"
+              />
               <Image
                 src="/images/pokal-illustrasjon.jpg"
                 alt="Illustrasjon av en stor og en liten pokal formet etter 2025-løypa, merket Barteløpet 2025"
                 fill
-                sizes="(max-width: 768px) 100vw, 55vw"
-                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 55vw"
+                className="object-contain"
               />
             </div>
             <div className="flex flex-col justify-center p-7 md:p-10">
