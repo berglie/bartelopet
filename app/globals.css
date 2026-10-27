@@ -143,11 +143,6 @@
   .reveal[data-from='right']:not([data-visible]) {
     transform: translateX(3rem);
   }
-
-  /* Seamless ticker: the track holds two copies and slides by half its width */
-  .marquee:hover .marquee-track {
-    animation-play-state: paused;
-  }
 }
 
 /* Without JS or with reduced motion, content is simply shown */

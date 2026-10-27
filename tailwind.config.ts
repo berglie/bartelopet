@@ -101,10 +101,6 @@ const config: Config = {
           '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
           '50%': { transform: 'translateY(-8px) rotate(-3deg)' },
         },
-        marquee: {
-          from: { transform: 'translateX(0)' },
-          to: { transform: 'translateX(-50%)' },
-        },
         tick: {
           from: { opacity: '0.35', transform: 'translateY(-30%)' },
           to: { opacity: '1', transform: 'none' },
@@ -119,7 +115,6 @@ const config: Config = {
         draw: 'draw 2.4s cubic-bezier(0.65, 0, 0.35, 1) both',
         drift: 'drift 18s ease-in-out infinite',
         float: 'float 6s ease-in-out infinite',
-        marquee: 'marquee 64s linear infinite',
         tick: 'tick 0.35s cubic-bezier(0.16, 1, 0.3, 1) both',
         'spin-slow': 'spin 60s linear infinite',
       },

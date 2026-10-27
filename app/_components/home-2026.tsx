@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import {
   ArrowDown,
@@ -7,6 +8,7 @@ import {
   DoorOpen,
   Download,
   Footprints,
+  GraduationCap,
   HeartHandshake,
   Mountain,
   Route,
@@ -61,21 +63,17 @@ export async function Home2026() {
   ];
 
   const tickerItems = [
-    'Hver tur teller',
-    'Hver kilometer teller',
-    'Fra 1 km',
-    `Gi gjerne ${rate} kr per km`,
     'Hele november',
+    'Fra 1 km',
     'Løp hvor du vil',
-    'Prosjekt SUT',
-    'Ingen går alene',
+    `Gi gjerne ${rate} kr per km`,
   ];
 
   const sutFeatures = [
-    { icon: Users, label: 'Tilhørighet gjennom trening' },
-    { icon: Footprints, label: 'Mestring i eget tempo' },
-    { icon: Sprout, label: 'Ingen krav til form eller erfaring' },
-    { icon: DoorOpen, label: 'Gratis og lav terskel' },
+    { icon: Users, label: 'Rusfritt miljø med plass til alle' },
+    { icon: Footprints, label: 'Treningsglede i naturen' },
+    { icon: Sprout, label: 'Du deler bare det du selv vil' },
+    { icon: DoorOpen, label: 'Gratis og ingen bindingstid' },
   ];
 
   const heroLines = [
@@ -196,17 +194,30 @@ export async function Home2026() {
         id="prosjekt-sut"
         className="relative scroll-mt-24 border-b-2 border-foreground py-16 md:py-28"
       >
-        <div className="mx-auto grid max-w-[1500px] gap-12 px-4 md:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <div className="mx-auto grid max-w-[1500px] gap-12 px-4 md:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
           <Reveal from="left" className="order-last lg:order-none">
-            <div className="group relative min-h-[300px] overflow-hidden border-2 border-foreground bg-accent p-7 shadow-[8px_8px_0_hsl(var(--foreground))] transition-shadow duration-300 hover:shadow-[14px_14px_0_hsl(var(--secondary))] md:min-h-[480px] md:p-12">
-              <TerrainLines className="text-foreground/20" />
-              <div className="relative flex h-full min-h-[240px] flex-col justify-between md:min-h-[380px]">
+            <div className="group relative min-h-[360px] overflow-hidden border-2 border-foreground bg-foreground text-background shadow-[8px_8px_0_hsl(var(--foreground))] transition-shadow duration-300 hover:shadow-[14px_14px_0_hsl(var(--secondary))] md:min-h-[560px] lg:h-[min(calc(100svh-10rem),780px)]">
+              <Image
+                src="/images/prosjekt-sut/sut-hodelykter.jpg"
+                alt="Løpere fra Prosjekt SUT med hodelykter på vei ned et berg i mørket"
+                fill
+                sizes="(max-width: 1024px) 100vw, 45vw"
+                className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+              />
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent"
+              />
+              <div className="relative flex h-full min-h-[360px] flex-col justify-between p-7 md:min-h-[560px] md:p-12">
                 <div className="flex items-center justify-between">
-                  <span className="trail-label bg-accent">Lokalt initiativ</span>
-                  <Mountain className="h-10 w-10 animate-float md:h-12 md:w-12" strokeWidth={1.5} />
+                  <span className="trail-label bg-accent text-foreground">Lokalt initiativ</span>
+                  <Mountain
+                    className="h-10 w-10 animate-float text-accent md:h-12 md:w-12"
+                    strokeWidth={1.5}
+                  />
                 </div>
                 <div>
-                  <p className="font-display text-5xl font-black uppercase leading-[0.9] md:text-7xl">
+                  <p className="font-display text-5xl font-black uppercase leading-[0.9] text-white md:text-7xl">
                     Ingen
                     <br />
                     går alene.
@@ -215,38 +226,7 @@ export async function Home2026() {
                 </div>
               </div>
             </div>
-          </Reveal>
-
-          <Reveal className="lg:pl-10" delay={120}>
-            <p className="trail-label">Årets mottaker</p>
-            <h2 className="section-title mt-6">
-              Prosjekt
-              <span className="block text-secondary">SUT</span>
-            </h2>
-            <p className="mt-8 max-w-2xl text-xl leading-relaxed md:text-2xl">
-              Et trygt treningsfellesskap for deg som trenger litt ekstra samhold – enten
-              utfordringene handler om psykisk helse, rus eller andre sosiale og helsemessige
-              vansker.
-            </p>
-            <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground">
-              Gruppen trener sammen i naturen, deltar på løp og avslutter gjerne med en prat og noe
-              å bite i. Ingen må dele sin egen historie. For noen er prosjektet forebyggende, for
-              andre et steg på veien ut av sykemelding og utenforskap og tilbake i arbeid.
-              Prosjektet drives i samarbeid med A-larm Rogaland, Dale fjelløpere og Sandnes
-              Ultratrail.
-            </p>
-            <div className="mt-8 grid gap-3 sm:grid-cols-2">
-              {sutFeatures.map(({ icon: Icon, label }) => (
-                <div key={label} className={featureTile}>
-                  <Icon
-                    className="h-7 w-7 shrink-0 text-secondary transition-transform duration-300 group-hover:-rotate-12 group-hover:scale-110"
-                    aria-hidden="true"
-                  />
-                  <span className="font-bold">{label}</span>
-                </div>
-              ))}
-            </div>
-            <div className="mt-8 max-w-2xl border-l-4 border-secondary pl-5">
+            <div className="mt-10 max-w-2xl border-l-4 border-secondary pl-5">
               <p className="text-xs font-black uppercase tracking-[0.18em]">Hvor går pengene?</p>
               <p className="mt-2 leading-relaxed text-muted-foreground">
                 Alle donasjoner samles inn på Spleis og går uavkortet til Prosjekt SUT. Pengene
@@ -273,6 +253,56 @@ export async function Home2026() {
                 </a>
               )}
             </div>
+          </Reveal>
+
+          <Reveal className="lg:pl-10" delay={120}>
+            <p className="trail-label">Årets mottaker</p>
+            <h2 className="section-title mt-6">
+              Prosjekt
+              <span className="block text-secondary">SUT</span>
+            </h2>
+            <p className="mt-8 max-w-2xl text-xl leading-relaxed md:text-2xl">
+              Et trygt treningsfellesskap for deg som trenger litt ekstra samhold – enten
+              utfordringene handler om psykisk helse, rus eller andre sosiale og helsemessige
+              vansker. Et rusfritt miljø som jobber for inkludering og mot utenforskap.
+            </p>
+            <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground">
+              Kjenner du på ensomhet i hverdagen, eller synes du sosiale sammenkomster og vanlige
+              gruppetreninger er vanskelige? Hos SUT møter du andre i lignende situasjoner. Det er
+              høyt under taket, og ingen forventer at du deler noe om din egen historie.
+            </p>
+            <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground">
+              For noen er gruppen forebyggende, for andre et steg på veien ut av sykemelding og
+              utenforskap og tilbake i arbeid. Noen blir med lenge, andre i kortere perioder – det
+              er opp til deg. Takket være gode samarbeidspartnere kan gruppen hjelpe med hodelykter,
+              løpesko og litt klær, og treningene avsluttes for de som vil med en prat, en boks brus
+              og noe å bite i. Prosjektet drives i samarbeid med A-larm Rogaland, Dale fjelløpere og
+              Sandnes Ultratrail.
+            </p>
+            <div className="mt-8 grid gap-3 sm:grid-cols-2">
+              {sutFeatures.map(({ icon: Icon, label }) => (
+                <div key={label} className={featureTile}>
+                  <Icon
+                    className="h-7 w-7 shrink-0 text-secondary transition-transform duration-300 group-hover:-rotate-12 group-hover:scale-110"
+                    aria-hidden="true"
+                  />
+                  <span className="font-bold">{label}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-8 flex max-w-2xl gap-4 border-2 border-foreground bg-card p-5">
+              <GraduationCap className="h-7 w-7 shrink-0 text-secondary" aria-hidden="true" />
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em]">
+                  Prøveprosjekt med videregående
+                </p>
+                <p className="mt-2 leading-relaxed text-muted-foreground">
+                  Våren 2026 trente noen elever fra videregående skole sammen med gruppen.
+                  Prosjektet fikk veldig positive tilbakemeldinger, og SUT håper å kunne fortsette
+                  med det.
+                </p>
+              </div>
+            </div>
             <a
               href={PROJECT_SUT_URL}
               target="_blank"
@@ -283,6 +313,22 @@ export async function Home2026() {
             </a>
           </Reveal>
         </div>
+        <Reveal className="mx-auto mt-12 max-w-[1500px] px-4 md:mt-16 md:px-8">
+          <figure>
+            <div className="relative aspect-[2000/924] overflow-hidden border-2 border-foreground shadow-[8px_8px_0_hsl(var(--foreground))]">
+              <Image
+                src="/images/prosjekt-sut/sut-gruppe.jpg"
+                alt="Deltakere i Prosjekt SUT med startnummer sitter sammen på en stein i sola"
+                fill
+                sizes="(max-width: 1500px) 100vw, 1500px"
+                className="object-cover"
+              />
+            </div>
+            <figcaption className="mt-3 text-xs text-muted-foreground">
+              Gjengen fra Prosjekt SUT på løp. Foto: Jim W. Amdal
+            </figcaption>
+          </figure>
+        </Reveal>
       </section>
 
       <section className="border-b-2 border-foreground bg-muted/60 py-16 md:py-28">
@@ -578,27 +624,24 @@ function TrailMark() {
 
 /** Scrolling ticker band between sections. */
 function Ticker({ items }: { items: string[] }) {
-  const sequence = [...items, ...items];
   return (
     <div
       aria-hidden="true"
-      className="marquee overflow-hidden border-b-2 border-foreground bg-secondary py-4 text-secondary-foreground"
+      className="border-b-2 border-foreground bg-secondary px-4 py-4 text-secondary-foreground"
     >
-      <div className="marquee-track flex w-max animate-marquee">
-        {[0, 1].map((copy) => (
-          <div key={copy} className="flex shrink-0 items-center">
-            {sequence.map((item, index) => (
-              <span
-                key={`${copy}-${index}`}
-                className="font-display flex items-center gap-6 px-6 text-2xl font-black uppercase tracking-tight md:text-4xl"
-              >
-                {item}
-                <span className="inline-block h-3 w-3 rotate-45 bg-foreground md:h-4 md:w-4" />
-              </span>
-            ))}
-          </div>
+      <ul className="mx-auto flex max-w-[1500px] flex-wrap items-center justify-center gap-x-6 gap-y-1 md:gap-x-8">
+        {items.map((item, index) => (
+          <li
+            key={item}
+            className="font-display flex items-center gap-5 whitespace-nowrap text-xl font-black uppercase tracking-tight md:gap-8 md:text-4xl"
+          >
+            {item}
+            {index < items.length - 1 && (
+              <span className="hidden h-4 w-4 rotate-45 bg-foreground md:inline-block" />
+            )}
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 }
