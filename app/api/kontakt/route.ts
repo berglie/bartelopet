@@ -143,7 +143,8 @@ export async function POST(request: NextRequest) {
         Authorization: `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: 'Barteløpet Kontaktskjema <onboarding@resend.dev>',
+        // Sent from our own domain, verified in Resend. Replies go to the sender through reply_to.
+        from: 'Barteløpet Kontaktskjema <kontakt@xn--bartelpet-q8a.no>',
         to: [adminEmail],
         reply_to: sanitizedEmail, // Use sanitized email to prevent header injection
         subject: `Kontaktskjema: ${sanitizedName}`,
