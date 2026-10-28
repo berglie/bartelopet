@@ -18,6 +18,9 @@ import { formatDate } from '@/app/_shared/lib/utils/format';
 const DONOR_LOGOS: Record<string, string> = {
   'Sandnes Ultra Trail': '/images/sponsors/sandnes-ultra-trail.webp',
   'Dale Fjelløpere': '/images/sponsors/dale-fjellopere.webp',
+  'GTI Friidrett': '/images/sponsors/gti-friidrett.webp',
+  Robust: '/images/sponsors/robust.webp',
+  'Sandnes IL Orientering': '/images/sponsors/sandnes-il.webp',
 };
 
 export async function Prizes2026() {
