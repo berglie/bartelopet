@@ -88,6 +88,7 @@ export function RunForm2026({
   const router = useRouter();
   const [distance, setDistance] = useState(run?.distance_km?.toString() || '');
   const [confirmed, setConfirmed] = useState(false);
+  const [onBarteloypa, setOnBarteloypa] = useState(run?.on_barteloypa ?? false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   // Suggested gift for all runs so far, counted when saving. Shown after saving, never as a condition.
@@ -151,6 +152,7 @@ export function RunForm2026({
         run_date: String(form.get('run_date') || run?.run_date),
         distance_km: Number(distance),
         run_confirmed: confirmed as true,
+        on_barteloypa: onBarteloypa,
         title: String(form.get('title') || ''),
         // No longer asked for, but older runs keep the time they were saved with.
         duration_text: run?.duration_text ?? '',
@@ -167,6 +169,7 @@ export function RunForm2026({
         formElement.reset();
         setDistance('');
         setConfirmed(false);
+        setOnBarteloypa(false);
         // Rounded so float sums like 0.1 + 0.2 do not add a krone.
         const km = Math.round((knownKm + payload.distance_km) * 100) / 100;
         setSavedGift({ km, amount: donationForDistance(km) });
@@ -293,6 +296,27 @@ export function RunForm2026({
           placeholder="F.eks. 3-Sjøersløpet"
           disabled={loading || disabled}
         />
+      </div>
+      <div className="flex items-start gap-3 border-2 border-foreground p-4">
+        <Checkbox
+          id={`barteloypa-${run?.id || 'new'}`}
+          className="mt-0.5"
+          checked={onBarteloypa}
+          onCheckedChange={(checked) => setOnBarteloypa(checked === true)}
+          disabled={loading || disabled}
+        />
+        <div className="space-y-1 text-sm">
+          <label
+            htmlFor={`barteloypa-${run?.id || 'new'}`}
+            className="cursor-pointer font-semibold"
+          >
+            Jeg løp eller gikk Barteløypa
+          </label>
+          <p className="text-xs text-muted-foreground">
+            Turen får et bartemerke på forsiden. Det gir ingen ekstra lodd: lodd regnes bare ut fra
+            distansen, uansett hvor du løper.
+          </p>
+        </div>
       </div>
       <div className="space-y-2">
         <Label htmlFor={`evidence-file-${run?.id || 'new'}`}>Bilde fra turen</Label>

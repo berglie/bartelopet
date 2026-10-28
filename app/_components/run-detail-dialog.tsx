@@ -80,6 +80,11 @@ export function RunDetailDialog({ run, summary, onOpenChange }: RunDetailDialogP
             <span>
               {summary.runs === 1 ? '1 registrert tur' : `${summary.runs} registrerte turer`}
             </span>
+            {run.on_barteloypa && (
+              <span className="border border-accent bg-accent px-2 py-1 text-accent-foreground">
+                Barteløypa
+              </span>
+            )}
           </div>
           <DialogTitle className="font-display mt-3 text-4xl font-black uppercase leading-none sm:text-5xl">
             {run.full_name}

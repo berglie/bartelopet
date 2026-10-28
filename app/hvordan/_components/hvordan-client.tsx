@@ -33,7 +33,9 @@ export function HvordanClient() {
             <MapPin className="h-4 w-4 text-primary-foreground" />
             <span className="text-sm font-medium text-primary-foreground">Komme i gang</span>
           </div>
-          <h1 className="text-4xl font-bold tracking-tight md:text-5xl">Hvordan bruke ruten</h1>
+          <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
+            Slik løper du Barteløypa
+          </h1>
           <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
             Følg instruksjonene nedenfor for å laste ned og bruke ruten på Strava eller din
             GPS-klokke
@@ -43,7 +45,7 @@ export function HvordanClient() {
         {/* Route Embed */}
         <Card className="border-border/50 bg-card/50 backdrop-blur">
           <CardContent className="p-6 md:p-8">
-            <h2 className="mb-4 text-2xl font-bold">Ruten</h2>
+            <h2 className="mb-4 text-2xl font-bold">Barteløypa</h2>
             <div className="min-h-[400px] w-full">
               <div
                 className="strava-embed-placeholder"

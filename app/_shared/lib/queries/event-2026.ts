@@ -6,7 +6,7 @@ import { EVENT_YEAR_2026 } from '@/app/_shared/types/event-2026';
 
 /** Columns the public pages need. Keep in sync with PublicRun; never select('*') here. */
 export const PUBLIC_RUN_COLUMNS =
-  'id, participant_id, full_name, bib_number, run_date, distance_km, title, duration_text, comment, evidence_url, interest_categories';
+  'id, participant_id, full_name, bib_number, run_date, distance_km, title, duration_text, comment, evidence_url, interest_categories, on_barteloypa';
 
 type RunsPublicRow = Partial<Record<keyof PublicRun, unknown>>;
 

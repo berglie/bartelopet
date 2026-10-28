@@ -118,6 +118,16 @@ const faq: { question: string; answer: ReactNode }[] = [
     ),
   },
   {
+    question: 'Gir det flere lodd å løpe Barteløypa?',
+    answer: (
+      <p>
+        Nei. Turer på Barteløypa får et eget merke på bartelinjen, men lodd regnes bare ut fra
+        distansen. En tur på 11 km gir like mange lodd enten du løper Barteløypa eller et annet
+        sted.
+      </p>
+    ),
+  },
+  {
     question: 'Hva er sjansen min?',
     answer: (
       <p>

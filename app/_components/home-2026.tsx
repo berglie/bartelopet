@@ -33,6 +33,7 @@ export async function Home2026() {
   const rate = edition?.donation_rate_nok ?? 5;
   const submissionsOpen = Boolean(edition?.submissions_open);
   const hasRuns = stats.runs > 0;
+  const barteloypaRuns = runs.filter((run) => run.on_barteloypa).length;
 
   const steps = [
     {
@@ -62,7 +63,13 @@ export async function Home2026() {
     { label: 'Påmeldte', value: stats.registered },
   ];
 
-  const tickerItems = ['Hele november', 'Fra 1 km', 'Løp hvor du vil', 'For Prosjekt SUT'];
+  const tickerItems = [
+    'Hele november',
+    'Fra 1 km',
+    'Løp hvor du vil',
+    'Løp Barteløypa',
+    'For Prosjekt SUT',
+  ];
 
   const trophies = [
     { name: 'Liten pokal', price: '150 kr', size: 'Høyde 3 cm' },
@@ -178,12 +185,20 @@ export async function Home2026() {
                 </a>
               </Button>
             </div>
-            <a
-              href="#prosjekt-sut"
-              className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-background/70 transition-colors hover:text-accent"
-            >
-              Se hvem du løper for <ArrowDown className="h-4 w-4" />
-            </a>
+            <div className="flex flex-col gap-3 sm:items-end">
+              <a
+                href="#barteloypa"
+                className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-background/70 transition-colors hover:text-accent"
+              >
+                Løp Barteløypa i Stavanger <ArrowDown className="h-4 w-4" />
+              </a>
+              <a
+                href="#prosjekt-sut"
+                className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-background/70 transition-colors hover:text-accent"
+              >
+                Se hvem du løper for <ArrowDown className="h-4 w-4" />
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -348,6 +363,114 @@ export async function Home2026() {
         </div>
       </section>
 
+      <section id="barteloypa" className="scroll-mt-24 border-b-2 border-foreground py-16 md:py-28">
+        <div className="mx-auto grid max-w-[1500px] gap-10 px-4 md:px-8 lg:grid-cols-[0.75fr_1.25fr] lg:items-center">
+          <Reveal>
+            <p className="trail-label">Barteløypa</p>
+            <h2 className="section-title mt-5">
+              11 km.
+              <span className="block pt-[0.1em] text-secondary">Formet som en bart.</span>
+            </h2>
+            <p className="mt-6 max-w-xl text-lg text-muted-foreground">
+              Barteløypa går gjennom Fargegaten, Gamle Stavanger, Stavanger Øst og Eiganes, og på
+              kartet tegner den en bart. Er du i nærheten, så løp den minst én gang i november og
+              kryss av for Barteløypa når du registrerer turen.
+            </p>
+            <p className="mt-3 max-w-xl text-sm text-muted-foreground">
+              {barteloypaRuns > 0
+                ? `${barteloypaRuns.toLocaleString('nb-NO')} ${barteloypaRuns === 1 ? 'tur' : 'turer'} på Barteløypa så langt. `
+                : ''}
+              Turer på Barteløypa får et eget merke på bartelinjen, men gir like mange lodd som alle
+              andre turer. Bor du et annet sted, teller turene dine akkurat like mye.
+            </p>
+            <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
+              <Button asChild variant="ink" size="xl" className="group">
+                <a
+                  href="https://www.strava.com/routes/3419817784051532462"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Strava-rute
+                  <ArrowUpRight className={cn('ml-2 h-4 w-4', nudgeUpRight)} />
+                </a>
+              </Button>
+              <Button asChild variant="line" size="xl">
+                <a href="/bartelopet-2025.gpx" download>
+                  <Download className="mr-2 h-4 w-4" />
+                  Last ned GPX
+                </a>
+              </Button>
+            </div>
+            <Link
+              href="/hvordan"
+              className="group mt-6 inline-flex items-center gap-2 text-sm font-bold underline decoration-secondary decoration-2 underline-offset-4 hover:decoration-foreground"
+            >
+              Slik bruker du ruten på Strava eller GPS-klokka
+              <ArrowRight className={cn('h-4 w-4', nudgeRight)} />
+            </Link>
+          </Reveal>
+
+          <Reveal from="right" delay={150}>
+            <RouteMap year={2025} variant="trail" lazy />
+          </Reveal>
+        </div>
+
+        <Reveal className="mx-auto mt-14 max-w-[1500px] px-4 md:mt-20 md:px-8">
+          <div className="grid overflow-hidden border-2 border-foreground bg-card shadow-[8px_8px_0_hsl(var(--foreground))] lg:grid-cols-[1.1fr_1fr]">
+            <div className="relative aspect-[3/2] overflow-hidden border-b-2 border-foreground lg:aspect-auto lg:min-h-[380px] lg:border-b-0 lg:border-r-2">
+              {/* Blurred copy fills the cell so the sharp image can be shown whole, measurements
+                  included, whatever the cell's aspect ratio. Same src and sizes, so one download. */}
+              <Image
+                src="/images/pokal-illustrasjon.jpg"
+                alt=""
+                aria-hidden="true"
+                fill
+                sizes="(max-width: 1024px) 100vw, 55vw"
+                className="scale-110 object-cover blur-xl"
+              />
+              <Image
+                src="/images/pokal-illustrasjon.jpg"
+                alt="Illustrasjon av en stor og en liten pokal formet etter Barteløypa, merket Barteløpet 2025"
+                fill
+                sizes="(max-width: 1024px) 100vw, 55vw"
+                className="object-contain"
+              />
+            </div>
+            <div className="flex flex-col justify-center p-7 md:p-10">
+              <p className="trail-label w-fit">Fjorårets pokal</p>
+              <h3 className="font-display mt-5 text-4xl font-black uppercase leading-[0.95] md:text-5xl">
+                Ta med deg løypa hjem.
+              </h3>
+              <p className="mt-4 max-w-xl leading-relaxed text-muted-foreground">
+                Pokalen er formet etter GPS-sporet til Barteløypa og merket Barteløpet 2025. Løp
+                løypa i november og sikre deg et unikt minne. Inntektene går til Prosjekt SUT.
+              </p>
+              <dl className="mt-6 grid max-w-md grid-cols-2 gap-3">
+                {trophies.map((trophy) => (
+                  <div key={trophy.name} className="border-2 border-foreground p-4">
+                    <dt className="text-xs font-black uppercase tracking-[0.15em]">
+                      {trophy.name}
+                    </dt>
+                    <dd className="font-display mt-1 text-3xl font-black">{trophy.price}</dd>
+                    <dd className="text-sm text-muted-foreground">{trophy.size}</dd>
+                  </div>
+                ))}
+              </dl>
+              <Button asChild variant="ink" size="xl" className="group mt-8 w-fit">
+                <a href={SPLEIS_PROJECT_URL} target="_blank" rel="noopener noreferrer">
+                  Kjøp pokal på Spleis
+                  <ArrowUpRight className={cn('ml-2 h-4 w-4', nudgeUpRight)} />
+                </a>
+              </Button>
+              <p className="mt-4 text-xs text-muted-foreground">
+                Bildet er en AI-generert illustrasjon, og utseendet kan avvike noe. Begrenset
+                antall.
+              </p>
+            </div>
+          </div>
+        </Reveal>
+      </section>
+
       <section
         id="bartelinjen"
         className="scroll-mt-24 border-b-2 border-foreground bg-foreground py-16 text-background md:py-28"
@@ -476,106 +599,6 @@ export async function Home2026() {
             })}
           </div>
         </div>
-      </section>
-
-      <section id="loypa" className="scroll-mt-24 border-t-2 border-foreground py-16 md:py-28">
-        <div className="mx-auto grid max-w-[1500px] gap-10 px-4 md:px-8 lg:grid-cols-[0.75fr_1.25fr] lg:items-center">
-          <Reveal>
-            <p className="trail-label">Fjorårets løype</p>
-            <h2 className="section-title mt-5">
-              11 km.
-              <span className="block pt-[0.1em] text-secondary">Stavanger sentrum.</span>
-            </h2>
-            <p className="mt-6 max-w-xl text-lg text-muted-foreground">
-              Vet du ikke hvor du skal løpe? Bryn deg på 2025-løypa gjennom Fargegaten, Gamle
-              Stavanger, Stavanger Øst og Eiganes. Den teller like mye som alle andre turer.
-            </p>
-            <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
-              <Button asChild variant="ink" size="xl" className="group">
-                <a
-                  href="https://www.strava.com/routes/3419817784051532462"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Strava-rute
-                  <ArrowUpRight className={cn('ml-2 h-4 w-4', nudgeUpRight)} />
-                </a>
-              </Button>
-              <Button asChild variant="line" size="xl">
-                <a href="/bartelopet-2025.gpx" download>
-                  <Download className="mr-2 h-4 w-4" />
-                  Last ned GPX
-                </a>
-              </Button>
-            </div>
-            <Link
-              href="/hvordan"
-              className="group mt-6 inline-flex items-center gap-2 text-sm font-bold underline decoration-secondary decoration-2 underline-offset-4 hover:decoration-foreground"
-            >
-              Slik bruker du ruten på Strava eller GPS-klokka
-              <ArrowRight className={cn('h-4 w-4', nudgeRight)} />
-            </Link>
-          </Reveal>
-
-          <Reveal from="right" delay={150}>
-            <RouteMap year={2025} variant="trail" lazy />
-          </Reveal>
-        </div>
-
-        <Reveal className="mx-auto mt-14 max-w-[1500px] px-4 md:mt-20 md:px-8">
-          <div className="grid overflow-hidden border-2 border-foreground bg-card shadow-[8px_8px_0_hsl(var(--foreground))] lg:grid-cols-[1.1fr_1fr]">
-            <div className="relative aspect-[3/2] overflow-hidden border-b-2 border-foreground lg:aspect-auto lg:min-h-[380px] lg:border-b-0 lg:border-r-2">
-              {/* Blurred copy fills the cell so the sharp image can be shown whole, measurements
-                  included, whatever the cell's aspect ratio. Same src and sizes, so one download. */}
-              <Image
-                src="/images/pokal-illustrasjon.jpg"
-                alt=""
-                aria-hidden="true"
-                fill
-                sizes="(max-width: 1024px) 100vw, 55vw"
-                className="scale-110 object-cover blur-xl"
-              />
-              <Image
-                src="/images/pokal-illustrasjon.jpg"
-                alt="Illustrasjon av en stor og en liten pokal formet etter 2025-løypa, merket Barteløpet 2025"
-                fill
-                sizes="(max-width: 1024px) 100vw, 55vw"
-                className="object-contain"
-              />
-            </div>
-            <div className="flex flex-col justify-center p-7 md:p-10">
-              <p className="trail-label w-fit">Fjorårets pokal</p>
-              <h3 className="font-display mt-5 text-4xl font-black uppercase leading-[0.95] md:text-5xl">
-                Ta med deg løypa hjem.
-              </h3>
-              <p className="mt-4 max-w-xl leading-relaxed text-muted-foreground">
-                Pokalen er formet etter GPS-sporet fra 2025-løypa og merket Barteløpet 2025. Løp
-                løypa i november og sikre deg et unikt minne. Inntektene går til Prosjekt SUT.
-              </p>
-              <dl className="mt-6 grid max-w-md grid-cols-2 gap-3">
-                {trophies.map((trophy) => (
-                  <div key={trophy.name} className="border-2 border-foreground p-4">
-                    <dt className="text-xs font-black uppercase tracking-[0.15em]">
-                      {trophy.name}
-                    </dt>
-                    <dd className="font-display mt-1 text-3xl font-black">{trophy.price}</dd>
-                    <dd className="text-sm text-muted-foreground">{trophy.size}</dd>
-                  </div>
-                ))}
-              </dl>
-              <Button asChild variant="ink" size="xl" className="group mt-8 w-fit">
-                <a href={SPLEIS_PROJECT_URL} target="_blank" rel="noopener noreferrer">
-                  Kjøp pokal på Spleis
-                  <ArrowUpRight className={cn('ml-2 h-4 w-4', nudgeUpRight)} />
-                </a>
-              </Button>
-              <p className="mt-4 text-xs text-muted-foreground">
-                Bildet er en AI-generert illustrasjon, og utseendet kan avvike noe. Begrenset
-                antall.
-              </p>
-            </div>
-          </div>
-        </Reveal>
       </section>
 
       <section className="relative overflow-hidden border-t-2 border-foreground bg-accent">

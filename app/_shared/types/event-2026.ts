@@ -20,6 +20,8 @@ export interface PublicRun {
   comment: string | null;
   evidence_url: string | null;
   interest_categories: DistanceCategorySlug[];
+  /** Run on Barteløypa. Display only, it never changes tickets. */
+  on_barteloypa: boolean;
 }
 
 export interface TicketTotals {
