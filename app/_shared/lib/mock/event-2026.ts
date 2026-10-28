@@ -18,6 +18,7 @@ const mockRuns = [
     comment: null,
     evidence_url: null,
     interest_categories: ['short'],
+    on_barteloypa: false,
   },
   {
     id: 'mock-run-02',
@@ -31,6 +32,7 @@ const mockRuns = [
     comment: null,
     evidence_url: null,
     interest_categories: ['short', 'medium'],
+    on_barteloypa: false,
   },
   {
     id: 'mock-run-03',
@@ -44,6 +46,7 @@ const mockRuns = [
     comment: null,
     evidence_url: null,
     interest_categories: ['short'],
+    on_barteloypa: false,
   },
   {
     id: 'mock-run-04',
@@ -57,6 +60,7 @@ const mockRuns = [
     comment: null,
     evidence_url: null,
     interest_categories: ['short', 'medium'],
+    on_barteloypa: false,
   },
   {
     id: 'mock-run-05',
@@ -70,6 +74,7 @@ const mockRuns = [
     comment: null,
     evidence_url: null,
     interest_categories: ['short'],
+    on_barteloypa: true,
   },
   {
     id: 'mock-run-06',
@@ -83,6 +88,7 @@ const mockRuns = [
     comment: null,
     evidence_url: null,
     interest_categories: ['short', 'medium'],
+    on_barteloypa: true,
   },
   {
     id: 'mock-run-07',
@@ -96,6 +102,7 @@ const mockRuns = [
     comment: null,
     evidence_url: null,
     interest_categories: ['medium'],
+    on_barteloypa: false,
   },
   {
     id: 'mock-run-08',
@@ -109,6 +116,7 @@ const mockRuns = [
     comment: null,
     evidence_url: null,
     interest_categories: ['short', 'medium'],
+    on_barteloypa: false,
   },
   {
     id: 'mock-run-09',
@@ -122,6 +130,7 @@ const mockRuns = [
     comment: null,
     evidence_url: null,
     interest_categories: ['medium', 'long'],
+    on_barteloypa: false,
   },
   {
     id: 'mock-run-10',
@@ -135,6 +144,7 @@ const mockRuns = [
     comment: null,
     evidence_url: null,
     interest_categories: ['short', 'medium', 'long'],
+    on_barteloypa: false,
   },
   {
     id: 'mock-run-11',
@@ -148,6 +158,7 @@ const mockRuns = [
     comment: null,
     evidence_url: null,
     interest_categories: ['medium'],
+    on_barteloypa: false,
   },
   {
     id: 'mock-run-12',
@@ -161,6 +172,7 @@ const mockRuns = [
     comment: null,
     evidence_url: null,
     interest_categories: ['medium', 'long'],
+    on_barteloypa: false,
   },
   {
     id: 'mock-run-13',
@@ -174,6 +186,7 @@ const mockRuns = [
     comment: null,
     evidence_url: null,
     interest_categories: ['long'],
+    on_barteloypa: false,
   },
   {
     id: 'mock-run-14',
@@ -187,6 +200,7 @@ const mockRuns = [
     comment: null,
     evidence_url: null,
     interest_categories: ['short', 'medium', 'long'],
+    on_barteloypa: false,
   },
   {
     id: 'mock-run-15',
@@ -200,6 +214,7 @@ const mockRuns = [
     comment: null,
     evidence_url: null,
     interest_categories: ['long'],
+    on_barteloypa: false,
   },
   {
     id: 'mock-run-16',
@@ -213,6 +228,7 @@ const mockRuns = [
     comment: null,
     evidence_url: null,
     interest_categories: ['medium', 'long'],
+    on_barteloypa: false,
   },
   {
     id: 'mock-run-17',
@@ -226,6 +242,7 @@ const mockRuns = [
     comment: null,
     evidence_url: null,
     interest_categories: ['short', 'medium', 'long'],
+    on_barteloypa: false,
   },
 ] satisfies PublicRun[];
 

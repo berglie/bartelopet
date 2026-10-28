@@ -581,6 +581,7 @@ export type Database = {
           event_year: number;
           evidence_url: string | null;
           id: string;
+          on_barteloypa: boolean;
           participant_id: string;
           run_date: string;
           title: string | null;
@@ -596,6 +597,7 @@ export type Database = {
           event_year: number;
           evidence_url?: string | null;
           id?: string;
+          on_barteloypa?: boolean;
           participant_id: string;
           run_date: string;
           title?: string | null;
@@ -611,6 +613,7 @@ export type Database = {
           event_year?: number;
           evidence_url?: string | null;
           id?: string;
+          on_barteloypa?: boolean;
           participant_id?: string;
           run_date?: string;
           title?: string | null;
@@ -926,6 +929,7 @@ export type Database = {
           full_name: string | null;
           id: string | null;
           interest_categories: string[] | null;
+          on_barteloypa: boolean | null;
           participant_id: string | null;
           run_date: string | null;
           submitted_order: number | null;

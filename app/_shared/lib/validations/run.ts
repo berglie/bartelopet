@@ -22,6 +22,8 @@ export const runInputSchema = z.object({
   run_confirmed: z.literal(true, {
     error: 'Du må bekrefte at du har gått eller løpt turen selv',
   }),
+  // Display only: never feeds tickets or the draw.
+  on_barteloypa: z.boolean().optional(),
   title: optionalText(100),
   duration_text: optionalText(50),
   comment: optionalText(500),

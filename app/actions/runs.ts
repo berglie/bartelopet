@@ -139,6 +139,7 @@ export async function createRun(input: RunInput): Promise<ActionResult<{ id: str
       run_date: parsed.data.run_date,
       distance_km: distance,
       donation_amount_nok: donationForDistance(distance),
+      on_barteloypa: parsed.data.on_barteloypa ?? false,
       title: parsed.data.title || null,
       duration_text: parsed.data.duration_text || null,
       comment: parsed.data.comment || null,
@@ -174,6 +175,7 @@ export async function updateRun(runId: string, input: RunInput): Promise<ActionR
     .update({
       run_date: parsed.data.run_date,
       distance_km: distance,
+      on_barteloypa: parsed.data.on_barteloypa ?? false,
       title: parsed.data.title || null,
       duration_text: parsed.data.duration_text || null,
       comment: parsed.data.comment || null,

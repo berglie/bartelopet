@@ -38,6 +38,8 @@ konverteres.
 - 10 km kvalifiserer til kort, over 10 km til kort og mellom, og 30 km eller mer til alle tre.
 - Hver tur gir ett lodd per km i hver valgt og kvalifisert kategori. Trekningen gir hvert lodd
   lik sjanse.
+- `runs.on_barteloypa` (deltakeren løp Barteløypa) er bare til visning og skal aldri påvirke lodd
+  eller trekning.
 - Loddsummer hentes fra `category_ticket_totals` og `participant_ticket_totals`, ikke ved å summere
   `eligible_entries` i appen (API-et returnerer maks 1000 rader).
 - En deltaker vinner bare én premie, med mindre alle gjenværende lodd i potten tilhører

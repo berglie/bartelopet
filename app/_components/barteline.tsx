@@ -120,10 +120,14 @@ export function Barteline({ runs }: BartelineProps) {
                   type="button"
                   className="group absolute z-10 h-6 w-6 -translate-x-1/2 rounded-full hover:z-20 focus:z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2"
                   style={{ left: `${left}%`, bottom }}
-                  aria-label={`Se turen til ${run.full_name}, ${run.distance_km.toLocaleString('nb-NO')} kilometer`}
+                  aria-label={`Se turen til ${run.full_name}, ${run.distance_km.toLocaleString('nb-NO')} kilometer${run.on_barteloypa ? ', på Barteløypa' : ''}`}
                   onClick={() => setSelectedRun(run)}
                 >
-                  <span className="pointer-events-none absolute inset-1 rounded-full border-2 border-foreground bg-secondary transition-transform group-hover:scale-150 group-focus-visible:scale-150" />
+                  <span
+                    className={`pointer-events-none absolute inset-1 rounded-full border-2 border-foreground transition-transform group-hover:scale-150 group-focus-visible:scale-150 ${
+                      run.on_barteloypa ? 'bg-accent' : 'bg-secondary'
+                    }`}
+                  />
                   <span
                     className={`pointer-events-none absolute hidden w-56 border-2 border-foreground bg-popover p-3 text-left text-xs text-popover-foreground shadow-[4px_4px_0_hsl(var(--foreground))] group-hover:block group-focus-visible:block ${tooltipHorizontalPosition} ${
                       showTooltipBelow ? 'top-7' : 'bottom-7'
@@ -131,6 +135,7 @@ export function Barteline({ runs }: BartelineProps) {
                   >
                     <strong className="block text-sm">{run.full_name}</strong>
                     {run.title && <span className="block">{run.title}</span>}
+                    {run.on_barteloypa && <span className="block font-bold">Barteløypa</span>}
                     <span className="block tabular-nums">
                       {formatDate(run.run_date, { year: undefined })} ·{' '}
                       {run.distance_km.toLocaleString('nb-NO')} km
@@ -170,10 +175,19 @@ export function Barteline({ runs }: BartelineProps) {
       </div>
 
       {runs.length > 0 && (
-        <p className="text-center text-xs font-semibold text-background/70">
-          <span className="md:hidden">Sveip for å se hele linjen. </span>
-          Trykk på en prikk for å se turen, bilder og opptjente lodd.
-        </p>
+        <div className="space-y-2 text-center text-xs font-semibold text-background/70">
+          <p>
+            <span className="md:hidden">Sveip for å se hele linjen. </span>
+            Trykk på en prikk for å se turen, bilder og opptjente lodd.
+          </p>
+          <p className="flex items-center justify-center gap-2">
+            <span
+              aria-hidden="true"
+              className="h-3 w-3 shrink-0 rounded-full border-2 border-background bg-accent"
+            />
+            Turer på Barteløypa. De gir like mange lodd som andre turer.
+          </p>
+        </div>
       )}
 
       <RunDetailDialog

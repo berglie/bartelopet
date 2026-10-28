@@ -41,7 +41,12 @@ Reglene er forklart for deltakerne på [`/trekning`](https://www.barteløpet.no/
 > vært innsats etter pengespilloven § 2, og Spleis tillater ikke trekning blant givere. Ikke koble
 > gaver og lodd sammen i kode eller tekst.
 
-2025-utgaven (fast rute i Stavanger, bildegalleri og avstemning) ligger som arkiv på `?year=2025`.
+**Barteløypa**, 11 km gjennom Stavanger formet som en bart, er løypa vi oppfordrer til å løpe minst én
+gang i november. Deltakerne kan krysse av for Barteløypa når de registrerer en tur (`runs.on_barteloypa`).
+Turen får da et eget merke på forsiden, men gir ingen ekstra lodd: lodd regnes bare ut fra distansen, så
+de som bor andre steder ikke stiller dårligere.
+
+2025-utgaven (Barteløypa som eneste rute, bildegalleri og avstemning) ligger som arkiv på `?year=2025`.
 
 ## ⚡ Kom i gang
 

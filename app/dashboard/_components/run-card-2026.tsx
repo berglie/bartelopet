@@ -46,6 +46,7 @@ export function RunCard2026({
             <div className="text-sm tabular-nums text-muted-foreground">
               {formatDate(run.run_date, { weekday: 'short', year: undefined })} ·{' '}
               {run.distance_km.toLocaleString('nb-NO')} km
+              {run.on_barteloypa && ' · Barteløypa'}
             </div>
           </div>
           {canEdit && (
