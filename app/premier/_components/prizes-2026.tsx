@@ -14,13 +14,25 @@ import { TerrainLines } from '@/app/_shared/components/terrain-lines';
 import { cn } from '@/app/_shared/lib/utils/cn';
 import { formatDate } from '@/app/_shared/lib/utils/format';
 
-/** Logos for donors, keyed by race_prizes.donor_name. Files live in public/images/sponsors. */
-const DONOR_LOGOS: Record<string, string> = {
-  'Sandnes Ultra Trail': '/images/sponsors/sandnes-ultra-trail.webp',
-  'Dale Fjelløpere': '/images/sponsors/dale-fjellopere.webp',
-  'GTI Friidrett': '/images/sponsors/gti-friidrett.webp',
-  Robust: '/images/sponsors/robust.webp',
-  'Sandnes IL Orientering': '/images/sponsors/sandnes-il.webp',
+/** Logos and websites for donors, keyed by race_prizes.donor_name. Logos live in public/images/sponsors. */
+const DONORS: Record<string, { logo: string; url: string }> = {
+  'Sandnes Ultra Trail': {
+    logo: '/images/sponsors/sandnes-ultra-trail.webp',
+    url: 'https://www.sandnesultratrail.com/',
+  },
+  'Dale Fjelløpere': {
+    logo: '/images/sponsors/dale-fjellopere.webp',
+    url: 'https://www.dalefjellopere.com/',
+  },
+  'GTI Friidrett': {
+    logo: '/images/sponsors/gti-friidrett.webp',
+    url: 'https://www.gti-friidrett.no/',
+  },
+  Robust: { logo: '/images/sponsors/robust.webp', url: 'https://robusttf.no/' },
+  'Sandnes IL Orientering': {
+    logo: '/images/sponsors/sandnes-il.webp',
+    url: 'https://www.sandnes-idrettslag.no/orientering/',
+  },
 };
 
 export async function Prizes2026() {
@@ -123,16 +135,30 @@ export async function Prizes2026() {
                   </div>
                   {prize.donor_name && (
                     <div className="flex items-center gap-3 border-l-4 border-secondary pl-3 text-muted-foreground">
-                      {DONOR_LOGOS[prize.donor_name] && (
+                      {DONORS[prize.donor_name] && (
                         <Image
-                          src={DONOR_LOGOS[prize.donor_name]}
+                          src={DONORS[prize.donor_name].logo}
                           alt=""
                           width={48}
                           height={48}
                           className="h-12 w-12 shrink-0 object-contain"
                         />
                       )}
-                      <p>Donert av {prize.donor_name}</p>
+                      <p>
+                        Donert av{' '}
+                        {DONORS[prize.donor_name] ? (
+                          <a
+                            href={DONORS[prize.donor_name].url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-bold text-foreground underline decoration-secondary underline-offset-2 hover:text-secondary-ink"
+                          >
+                            {prize.donor_name}
+                          </a>
+                        ) : (
+                          prize.donor_name
+                        )}
+                      </p>
                     </div>
                   )}
                   {prize.race_date && (
