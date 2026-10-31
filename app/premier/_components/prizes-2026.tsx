@@ -30,7 +30,7 @@ const DONORS: Record<string, { logo: string; url: string }> = {
   },
   'Gjesdal IL': {
     logo: '/images/sponsors/gjesdal-il.webp',
-    url: 'https://www.gjesdal-il.no/',
+    url: 'https://www.gjesdal-il.com/',
   },
   Robust: { logo: '/images/sponsors/robust.webp', url: 'https://robusttf.no/' },
   'Sandnes IL Orientering': {
