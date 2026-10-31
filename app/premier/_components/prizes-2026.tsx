@@ -28,6 +28,10 @@ const DONORS: Record<string, { logo: string; url: string }> = {
     logo: '/images/sponsors/gti-friidrett.webp',
     url: 'https://www.gti-friidrett.no/',
   },
+  'Gjesdal IL': {
+    logo: '/images/sponsors/gjesdal-il.webp',
+    url: 'https://www.gjesdal-il.no/',
+  },
   Robust: { logo: '/images/sponsors/robust.webp', url: 'https://robusttf.no/' },
   'Sandnes IL Orientering': {
     logo: '/images/sponsors/sandnes-il.webp',
